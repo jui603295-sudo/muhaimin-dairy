@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<title>মুহাইমিন — Dairy & Animal Products Management System</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;background:#f5f7f9;color:#17202a}
+header{position:sticky;top:0;z-index:10;background:#0f766e;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}.brandLogo{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #fff} h1{font-size:20px;margin:0 0 3px}.sub{font-size:12px;opacity:.9}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px;background:#fff;position:sticky;top:65px;z-index:9;border-bottom:1px solid #ddd}
+nav button,.btn{border:0;border-radius:10px;padding:10px;background:#e6f3f1;color:#0f5f59;font-weight:700;cursor:pointer}
+nav button.active{background:#0f766e;color:#fff}.danger{background:#fee2e2!important;color:#991b1b!important}
+main{padding:12px;max-width:1100px;margin:auto}.page{display:none}.page.active{display:block}
+.card{background:#fff;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 2px 10px #0000000d}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{padding:14px;border-radius:12px;background:#f0fdfa}.stat b{font-size:22px;display:block}
+label{display:block;font-weight:700;font-size:13px;margin:9px 0 5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;background:#fff}.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;margin-top:2px;white-space:nowrap}textarea{min-height:65px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:150px}
+table{width:100%;border-collapse:collapse;font-size:12px;overflow:hidden}th,td{border-bottom:1px solid #e5e7eb;padding:8px;text-align:left;vertical-align:top}th{background:#f8fafc}
+.tablewrap{overflow:auto}.small{font-size:12px;color:#64748b}.ok{color:#166534;font-weight:700}.err{color:#991b1b;font-weight:700}
+.hidden{display:none!important}#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#17202a;color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:50;max-width:90%}
+#login{max-width:430px;margin:30px auto}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#e6f3f1;font-size:11px}
+@media(min-width:700px){nav{grid-template-columns:repeat(8,1fr)}.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <img class="brandLogo" src="muhaimin-logo.png" alt="মুহাইমিন ডেইরি Logo">
+  <div><h1 id="appName">মুহাইমিন</h1>
+  <div class="sub"><span id="businessBrand">মুহাইমিন ডেইরি</span> • Dairy & Animal Products Management System • Supabase Online</div></div>
+</header>
+
+<section id="login" class="card">
+  <h3>Admin Login</h3>
+  <p class="small">Supabase Authentication ব্যবহার করা হচ্ছে। আপনার Supabase Auth account-এর Email ও Password দিন।</p>
+  <label>Email<input id="loginEmail" type="email" autocomplete="email"></label>
+  <label>Password<input id="loginPassword" type="password" autocomplete="current-password"></label>
+  <div class="row">
+    <button class="btn" id="loginBtn">Login</button>
+    <button class="btn" id="signupBtn">Create Account</button>
+  </div>
+  <p id="loginMsg" class="small"></p>
+</section>
+
+<div id="app" class="hidden">
+<nav id="nav">
+<button data-page="home" class="active">হোম</button>
+<button data-page="branches">কেন্দ্র</button>
+<button data-page="farmers">কৃষক</button>
+<button data-page="collection">দুধ</button>
+<button data-page="payments">পেমেন্ট</button>
+<button data-page="feed">Feed</button>
+<button data-page="vet">Veterinary</button>
+<button data-page="agro">Agro</button>
+<button data-page="reports">রিপোর্ট</button>
+<button data-page="settings">সেটিংস</button>
+<button data-page="backup">ব্যাকআপ</button>
+</nav>
+
+<main>
+<section id="home" class="page active">
+<div class="grid">
+<div class="stat">আজ সংগ্রহ<b id="todayLiters">0 L</b></div>
+<div class="stat">আজ কমিশন<b id="todayCommission">৳0</b></div>
+<div class="stat">কেন্দ্র<b id="branchCount">0</b></div>
+<div class="stat">কৃষক<b id="farmerCount">0</b></div>
+</div>
+<div class="card"><h3>ব্যবসার লক্ষ্য</h3><p>দৈনিক লক্ষ্য: <b id="targetView">2,500 L</b></p><p>CLR: <b id="clrView">28</b></p><p>কমিশন/L: <b id="commissionView">৳1</b></p></div>
+<div class="card"><h3>আজকের কেন্দ্রভিত্তিক অবস্থা</h3><div id="homeBranches"></div></div>
+</section>
+
+<section id="branches" class="page">
+<div class="card"><h3>সংগ্রহ কেন্দ্র</h3><div class="tablewrap" id="branchTable"></div></div>
+<div class="card"><h3>নতুন কেন্দ্র</h3><form id="branchForm">
+<div class="row"><div><label>Code<input name="code" placeholder="B006" required></label></div><div><label>নাম<input name="name" required></label></div></div>
+<div class="row"><div><label>দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label>অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div>
+<label>নোট<textarea name="notes"></textarea></label><button class="btn">সংরক্ষণ</button></form></div>
+</section>
+
+<section id="farmers" class="page">
+<div class="card"><h3>কৃষক যোগ করুন</h3><form id="farmerForm">
+<div class="row"><div><label>Farmer Code<input name="farmer_code" placeholder="F00001" required></label></div><div><label>নাম<input name="name" required></label></div></div>
+<div class="row"><div><label>মোবাইল<input name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required></label></div><div><label>গ্রাম/ঠিকানা<input name="village"></label></div></div>
+<div class="row"><div><label>কেন্দ্র<select name="branch_id" id="farmerBranch" required></select></div><div><label>আনুমানিক L/day<input name="expected_liters" type="number" step=".01"></label></div></div>
+<button class="btn">কৃষক সংরক্ষণ</button></form></div>
+<div class="card"><h3>কৃষক তালিকা</h3><div class="tablewrap" id="farmerTable"></div></div>
+</section>
+
+<section id="collection" class="page">
+<div class="card"><h3>দৈনিক দুধ সংগ্রহ</h3><form id="collectionForm">
+<label>তারিখ<input name="collection_date" id="cdate" type="date" required></label>
+<div class="row"><div><label>কেন্দ্র<select name="branch_id" id="collectionBranch" required></select></div><div><label>কৃষক<select name="farmer_id" id="collectionFarmer"></select></div></div>
+<div class="row"><div><label>লিটার<input name="liters" type="number" step=".01" required></label></div><div><label>CLR<input name="clr" type="number" step=".1" value="28"></label></div></div>
+<div class="row"><div><label>ক্রয় মূল্য/L<input name="purchase_rate" type="number" step=".01" value="50"></label></div><div><label>Accepted?<select name="accepted"><option value="true">Yes</option><option value="false">No</option></select></div></div>
+<label>নোট<textarea name="notes"></textarea></label><button class="btn">সংগ্রহ সংরক্ষণ</button></form></div>
+<div class="card"><h3>সাম্প্রতিক সংগ্রহ</h3><div class="tablewrap" id="collectionTable"></div></div>
+</section>
+
+<section id="payments" class="page">
+<div class="card"><h3>কৃষক পেমেন্ট</h3><form id="paymentForm">
+<div class="row"><div><label>তারিখ<input name="payment_date" id="pdate" type="date" required></label></div><div><label>কৃষক<select name="farmer_id" id="paymentFarmer" required></select></div></div>
+<div class="row"><div><label>পরিমাণ<input name="amount" type="number" step=".01" required></label></div><div><label>মাধ্যম<select name="payment_method"><option>Cash</option><option>Bank</option><option>bKash</option><option>Nagad</option><option>Other</option></select></div></div>
+<label>Reference<input name="reference"></label><label>নোট<textarea name="notes"></textarea></label>
+<button class="btn">পেমেন্ট সংরক্ষণ</button></form></div>
+<div class="card"><h3>পেমেন্ট তালিকা</h3><div class="tablewrap" id="paymentTable"></div></div>
+</section>
+
+<section id="feed" class="page">
+<div class="card"><h3>Feed Product</h3><p class="small">ডিফল্ট দাম: <b>৳৫০ / kg</b> — পরে অ্যাপ থেকেই পরিবর্তন করা যাবে।</p><form id="feedProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Feed Name<select name="product_name_select" id="feedNameSelect" required><option value="গোয়ালা ফিড">গোয়ালা ফিড</option><option value="নারিশ">নারিশ</option><option value="ACI Feed">ACI Feed</option><option value="Provita Feed">Provita Feed</option><option value="Fresh Feed">Fresh Feed</option><option value="অন্যান্য">অন্যান্য</option></select></label></div></div><label id="customFeedWrap" class="hidden">নতুন Feed-এর নাম<input name="custom_product_name" placeholder="নিজের Feed-এর নাম"></label><div class="row"><div><label>Purchase Price/kg<input name="purchase_price" type="number" step=".01" value="50"></label></div><div><label>Sale Price/kg<input name="sale_price" type="number" step=".01" value="50"></label></div></div><label>নোট<textarea name="notes"></textarea></label><button class="btn">Product Save</button></form></div>
+<div class="card"><h3>Feed Purchase</h3><form id="feedPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="date" class="today"></label></div><div><label>Product<select name="product_id" id="feedPurchaseProduct"></select></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01"></label></div><div><label>Price/kg<input name="purchase_price_per_kg" type="number" step=".01"></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid<input name="paid_amount" type="number" step=".01"></label></div></div><button class="btn">Purchase Save</button></form></div>
+<div class="card"><h3>Feed Sale</h3><form id="feedSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="date" class="today"></label></div><div><label>Product<select name="product_id" id="feedSaleProduct"></select></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01"></label></div><div><label>Sale Price/kg<input name="sale_price_per_kg" type="number" step=".01"></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid<input name="paid_amount" type="number" step=".01"></label></div></div><button class="btn">Sale Save</button></form></div>
+<div class="card"><h3>Feed Stock</h3><div class="tablewrap" id="feedStock"></div></div>
+</section>
+
+<section id="vet" class="page">
+<div class="card"><h3>Veterinary Company</h3><form id="vetCompanyForm"><label>Company Name<input name="company_name" required></label><label>নোট<textarea name="notes"></textarea></label><button class="btn">Company Save</button></form></div>
+<div class="card"><h3>Veterinary Product</h3><form id="vetProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Company<select name="company_id" id="vetCompany"></select></div><div><label>Unit<input name="unit" value="pcs"></label></div></div><div class="row"><div><label>Batch No<input name="batch_no"></label></div><div><label>Expiry<input name="expiry_date" type="date"></label></div></div><div class="row"><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01"></label></div></div><button class="btn">Product Save</button></form></div>
+<div class="card"><h3>Veterinary Stock</h3><div class="tablewrap" id="vetStock"></div></div>
+</section>
+
+<section id="agro" class="page">
+<div class="card"><h3>Agro Care Product</h3><form id="agroProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Category<input name="category"></label></div><div><label>Company<input name="company_name"></label></div></div><div class="row"><div><label>Unit<input name="unit" value="pcs"></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div></div><label>Sale Price<input name="sale_price" type="number" step=".01"></label><button class="btn">Product Save</button></form></div>
+<div class="card"><h3>Agro Stock</h3><div class="tablewrap" id="agroStock"></div></div>
+</section>
+
+<section id="reports" class="page"><div class="card"><h3>রিপোর্ট</h3><div id="report"></div></div></section>
+
+<section id="settings" class="page">
+<div class="card"><h3>ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm">
+<label>Business/App Name<input name="business_name" id="setName"></label>
+<div class="row"><div><label>Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div>
+<button class="btn">Settings Save</button></form></div>
+<div class="card"><button class="btn danger" id="logoutBtn">Logout</button></div>
+</section>
+
+<section id="backup" class="page">
+<div class="card"><h3>ডেটা Backup</h3><p class="small">Online data Supabase-এ থাকে। এই version-এ local JSON export এখনো শুধু configuration/summary backup-এর জন্য ব্যবহার করুন।</p><button class="btn" id="exportBtn">Export Summary JSON</button></div>
+</section>
+</main>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://hhqshslzoznwyprhjzia.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+let state={settings:null,branches:[],farmers:[],collections:[],payments:[],feedProducts:[],feedPurchases:[],feedSales:[],vetCompanies:[],vetProducts:[],vetPurchases:[],vetSales:[],agroProducts:[],agroPurchases:[],agroSales:[]};
+
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const money=n=>"৳"+Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2});
+const dateBN=d=>{if(!d)return "";let a=String(d).slice(0,10).split("-");return a.length===3?`${a[2]}-${a[1]}-${a[0]}`:d};
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function toast(s){$("toast").textContent=s;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",2200)}
+function formObj(form){return Object.fromEntries(new FormData(form).entries())}
+function setToday(){document.querySelectorAll(".today").forEach(x=>x.value=today())}
+function fill(id,items,label="name"){let s=$(id);if(!s)return;s.innerHTML='<option value="">-- নির্বাচন --</option>'+items.map(x=>`<option value="${x.id}">${esc(x[label])}</option>`).join("")}
+function branchName(id){return state.branches.find(x=>x.id===id)?.name||id||""}
+function farmerName(id){return state.farmers.find(x=>x.id===id)?.name||id||""}
+function phoneHref(v){let x=String(v||"").trim().replace(/[^0-9+]/g,"");if(x.startsWith("01")&&x.length===11)x="+88"+x;return x?`tel:${x}`:""}
+function callButton(v){let h=phoneHref(v);return h?`<a class="btn callBtn" href="${h}">📞 কল</a>`:`<span class="small">নম্বর নেই</span>`}
+
+async function loadAll(){
+ const q=async(table,order="created_at")=>{let r=await sb.from(table).select("*").order(order,{ascending:false});if(r.error)throw r.error;return r.data||[]};
+ state.settings=(await sb.from("app_settings").select("*").limit(1).maybeSingle()).data;
+ if(!state.settings){let r=await sb.from("app_settings").insert({business_name:"মুহাইমিন ডেইরি",daily_target_liters:2500,default_clr:28,milk_commission:1}).select().single();if(r.error)throw r.error;state.settings=r.data}
+ state.branches=await q("branches");state.farmers=await q("farmers");state.collections=await q("milk_collections","collection_date");state.payments=await q("farmer_payments","payment_date");
+ state.feedProducts=await q("feed_products");state.feedPurchases=await q("feed_purchases","purchase_date");state.feedSales=await q("feed_sales","sale_date");
+ state.vetCompanies=await q("vet_companies");state.vetProducts=await q("vet_products");state.vetPurchases=await q("vet_purchases","purchase_date");state.vetSales=await q("vet_sales","sale_date");
+ state.agroProducts=await q("agro_products");state.agroPurchases=await q("agro_purchases","purchase_date");state.agroSales=await q("agro_sales","sale_date");
+ render();
+}
+
+function render(){
+ $("appName").textContent="মুহাইমিন";$("businessBrand").textContent=state.settings.business_name||"মুহাইমিন ডেইরি";$("targetView").textContent=Number(state.settings.daily_target_liters||0).toLocaleString()+" L";$("clrView").textContent=state.settings.default_clr;$("commissionView").textContent=money(state.settings.milk_commission);
+ let todayC=state.collections.filter(x=>x.collection_date===today()&&x.accepted!==false);
+ let liters=todayC.reduce((a,x)=>a+Number(x.liters||0),0);
+ $("todayLiters").textContent=liters.toLocaleString()+" L";$("todayCommission").textContent=money(todayC.reduce((a,x)=>a+Number(x.commission||0),0));
+ $("branchCount").textContent=state.branches.length;$("farmerCount").textContent=state.farmers.length;
+ $("homeBranches").innerHTML=state.branches.map(b=>{let l=todayC.filter(x=>x.branch_id===b.id).reduce((a,x)=>a+Number(x.liters||0),0);return `<p><b>${esc(b.name)}</b> — ${l} L / ${b.target_liters||0} L <span class="small">(${esc(b.status||"")})</span></p>`}).join("");
+ $("branchTable").innerHTML=table(["Code","কেন্দ্র","লক্ষ্য","অবস্থা"],state.branches.map(b=>[esc(b.code),esc(b.name),`${b.target_liters||0} L`,esc(b.status||"")]));
+ fill("farmerBranch",state.branches);fill("collectionBranch",state.branches);fill("paymentFarmer",state.farmers);updateFarmerSelect();
+ $("farmerTable").innerHTML=table(["Code","নাম","মোবাইল","কেন্দ্র","Status","যোগাযোগ"],state.farmers.map(f=>[esc(f.farmer_code),esc(f.name),esc(f.mobile||""),esc(branchName(f.branch_id)),esc(f.status||""),callButton(f.mobile)]));
+ $("collectionTable").innerHTML=table(["তারিখ","কেন্দ্র","কৃষক","L","CLR","৳/L"],state.collections.slice(0,100).map(x=>[dateBN(x.collection_date),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),x.liters,x.clr??"",money(x.purchase_rate)]));
+ $("paymentTable").innerHTML=table(["তারিখ","কৃষক","Amount","Method"],state.payments.slice(0,100).map(x=>[dateBN(x.payment_date),esc(farmerName(x.farmer_id)),money(x.amount),esc(x.payment_method||"")]));
+ fill("feedPurchaseProduct",state.feedProducts);fill("feedSaleProduct",state.feedProducts);fill("vetCompany",state.vetCompanies);
+ $("feedStock").innerHTML=stockTable(state.feedProducts,state.feedPurchases,state.feedSales,"quantity_kg");
+ $("vetStock").innerHTML=stockTable(state.vetProducts,state.vetPurchases,state.vetSales,"quantity");
+ $("agroStock").innerHTML=stockTable(state.agroProducts,state.agroPurchases,state.agroSales,"quantity");
+ let total=state.collections.filter(x=>x.accepted!==false).reduce((a,x)=>a+Number(x.liters||0),0);
+ $("report").innerHTML=`<p>মোট গ্রহণযোগ্য দুধ: <b>${total.toLocaleString()} L</b></p><p>মোট কমিশন: <b>${money(state.collections.reduce((a,x)=>a+Number(x.commission||0),0))}</b></p><p>আজকের লক্ষ্য: <b>${Number(state.settings.daily_target_liters||0).toLocaleString()} L</b></p>`;
+ $("setName").value=state.settings.business_name;$("setTarget").value=state.settings.daily_target_liters;$("setClr").value=state.settings.default_clr;$("setCommission").value=state.settings.milk_commission;
+ setToday();
+}
+function table(head,rows){return `<table><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c??""}</td>`).join("")}</tr>`).join("")}</table>`}
+function stockTable(products,purchases,sales,qtyField){return table(["Product","Purchase","Sale","Stock"],products.map(p=>{let a=purchases.filter(x=>x.product_id===p.id).reduce((s,x)=>s+Number(x[qtyField]||0),0),b=sales.filter(x=>x.product_id===p.id).reduce((s,x)=>s+Number(x[qtyField]||0),0);return [esc(p.product_name),a,b,a-b]}))}
+function updateFarmerSelect(){let b=$("collectionBranch").value;fill("collectionFarmer",state.farmers.filter(f=>!b||f.branch_id===b))}
+async function insert(table,data,form){let r=await sb.from(table).insert(data);if(r.error)throw r.error;form?.reset();toast("সংরক্ষণ হয়েছে");await loadAll()}
+function n(v){return v===""||v==null?0:Number(v)}
+
+$("loginBtn").onclick=async()=>{try{let r=await sb.auth.signInWithPassword({email:$("loginEmail").value,password:$("loginPassword").value});if(r.error)throw r.error;await startApp()}catch(e){$("loginMsg").textContent=e.message}}
+$("signupBtn").onclick=async()=>{try{let r=await sb.auth.signUp({email:$("loginEmail").value,password:$("loginPassword").value});if(r.error)throw r.error;$("loginMsg").textContent="Account তৈরি হয়েছে। Email confirmation প্রয়োজন হলে email verify করুন।"}catch(e){$("loginMsg").textContent=e.message}}
+$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload()}
+
+$("branchForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters),status:f.status,notes:f.notes},e.target)}catch(x){toast(x.message)}}
+$("farmerForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:f.village,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},e.target)}catch(x){toast(x.message)}}
+$("collectionBranch").onchange=updateFarmerSelect;
+$("collectionForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),lit=n(f.liters),rate=n(f.purchase_rate);await insert("milk_collections",{collection_date:f.collection_date,branch_id:f.branch_id,farmer_id:f.farmer_id||null,liters:lit,clr:n(f.clr),purchase_rate:rate,commission:lit*n(state.settings.milk_commission),accepted:f.accepted==="true",notes:f.notes},e.target)}catch(x){toast(x.message)}}
+$("paymentForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("farmer_payments",{payment_date:f.payment_date,farmer_id:f.farmer_id,amount:n(f.amount),payment_method:f.payment_method,reference:f.reference,notes:f.notes},e.target)}catch(x){toast(x.message)}}
+$("settingsForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),r=await sb.from("app_settings").update({business_name:f.business_name,daily_target_liters:n(f.daily_target_liters),default_clr:n(f.default_clr),milk_commission:n(f.milk_commission),updated_at:new Date().toISOString()}).eq("id",state.settings.id);if(r.error)throw r.error;toast("Settings saved");await loadAll()}catch(x){toast(x.message)}}
+
+$("feedNameSelect").onchange=()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য");
+$("feedProductForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),name=f.product_name_select==="অন্যান্য"?f.custom_product_name:f.product_name_select;if(!name)throw new Error("Feed-এর নাম দিন");await insert("feed_products",{product_code:f.product_code||null,product_name:name,unit:"kg",purchase_price:n(f.purchase_price)||50,sale_price:n(f.sale_price)||50,notes:f.notes},e.target)}catch(x){toast(x.message)}}
+$("feedPurchaseForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),q=n(f.quantity_kg),p=n(f.purchase_price_per_kg),t=q*p,paid=n(f.paid_amount);await insert("feed_purchases",{purchase_date:f.purchase_date||today(),product_id:f.product_id||null,supplier_name:f.supplier_name,quantity_kg:q,purchase_price_per_kg:p,total_amount:t,paid_amount:paid,due_amount:t-paid},e.target)}catch(x){toast(x.message)}}
+$("feedSaleForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),q=n(f.quantity_kg),p=n(f.sale_price_per_kg),t=q*p,paid=n(f.paid_amount);await insert("feed_sales",{sale_date:f.sale_date||today(),product_id:f.product_id||null,customer_name:f.customer_name,quantity_kg:q,sale_price_per_kg:p,total_amount:t,paid_amount:paid,due_amount:t-paid},e.target)}catch(x){toast(x.message)}}
+
+$("vetCompanyForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("vet_companies",{company_name:f.company_name,notes:f.notes},e.target)}catch(x){toast(x.message)}}
+$("vetProductForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("vet_products",{product_code:f.product_code||null,product_name:f.product_name,company_id:f.company_id||null,unit:f.unit,batch_no:f.batch_no,expiry_date:f.expiry_date||null,purchase_price:n(f.purchase_price),sale_price:n(f.sale_price)},e.target)}catch(x){toast(x.message)}}
+
+$("agroProductForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("agro_products",{product_code:f.product_code||null,product_name:f.product_name,category:f.category,company_name:f.company_name,unit:f.unit,purchase_price:n(f.purchase_price),sale_price:n(f.sale_price)},e.target)}catch(x){toast(x.message)}}
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$(b.dataset.page).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
+$("cdate").value=today();$("pdate").value=today();
+$("exportBtn").onclick=()=>{let data={settings:state.settings,branches:state.branches,farmers:state.farmers};let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.download="dairy-summary-"+today()+".json";a.click()}
+
+async function startApp(){ $("login").classList.add("hidden");$("app").classList.remove("hidden");try{await loadAll()}catch(e){toast("Database error: "+e.message);console.error(e)}}
+(async()=>{try{let r=await sb.auth.getSession();if(r.data.session)await startApp()}catch(e){console.error(e)}})();
+</script>
+</body>
+</html>
