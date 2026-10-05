@@ -1,0 +1,15 @@
+{
+  "name": "মুহাইমিন — Dairy & Animal Products Management System",
+  "short_name": "মুহাইমিন",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b6b4f",
+  "icons": [
+    {
+      "src": "muhaimin-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
