@@ -63,6 +63,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 
 </nav>
 <main>
+<div id="apiWarning" class="card hidden" role="alert" style="border-color:#d97706;background:#fffbeb;color:#92400e"></div>
 <section id="home" class="page active">
 <div class="grid"><div class="stat"><span data-i18n="todayMilk">আজকের সংগ্রহ</span><b id="todayLiters">0 L</b></div><div class="stat"><span data-i18n="todayCommission">আজকের কমিশন</span><b id="todayCommission">৳0</b></div><div class="stat"><span data-i18n="branchCountLabel">কেন্দ্র</span><b id="branchCount">0</b></div><div class="stat"><span data-i18n="farmerCountLabel">কৃষক</span><b id="farmerCount">0</b></div></div>
 <div class="card"><h3 data-i18n="businessTarget">🎯 ব্যবসার লক্ষ্য</h3><p><span data-i18n="dailyTarget">দৈনিক লক্ষ্য</span>: <b id="targetView">2,500 L</b></p><p>CLR: <b id="clrView">28</b></p><p><span data-i18n="commissionPerL">কমিশন/L</span>: <b id="commissionView">৳1</b></p></div>
@@ -77,8 +78,8 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
 <section id="feed" class="page"><div class="card"><h3>🌾 Feed Product</h3><p class="small" data-i18n="feedDefault">ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।</p><form id="feedProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Feed Name<select name="product_name_select" id="feedNameSelect" required><option value="গোয়ালা ফিড">গোয়ালা ফিড</option><option value="নারিশ">নারিশ</option><option value="ACI Feed">ACI Feed</option><option value="Provita Feed">Provita Feed</option><option value="Fresh Feed">Fresh Feed</option><option value="অন্যান্য">অন্যান্য</option></select></label></div></div><label id="customFeedWrap" class="hidden" data-i18n="customFeed">নতুন Feed-এর নাম<input name="custom_product_name"></label><div class="row"><div><label>Purchase Price/kg<input name="purchase_price" type="number" step=".01" value="50"></label></div><div><label>Sale Price/kg<input name="sale_price" type="number" step=".01" value="50"></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">💾 Product Save</button></form></div><div class="card"><h3>📥 Feed Purchase</h3><form id="feedPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="date" class="today"></label></div><div><label>Time<input name="purchase_time" type="time" step="1" class="currentTime"></label></div><div><label>Product<select name="product_id" id="feedPurchaseProduct"></select></label></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div><div><label>Price/kg<input name="purchase_price_per_kg" type="number" step=".01" value="50"></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid<input name="paid_amount" type="number" step=".01"></label></div></div><button class="btn primary">Purchase Save</button></form></div><div class="card"><h3>📤 Feed Sale</h3><form id="feedSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="date" class="today"></label></div><div><label>Time<input name="sale_time" type="time" step="1" class="currentTime"></label></div><div><label>Product<select name="product_id" id="feedSaleProduct"></select></label></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div><div><label>Sale Price/kg<input name="sale_price_per_kg" type="number" step=".01" value="50"></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid<input name="paid_amount" type="number"
 
 step=".01"></label></div></div><button class="btn primary">Sale Save</button></form></div><div class="card"><h3 data-i18n="feedStock">Feed Stock</h3><div class="tablewrap" id="feedStock"></div></div></section>
-<section id="vet" class="page"><div class="card"><h3>🏥 Veterinary Company</h3><form id="vetCompanyForm"><label>Company Name<input name="company_name" required></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">Company Save</button></form></div><div class="card"><h3>💊 Veterinary Product</h3><form id="vetProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Company<select name="company_id" id="vetCompany"></select></label></div><div><label>Unit<input name="unit" value="pcs"></label></div></div><div class="row"><div><label>Batch No<input name="batch_no"></label></div><div><label>Expiry<input name="expiry_date" type="date"></label></div></div><div class="row"><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01"></label></div></div><button class="btn primary">Product Save</button></form></div><div class="card"><h3 data-i18n="vetStock">Veterinary Stock & Expiry</h3><div class="tablewrap" id="vetStock"></div></div></section>
-<section id="agro" class="page"><div class="card"><h3>🌱 Agro Care Product</h3><form id="agroProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Category<input name="category"></label></div><div><label>Company<input name="company_name"></label></div></div><div class="row"><div><label>Unit<input name="unit" value="pcs"></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div></div><label>Sale Price<input name="sale_price" type="number" step=".01"></label><button class="btn primary">Product Save</button></form></div><div class="card"><h3 data-i18n="agroStock">Agro Stock</h3><div class="tablewrap" id="agroStock"></div></div></section>
+<section id="vet" class="page"><div class="card"><h3>🏥 Veterinary Company</h3><form id="vetCompanyForm"><label>Company Name<input name="company_name" required></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">Company Save</button></form></div><div class="card"><h3>💊 Veterinary Product</h3><form id="vetProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Company<select name="company_id" id="vetCompany"></select></label></div><div><label>Unit<input name="unit" value="pcs"></label></div></div><div class="row"><div><label>Batch No<input name="batch_no"></label></div><div><label>Expiry<input name="expiry_date" type="date"></label></div></div><div class="row"><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01"></label></div></div><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Veterinary Purchase</h3><form id="vetPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="vetPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Purchase</button></form></div><div class="card"><h3>📤 Veterinary Sale</h3><form id="vetSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="vetSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Sale</button></form></div><div class="card"><h3 data-i18n="vetStock">Veterinary Stock & Expiry</h3><div class="tablewrap" id="vetStock"></div></div></section>
+<section id="agro" class="page"><div class="card"><h3>🌱 Agro Care Product</h3><form id="agroProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Category<input name="category"></label></div><div><label>Company<input name="company_name"></label></div></div><div class="row"><div><label>Unit<input name="unit" value="pcs"></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div></div><label>Sale Price<input name="sale_price" type="number" step=".01"></label><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Agro Care Purchase</h3><form id="agroPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="agroPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Agro Purchase</button></form></div><div class="card"><h3>📤 Agro Care Sale</h3><form id="agroSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="agroSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Agro Sale</button></form></div><div class="card"><h3 data-i18n="agroStock">Agro Stock</h3><div class="tablewrap" id="agroStock"></div></div></section>
 <section id="reports" class="page"><div class="card"><h3 data-i18n="reportsTitle">📊 রিপোর্ট</h3><div class="row"><div><label data-i18n="fromDate">শুরুর তারিখ<input type="date" id="reportFrom"></label></div><div><label data-i18n="toDate">শেষ তারিখ<input type="date" id="reportTo"></label></div></div><button class="btn" id="runReport" data-i18n="runReport">রিপোর্ট দেখুন</button><div id="report"></div></div></section>
 <section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div id="ledgerResult" class="tablewrap"></div></div></section>
 <section id="settings" class="page"><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div><div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
@@ -90,102 +91,453 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 <div id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL="https://hhqshslzoznwyprhjzia.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let state={settings:null,branches:[],farmers:[],collections:[],payments:[],feedProducts:[],feedPurchases:[],feedSales:[],vetCompanies:[],vetProducts:[],vetPurchases:[],vetSales:[],agroProducts:[],agroPurchases:[],agroSales:[]};
-const $=id=>document.getElementById(id);
-const today=()=>{const d=new Date();return ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}};
-const currentTime=()=>{const d=new Date();return ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}};
-const money=n=>(localStorage.getItem("muhaimin-language")==="en"?"BDT ":"৳")+Number(n||0).toLocaleString(localStorage.getItem("muhaimin-language")==="en"?"en-US":"bn-BD",{maximumFractionDigits:2});
-const dateBN=d=>{if(!d)return "";const a=String(d).slice(0,10).split("-");return a.length===3?${a[2]}-${a[1]}-${a[0]}:d};
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const translations={
-bn:{loginTitle:"🔐 লগইন",authInfo:"আপনার Supabase Auth অ্যাকাউন্টের ইমেইল ও পাসওয়ার্ড ব্যবহার করুন।",emailLabel:"ইমেইল",passwordLabel:"পাসওয়ার্ড",otpNote:"মোবাইল OTP চালু করতে Supabase Phone Auth ও SMS প্রদানকারীর কনফিগারেশন প্রয়োজন।",phoneOtpTitle:"📲 মোবাইল OTP",phoneLabel:"মোবাইল নম্বর",otpLabel:"OTP কোড",otpSetupNote:"এই বোতামগুলো Supabase Phone Auth ব্যবহার করে; প্রকল্পে Phone provider ও SMS provider সক্রিয় না থাকলে কাজ করবে না।",navHome:"হোম",navBranches:"কেন্দ্র",navFarmers:"কৃষক",navMilk:"দুধ সংগ্রহ",navPayments:"পেমেন্ট",navFeed:"খাদ্য / Feed",navVet:"ভেটেরিনারি",navAgro:"কৃষি / Agro",navReports:"রিপোর্ট",navLedger:"ফার্মার লেজার",navSettings:"সেটিংস",navBackup:"ব্যাকআপ",navAudit:"অডিট লগ",todayMilk:"আজকের সংগ্রহ",todayCommission:"আজকের কমিশন",branchCountLabel:"কেন্দ্র",farmerCountLabel:"কৃষক",businessTarget:"🎯 ব্যবসার লক্ষ্য",dailyTarget:"দৈনিক লক্ষ্য",commissionPerL:"কমিশন/L",branchStatus:"📍 কেন্দ্রভিত্তিক অবস্থা",branchList:"🏢 সংগ্রহ কেন্দ্র",newBranch:"➕ নতুন কেন্দ্র",nameLabel:"নাম",dailyTargetLiters:"দৈনিক লক্ষ্য (L)",statusLabel:"অবস্থা",notesLabel:"নোট",save:"সংরক্ষণ",addFarmer:"👨‍🌾 কৃষক যোগ করুন",mobileLabel:"মোবাইল",addressLabel:"গ্রাম/ঠিকানা",branchLabel:"কেন্দ্র",expectedMilk:"আনুমানিক L/day",saveFarmer:"কৃষক সংরক্ষণ",farmerList:"📋 কৃষক তালিকা",milkCollection:"🥛 দৈনিক দুধ সংগ্রহ",dateLabel:"তারিখ",farmerLabel:"কৃষক",litersLabel:"লিটার",purchaseRate:"ক্রয় মূল্য/L",acceptedLabel:"গ্রহণ করা হয়েছে?",saveCollection:"সংগ্রহ সংরক্ষণ",recentCollections:"সাম্প্রতিক সংগ্রহ",farmerPayment:"💳 কৃষক পেমেন্ট",amountLabel:"পরিমাণ",methodLabel:"মাধ্যম",savePayment:"পেমেন্ট সংরক্ষণ",paymentList:"পেমেন্ট তালিকা",feedDefault:"ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।",customFeed:"নতুন Feed-এর নাম",feedStock:"Feed Stock",vetStock:"Veterinary Stock & Expiry",agroStock:"Agro Stock",reportsTitle:"📊 রিপোর্ট",fromDate:"শুরুর তারিখ",toDate:"শেষ তারিখ",runReport:"রিপোর্ট দেখুন",businessSettings:"⚙️ ব্যবসার নাম ও নিয়ম",businessName:"ব্যবসার নাম",saveSettings:"সেটিংস সংরক্ষণ",logout:"🚪 লগআউট",backupTitle:"💾
-
-ব্যাকআপ ও রিস্টোর",backupInfo:"JSON ব্যাকআপ ডাউনলোড করুন। রিস্টোরের আগে ডেটা যাচাই করুন; এই সংস্করণে নিরাপদ restore স্বয়ংক্রিয়ভাবে চালানো হয় না।",exportBackup:"সম্পূর্ণ উপলভ্য ডেটা ব্যাকআপ",importBackup:"ব্যাকআপ ফাইল নির্বাচন",validateBackup:"ফাইল যাচাই করুন",auditTitle:"🧾 অডিট লগ",auditInfo:"এই সংস্করণে এই ব্রাউজারে হওয়া কার্যকলাপের স্থানীয় তালিকা দেখা যাবে। এটি সার্ভার-সুরক্ষিত Audit Log-এর বিকল্প নয়."},
-en:{loginTitle:"🔐 Login",authInfo:"Use your Supabase Auth account email and password.",emailLabel:"Email",passwordLabel:"Password",otpNote:"Mobile OTP requires Supabase Phone Auth and an SMS provider configuration.",phoneOtpTitle:"📲 Mobile OTP",phoneLabel:"Mobile number",otpLabel:"OTP code",otpSetupNote:"These buttons use Supabase Phone Auth; Phone and SMS providers must be enabled in your project.",navHome:"Home",navBranches:"Branches",navFarmers:"Farmers",navMilk:"Milk Collection",navPayments:"Payments",navFeed:"Feed",navVet:"Veterinary",navAgro:"Agro",navReports:"Reports",navLedger:"Farmer Ledger",navSettings:"Settings",navBackup:"Backup",navAudit:"Audit Log",todayMilk:"Today's collection",todayCommission:"Today's commission",branchCountLabel:"Branches",farmerCountLabel:"Farmers",businessTarget:"🎯 Business target",dailyTarget:"Daily target",commissionPerL:"Commission/L",branchStatus:"📍 Branch status",branchList:"🏢 Collection branches",newBranch:"➕ New branch",nameLabel:"Name",dailyTargetLiters:"Daily target (L)",statusLabel:"Status",notesLabel:"Notes",save:"Save",addFarmer:"👨‍🌾 Add farmer",mobileLabel:"Mobile",addressLabel:"Village/Address",branchLabel:"Branch",expectedMilk:"Expected L/day",saveFarmer:"Save farmer",farmerList:"📋 Farmer list",milkCollection:"🥛 Daily milk collection",dateLabel:"Date",farmerLabel:"Farmer",litersLabel:"Liters",purchaseRate:"Purchase rate/L",acceptedLabel:"Accepted?",saveCollection:"Save collection",recentCollections:"Recent collections",farmerPayment:"💳 Farmer payment",amountLabel:"Amount",methodLabel:"Method",savePayment:"Save payment",paymentList:"Payment list",feedDefault:"Default price: BDT 50/kg — editable later.",customFeed:"New feed name",feedStock:"Feed stock",vetStock:"Veterinary stock & expiry",agroStock:"Agro stock",reportsTitle:"📊 Reports",fromDate:"From date",toDate:"To date",runReport:"Run report",businessSettings:"⚙️ Business name and rules",businessName:"Business/App name",saveSettings:"Save settings",logout:"🚪 Log out",backupTitle:"💾 Backup & Restore",backupInfo:"Download a JSON backup. Validate data before restoring; safe automatic restore is not enabled in this version.",exportBackup:"Back up all available data",importBackup:"Choose backup file",validateBackup:"Validate file",auditTitle:"🧾 Audit Log",auditInfo:"This version shows a local list of activity in this browser. It is not a replacement for a server-secured audit log."}
+"use strict";
+const SUPABASE_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+const state = {
+  settings: null, branches: [], farmers: [], collections: [], payments: [],
+  feedProducts: [], feedPurchases: [], feedSales: [], vetCompanies: [], vetProducts: [],
+  vetPurchases: [], vetSales: [], agroProducts: [], agroPurchases: [], agroSales: []
 };
-function lang(){return localStorage.getItem("muhaimin-language")||"bn"}
-function tr(k){return (translations[lang()]translations.bn)[k]k}
-function applyLanguage(l){localStorage.setItem("muhaimin-language",l);document.documentElement.lang=l;$("language").value=l;document.querySelectorAll("[data-i18n]").forEach(el=>{let k=el.dataset.i18n;if(el.tagName==="LABEL"){let input=el.querySelector("input,select,textarea");if(input){let textNode=[...el.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(textNode)textNode.textContent=tr(k)+" ";}else el.textContent=tr(k)}else el.textContent=tr(k)});$("loginBtn").textContent=l==="en"?"🔑 Login":"🔑 লগইন";$("signupBtn").textContent=l==="en"?"📝 Register":"📝 রেজিস্ট্রেশন";$("resetBtn").textContent=l==="en"?"🔁 Recover password":"🔁 পাসওয়ার্ড রিকভারি";$("resendBtn").textContent=l==="en"?"✉️ Resend verification":"✉️ ভেরিফিকেশন ইমেইল";$("sendOtpBtn").textContent=l==="en"?"Send OTP":"OTP পাঠান";$("verifyOtpBtn").textContent=l==="en"?"Verify OTP":"OTP যাচাই";if(state.settings)render()}
-
-function toast(s){$("toast").textContent=s;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",2600)}
-function formObj(form){return Object.fromEntries(new FormData(form).entries())}
-function setToday(){document.querySelectorAll(".today").forEach(x=>{if(!x.value)x.value=today()});document.querySelectorAll(".currentTime").forEach(x=>{if(!x.value)x.value=currentTime()});["ctime","ptime"].forEach(id=>{let x=$(id);if(x&&!x.value)x.value=currentTime()})}
-function fill(id,items,label="name"){let s=$(id);if(!s)return;const current=s.value;s.innerHTML=<option value="">${lang()==="en"?"-- Select --":"-- নির্বাচন --"}</option>+items.map(x=><option value="${esc(x.id)}">${esc(x[label])}</option>).join("");if(items.some(x=>String(x.id)===current))s.value=current}
-function branchName(id){return state.branches.find(x=>String(x.id)===String(id))?.nameid""}
-function farmerName(id){return state.farmers.find(x=>String(x.id)===String(id))?.nameid""}
-function phoneHref(v){let x=String(v||"").trim().replace(/[^0-9+]/g,"");if(x.startsWith("01")&&x.length===11)x="+88"+x;return x?tel:${x}:""}
-function callButton(v){let h=phoneHref(v);return h?<a class="btn callBtn" href="${h}">📞 ${lang()==="en"?"Call":"কল"}</a>:<span class="small">${lang()==="en"?"No number":"নম্বর নেই"}</span>}
-function table(head,rows){return <table><thead><tr>${head.map(h=><th>${h}</th>).join("")}</tr></thead><tbody>${rows.map(r=><tr>${r.map(c=><td>${c??""}</td>).join("")}</tr>).join("")}</tbody></table>}
-async function loadAll(){
- const q=async(table,order="created_at")=>{let r=await sb.from(table).select("*").order(order,{ascending:false});if(r.error)throw r.error;return r.data||[]};
- let s=await sb.from("app_settings").select("*").limit(1).maybeSingle();if(s.error)throw s.error;state.settings=s.data;
- if(!state.settings){let r=await sb.from("app_settings").insert({business_name:"মুহাইমিন",daily_target_liters:2500,default_clr:28,milk_commission:1}).select().single();if(r.error)throw r.error;state.settings=r.data}
- state.branches=await q("branches");state.farmers=await q("farmers");state.collections=await q("milk_collections","collection_date");state.payments=await q("farmer_payments","payment_date");
- state.feedProducts=await q("feed_products");state.feedPurchases=await q("feed_purchases","purchase_date");state.feedSales=await q("feed_sales","sale_date");
- state.vetCompanies=await q("vet_companies");state.vetProducts=await q("vet_products");state.vetPurchases=await q("vet_purchases","purchase_date");state.vetSales=await q("vet_sales","sale_date");
- state.agroProducts=await q("agro_products");state.agroPurchases=await q("agro_purchases","purchase_date");state.agroSales=await q("agro_sales","sale_date");render()
+const today = () => {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+};
+const currentTime = () => {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+};
+const lang = () => localStorage.getItem("muhaimin-language") || "bn";
+const money = value => (lang()==="en" ? "BDT " : "৳") + Number(value || 0).toLocaleString(lang()==="en" ? "en-US" : "bn-BD", {maximumFractionDigits:2});
+const dateBN = value => {
+  if (!value) return "";
+  const parts = String(value).slice(0,10).split("-");
+  return parts.length===3 ? parts[2]+"-"+parts[1]+"-"+parts[0] : String(value);
+};
+const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
+const translations = {
+  bn: {
+    loginTitle:"🔐 লগইন", authInfo:"আপনার Supabase Auth অ্যাকাউন্টের ইমেইল ও পাসওয়ার্ড ব্যবহার করুন।",
+    emailLabel:"ইমেইল", passwordLabel:"পাসওয়ার্ড", navHome:"হোম", navBranches:"কেন্দ্র", navFarmers:"কৃষক",
+    navMilk:"দুধ সংগ্রহ", navPayments:"পেমেন্ট", navFeed:"খাদ্য / Feed", navVet:"ভেটেরিনারি", navAgro:"কৃষি / Agro",
+    navReports:"রিপোর্ট", navLedger:"ফার্মার লেজার", navSettings:"সেটিংস", navBackup:"ব্যাকআপ", navAudit:"অডিট লগ",
+    todayMilk:"আজকের সংগ্রহ", todayCommission:"আজকের কমিশন", branchCountLabel:"কেন্দ্র", farmerCountLabel:"কৃষক",
+    businessTarget:"🎯 ব্যবসার লক্ষ্য", dailyTarget:"দৈনিক লক্ষ্য", commissionPerL:"কমিশন/L", branchStatus:"📍 কেন্দ্রভিত্তিক অবস্থা",
+    branchList:"🏢 সংগ্রহ কেন্দ্র", newBranch:"➕ নতুন কেন্দ্র", nameLabel:"নাম", dailyTargetLiters:"দৈনিক লক্ষ্য (L)",
+    statusLabel:"অবস্থা", notesLabel:"নোট", save:"সংরক্ষণ", addFarmer:"👨‍🌾 কৃষক যোগ করুন", mobileLabel:"মোবাইল",
+    addressLabel:"গ্রাম/ঠিকানা", branchLabel:"কেন্দ্র", expectedMilk:"আনুমানিক L/day", saveFarmer:"কৃষক সংরক্ষণ",
+    farmerList:"📋 কৃষক তালিকা", milkCollection:"🥛 দৈনিক দুধ সংগ্রহ", dateLabel:"তারিখ", farmerLabel:"কৃষক",
+    litersLabel:"লিটার", purchaseRate:"ক্রয় মূল্য/L", acceptedLabel:"গ্রহণ করা হয়েছে?", saveCollection:"সংগ্রহ সংরক্ষণ",
+    recentCollections:"সাম্প্রতিক সংগ্রহ", farmerPayment:"💳 কৃষক পেমেন্ট", amountLabel:"পরিমাণ", methodLabel:"মাধ্যম",
+    savePayment:"পেমেন্ট সংরক্ষণ", paymentList:"পেমেন্ট তালিকা", feedDefault:"ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।",
+    customFeed:"নতুন Feed-এর নাম", feedStock:"Feed Stock", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
+    reportsTitle:"📊 রিপোর্ট", fromDate:"শুরুর তারিখ", toDate:"শেষ তারিখ", runReport:"রিপোর্ট দেখুন",
+    businessSettings:"⚙️ ব্যবসার নাম ও নিয়ম", businessName:"ব্যবসার নাম", saveSettings:"সেটিংস সংরক্ষণ",
+    logout:"🚪 লগআউট", backupTitle:"💾 ব্যাকআপ ও রিস্টোর",
+    backupInfo:"JSON ব্যাকআপ ডাউনলোড করুন। এই সংস্করণে স্বয়ংক্রিয় ডেটা রিস্টোর চালু নেই।",
+    exportBackup:"সম্পূর্ণ উপলভ্য ডেটা ব্যাকআপ", importBackup:"ব্যাকআপ ফাইল নির্বাচন", validateBackup:"ফাইল যাচাই করুন",
+    auditTitle:"🧾 অডিট লগ", auditInfo:"এই ব্রাউজারের স্থানীয় কার্যকলাপের তালিকা; সার্ভার-সুরক্ষিত অডিট লগ নয়।"
+  },
+  en: {
+    loginTitle:"🔐 Login", authInfo:"Use your Supabase Auth account email and password.", emailLabel:"Email",
+    passwordLabel:"Password", navHome:"Home", navBranches:"Branches", navFarmers:"Farmers", navMilk:"Milk Collection",
+    navPayments:"Payments", navFeed:"Feed", navVet:"Veterinary", navAgro:"Agro", navReports:"Reports",
+    navLedger:"Farmer Ledger", navSettings:"Settings", navBackup:"Backup", navAudit:"Audit Log",
+    todayMilk:"Today's collection", todayCommission:"Today's commission", branchCountLabel:"Branches",
+    farmerCountLabel:"Farmers", businessTarget:"🎯 Business target", dailyTarget:"Daily target", commissionPerL:"Commission/L",
+    branchStatus:"📍 Branch status", branchList:"🏢 Collection branches", newBranch:"➕ New branch", nameLabel:"Name",
+    dailyTargetLiters:"Daily target (L)", statusLabel:"Status", notesLabel:"Notes", save:"Save", addFarmer:"👨‍🌾 Add farmer",
+    mobileLabel:"Mobile", addressLabel:"Village/Address", branchLabel:"Branch", expectedMilk:"Expected L/day",
+    saveFarmer:"Save farmer", farmerList:"📋 Farmer list", milkCollection:"🥛 Daily milk collection", dateLabel:"Date",
+    farmerLabel:"Farmer", litersLabel:"Liters", purchaseRate:"Purchase rate/L", acceptedLabel:"Accepted?",
+    saveCollection:"Save collection", recentCollections:"Recent collections", farmerPayment:"💳 Farmer payment",
+    amountLabel:"Amount", methodLabel:"Method", savePayment:"Save payment", paymentList:"Payment list",
+    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"New feed name", feedStock:"Feed stock",
+    vetStock:"Veterinary stock & expiry", agroStock:"Agro stock", reportsTitle:"📊 Reports", fromDate:"From date",
+    toDate:"To date", runReport:"Run report", businessSettings:"⚙️ Business name and rules", businessName:"Business name",
+    saveSettings:"Save settings", logout:"🚪 Log out", backupTitle:"💾 Backup & Restore",
+    backupInfo:"Download a JSON backup. Automatic data restoration is not enabled in this version.",
+    exportBackup:"Back up all available data", importBackup:"Choose backup file", validateBackup:"Validate file",
+    auditTitle:"🧾 Audit Log", auditInfo:"Local activity list for this browser; not a server-secured audit log."
+  }
+};
+function tr(key) { return (translations[lang()] || translations.bn)[key] || (translations.bn[key] || key); }
+function applyLanguage(value) {
+  const next = value || lang();
+  localStorage.setItem("muhaimin-language", next);
+  document.documentElement.lang = next;
+  if ($("language")) $("language").value = next;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (el.tagName === "LABEL" && el.querySelector("input,select,textarea")) {
+      const node = Array.from(el.childNodes).find(n => n.nodeType===3 && n.textContent.trim());
+      if (node) node.textContent = tr(key) + " ";
+    } else {
+      el.textContent = tr(key);
+    }
+  });
+  if ($("loginBtn")) $("loginBtn").textContent = next==="en" ? "🔑 Login" : "🔑 লগইন";
+  if ($("signupBtn")) $("signupBtn").textContent = next==="en" ? "📝 Register" : "📝 রেজিস্ট্রেশন";
+  if ($("resetBtn")) $("resetBtn").textContent = next==="en" ? "🔁 Recover password" : "🔁 পাসওয়ার্ড রিকভারি";
+  if ($("resendBtn")) $("resendBtn").textContent = next==="en" ? "✉️ Resend verification" : "✉️ ভেরিফিকেশন ইমেইল";
+  if ($("sendOtpBtn")) $("sendOtpBtn").textContent = next==="en" ? "Send OTP" : "OTP পাঠান";
+  if ($("verifyOtpBtn")) $("verifyOtpBtn").textContent = next==="en" ? "Verify OTP" : "OTP যাচাই";
+  if (state.settings) render();
 }
-function render(){
- $("appName").textContent=state.settings.business_name"মুহাইমিন";$("targetView").textContent=Number(state.settings.daily_target_liters0).toLocaleString()+" L";$("clrView").textContent=state.settings.default_clr;$("commissionView").textContent=money(state.settings.milk_commission);
- let tc=state.collections.filter(x=>x.collection_date===today()&&x.accepted!==false),lit=tc.reduce((a,x)=>a+Number(x.liters||0),0);
- $("todayLiters").textContent=lit.toLocaleString()+" L";$("todayCommission").textContent=money(tc.reduce((a,x)=>a+Number(x.liters0)*Number(state.settings.milk_commission0),0));$("branchCount").textContent=state.branches.length;$("farmerCount").textContent=state.farmers.length;
- $("homeBranches").innerHTML=state.branches.map(b=>{let l=tc.filter(x=>String(x.branch_id)===String(b.id)).reduce((a,x)=>a+Number(x.liters||0),0);return <p><b>${esc(b.name)}</b> — ${l} L / ${b.target_liters||0} L <span class="small">(${esc(b.status||"")})</span></p>}).join("")||<p class="small">${lang()==="en"?"No branches yet":"কোনো কেন্দ্র নেই"}</p>;
-
-$("branchTable").innerHTML=table(["Code",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Target":"লক্ষ্য",lang()==="en"?"Status":"অবস্থা"],state.branches.map(b=>[esc(b.code),esc(b.name),${b.target_liters||0} L,esc(b.status||"")]));
- fill("farmerBranch",state.branches);fill("collectionBranch",state.branches);fill("paymentFarmer",state.farmers);fill("ledgerFarmer",state.farmers);updateFarmerSelect();
- $("farmerTable").innerHTML=table(["Code",lang()==="en"?"Name":"নাম",lang()==="en"?"Mobile":"মোবাইল",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Status":"অবস্থা",lang()==="en"?"Contact":"যোগাযোগ"],state.farmers.map(f=>[esc(f.farmer_code),esc(f.name),esc(f.mof.phonene||""),esc(branchName(f.branch_id)),esc(f.st""),callButton(f.mobilele||f.phone)]));
- $("collectionTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Branch":"কেন্দ্র",tr("farmerLabel"),"L","CLR",lang()==="en"?"Rate/L":"৳/L"],state.collections.slice(0,100).map(x=>[dateBN(x.collection_date),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),x.liters,x.clr??"",money(x.purchase_rate)]));
- $("paymentTable").innerHTML=table([tr("dateLabel"),tr("farmerLabel"),tr("amountLabel"),tr("methodLabel")],state.payments.slice(0,100).map(x=>[dateBN(x.payment_date),esc(farmerName(x.farmer_id)),money(x.amount),esc(x.payment_method||"")]));
- fill("feedPurchaseProduct",state.feedProducts);fill("feedSaleProduct",state.feedProducts);fill("vetCompany",state.vetCompanies);
- $("feedStock").innerHTML=stockTable(state.feedProducts,state.feedPurchases,state.feedSales,"quantity_kg");
- $("vetStock").innerHTML=table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Expiry":"মেয়াদ",lang()==="en"?"Status":"অবস্থা"],state.vetProducts.map(p=>{let d=p.expiry_date,days=d?Math.ceil((new Date(d+"T00:00:00")-new Date(today()+"T00:00:00"))/86400000):null;return [esc(p.product_name),dateBN(d),d?(days<0?(lang()==="en"?"Expired":"মেয়াদোত্তীর্ণ"):days<=30?(lang()==="en"?"Expiring soon":"শিগগির মেয়াদ শেষ"):(lang()==="en"?"OK":"ঠিক আছে")):(lang()==="en"?"No date":"তারিখ নেই")]}));
- $("agroStock").innerHTML=stockTable(state.agroProducts,state.agroPurchases,state.agroSales,"quantity");
- let total=state.collections.filter(x=>x.accepted!==false).reduce((a,x)=>a+Number(x.liters||0),0);$("report").innerHTML=reportHtml(state.collections);
- $("setName").value=state.settings.business_name||"";$("setTarget").value=state.settings.daily_target_liters??2500;$("setClr").value=state.settings.default_clr??28;$("setCommission").value=state.settings.milk_commission??1;setToday();renderLedger();renderAudit()
+function toast(message) {
+  const el=$("toast"); if(!el) return;
+  el.textContent=String(message || "");
+  el.style.display="block";
+  setTimeout(()=>{el.style.display="none";},2600);
 }
-function stockTable(products,purchases,sales,qty){return table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Purchased":"ক্রয়",lang()==="en"?"Sold":"বিক্রি",lang()==="en"?"Stock":"স্টক"],products.map(p=>{let a=purchases.filter(x=>String(x.product_id)===String(p.id)).reduce((s,x)=>s+Number(x[0),0),b=sales.filter(x=>String(x.product_id)===String(p.id)).reduce((s,x)=>s+Number(x[qty]y]||0),0);return [esc(p.product_name),a,b,a-b]}))}
-function reportHtml(rows){let from=$("reportFrom")?.v"",to=$("reportTo")?.valueue||"";let list=rows.filter(x=>x.accepted!==false&&(!x.collection_date>=from)&&(!toto||x.collection_date<=to));let total=list.reduce((a,x)=>a+Number(x.li0),0),com=list.reduce((a,x)=>a+Number(x.litersrs||0)*Number(state.settings.milk_commission||0),0);return <p>${lang()==="en"?"Accepted milk":"মোট গ্রহণযোগ্য দুধ"}: <b>${total.toLocaleString()} L</b></p><p>${lang()==="en"?"Commission":"মোট কমিশন"}: <b>${money(com)}</b></p><p>${lang()==="en"?"Daily target":"দৈনিক লক্ষ্য"}: <b>${Number(state.settings.daily_target_liters||0).toLocaleString()} L</b></p><p>${lang()==="en"?"Records":"রেকর্ড"}: ${list.length}</p>}
-function updateFarmerSelect(){let b=$("collectionBranch").value;fill("collectionFarmer",state.farmers.filter(f=>!b||String(f.branch_id)===String(b)))}
-
-function logActivity(action){try{let a=JSON.parse(localStorage.getItem("muhaimin-audit")"[]");a.unshift({at:new Date().toISOString(),action,user:$("loginEmail").value"signed-in user"});localStorage.setItem("muhaimin-audit",JSON.stringify(a.slice(0,100)));}catch{}}
-function renderAudit(){let a=[];try{a=JSON.parse(localStorage.getItem("muhaimin-audit")||"[]")}catch{};$("auditList").innerHTML=a.length?table([lang()==="en"?"Time":"সময়",lang()==="en"?"Action":"কাজ"],a.map(x=>[esc(new Date(x.at).toLocaleString()),esc(x.action)])):<p class="small">${lang()==="en"?"No local activity yet":"এখনো কোনো কার্যকলাপ নেই"}</p>}
-function renderLedger(){let id=$("ledgerFarmer")?.value;if(!id){$("ledgerResult").innerHTML=<p class="small">${lang()==="en"?"Choose a farmer to view the ledger.":"লেজার দেখতে একজন কৃষক নির্বাচন করুন।"}</p>;return}let cs=state.collections.filter(x=>String(x.farmer_id)===String(id)),ps=state.payments.filter(x=>String(x.farmer_id)===String(id)),rows=[...cs.map(x=>({date:x.collection_date,type:lang()==="en"?"Milk":"দুধ",debit:Number(x.liters0)*Number(x.purchase_rate0),credit:0,detail:${x.liters||0} L})),...ps.map(x=>({date:x.payment_date,type:lang()==="en"?"Payment":"পেমেন্ট",debit:0,credit:Number(x.amount||0),detail:x.payment_method||""}))].sort((a,b)=>String(a.date).localeCompare(String(b.date)));let bal=0;rows=rows.map(x=>{bal+=x.debit-x.credit;return [dateBN(x.date),x.type,money(x.debit),money(x.credit),money(bal),esc(x.detail)]});$("ledgerResult").innerHTML=table([tr("dateLabel"),lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows)}
-async function insert(tableName,data,form){let r=await sb.from(tableName).insert(data);if(r.error)throw r.error;form?.reset();logActivity("Insert "+tableName);toast(lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে");await loadAll()}
-function n(v){return v===""||v==null?0:Number(v)}
-$("language").value=lang();$("language").onchange=e=>applyLanguage(e.target.value);applyLanguage(lang());
-$("togglePassword").onclick=()=>{let x=$("loginPassword");x.type=x.type==="password"?"text":"password";$("togglePassword").textContent=x.type==="password"?"👁":"🙈"};
-$("loginBtn").onclick=async()=>{try{let email=$("loginEmail").value.trim(),password=$("loginPassword").value;if(!email||!password)throw Error(lang()==="en"?"Enter email and password.":"ইমেইল ও পাসওয়ার্ড দিন।");let r=await sb.auth.signInWithPassword({email,password});if(r.error)throw r.error;logActivity("Login");await startApp()}catch(e){$("loginMsg").textContent=e.message}};
-$("signupBtn").onclick=async()=>{try{let email=$("loginEmail").value.trim(),password=$("loginPassword").value;if(!email||password.length<8)throw Error(lang()==="en"?"Enter an email and password of at least 8 characters.":"ইমেইল ও কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");let r=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin}});if(r.error)throw r.error;$("loginMsg").textContent=lang()==="en"?"Registration submitted. Check your email to verify the account.":"রেজিস্ট্রেশন হয়েছে। অ্যাকাউন্ট ভেরিফাই করতে ইমেইল দেখুন।"}catch(e){$("loginMsg").textContent=e.message}};
-$("resetBtn").onclick=async()=>{try{let email=$("loginEmail").value.trim();if(!email)throw Error(lang()==="en"?"Enter your email first.":"আগে ইমেইল লিখুন।");let r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});if(r.error)throw r.error;$("loginMsg").textContent=lang()==="en"?"Password recovery email sent if the account exists.":"অ্যাকাউন্ট থাকলে পাসওয়ার্ড রিকভারি ইমেইল পাঠানো হয়েছে।"}catch(e){$("loginMsg").textContent=e.message}};
-$("resendBtn").onclick=async()=>{try{let email=$("loginEmail").value.trim();if(!email)throw Error(lang()==="en"?"Enter your email first.":"আগে ইমেইল লিখুন।");let r=await sb.auth.resend({type:"signup",email});if(r.error)throw r.error;$("loginMsg").textContent=lang()==="en"?"Verification email requested.":"ভেরিফিকেশন ইমেইল পাঠানোর অনুরোধ করা হয়েছে।"}catch(e){$("loginMsg").textContent=e.message}};
-
-$("sendOtpBtn").onclick=async()=>{try{let phone=$("phoneNumber").value.trim();if(!phone)throw Error(lang()==="en"?"Enter phone in international format, e.g. +8801...":"আন্তর্জাতিক ফরম্যাটে মোবাইল নম্বর দিন, যেমন +8801...");let r=await sb.auth.signInWithOtp({phone});if(r.error)throw r.error;$("loginMsg").textContent=lang()==="en"?"OTP requested. Enter the code sent to your phone.":"OTP পাঠানোর অনুরোধ করা হয়েছে। মোবাইলে পাওয়া কোড দিন।"}catch(e){$("loginMsg").textContent=e.message}};
-$("verifyOtpBtn").onclick=async()=>{try{let phone=$("phoneNumber").value.trim(),token=$("phoneOtp").value.trim();if(!phone||!token)throw Error(lang()==="en"?"Enter phone and OTP.":"মোবাইল নম্বর ও OTP দিন।");let r=await sb.auth.verifyOtp({phone,token,type:"sms"});if(r.error)throw r.error;await startApp()}catch(e){$("loginMsg").textContent=e.message}};
-$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload()};
-$("branchForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters),status:f.status,notes:f.notes},e.target)}catch(x){toast(x.message)}};
-$("farmerForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:f.village,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},e.target)}catch(x){toast(x.message)}};
-$("collectionBranch").onchange=updateFarmerSelect;
-$("collectionForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),lit=n(f.liters),rate=n(f.purchase_rate);await insert("milk_collections",{collection_date:f.collection_date,branch_id:f.branch_id,farmer_id:f.farmer_id||null,liters:lit,clr:n(f.clr),purchase_rate:rate,accepted:f.accepted==="true",notes:f.notes},e.target)}catch(x){toast(x.message)}};
-$("paymentForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("farmer_payments",{payment_date:f.payment_date,farmer_id:f.farmer_id,amount:n(f.amount),payment_method:f.payment_method,reference:f.reference,notes:f.notes},e.target)}catch(x){toast(x.message)}};
-$("settingsForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),r=await sb.from("app_settings").update({business_name:f.business_name,daily_target_liters:n(f.daily_target_liters),default_clr:n(f.default_clr),milk_commission:n(f.milk_commission),updated_at:new Date().toISOString()}).eq("id",state.settings.id);if(r.error)throw r.error;logActivity("Update settings");toast(lang()==="en"?"Settings saved":"সেটিংস সংরক্ষিত");await loadAll()}catch(x){toast(x.message)}};
-$("feedNameSelect").onchange=()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য");
-$("feedProductForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),name=f.product_name_select==="অন্যান্য"?f.custom_product_name:f.product_name_select;if(!name)throw Error("Feed-এর নাম দিন");await insert("feed_products",{product_code:f.product_codenull,product_name:name,unit:"kg",purchase_price:n(f.purchase_price)50,sale_price:n(f.sale_price)||50,notes:f.notes},e.target)}catch(x){toast(x.message)}};
-$("feedPurchaseForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),q=n(f.quantity_kg),p=n(f.purchase_price_per_kg),t=q*p,paid=n(f.paid_amount);await insert("feed_purchases",{purchase_date:f.purchase_datetoday(),product_id:f.product_idnull,supplier_name:f.supplier_name,quantity_kg:q,purchase_price_per_kg:p,total_amount:t,paid_amount:paid,due_amount:t-paid},e.target)}catch(x){toast(x.message)}};
-$("feedSaleForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target),q=n(f.quantity_kg),p=n(f.sale_price_per_kg),t=q*p,paid=n(f.paid_amount);await insert("feed_sales",{sale_date:f.sale_datetoday(),product_id:f.product_idnull,customer_name:f.customer_name,quantity_kg:q,sale_price_per_kg:p,total_amount:t,paid_amount:paid,due_amount:t-paid},e.target)}catch(x){toast(x.message)}};
-
-$("vetCompanyForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("vet_companies",{company_name:f.company_name,notes:f.notes},e.target)}catch(x){toast(x.message)}};
-$("vetProductForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("vet_products",{product_code:f.product_codenull,product_name:f.product_name,company_id:f.company_idnull,unit:f.unit,batch_no:f.batch_no,expiry_date:f.expiry_date||null,purchase_price:n(f.purchase_price),sale_price:n(f.sale_price)},e.target)}catch(x){toast(x.message)}};
-$("agroProductForm").onsubmit=async e=>{e.preventDefault();try{let f=formObj(e.target);await insert("agro_products",{product_code:f.product_code||null,product_name:f.product_name,category:f.category,company_name:f.company_name,unit:f.unit,purchase_price:n(f.purchase_price),sale_price:n(f.sale_price)},e.target)}catch(x){toast(x.message)}};
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$(b.dataset.page).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");if(b.dataset.page==="ledger")renderLedger();if(b.dataset.page==="audit")renderAudit()});
-$("ledgerFarmer").onchange=renderLedger;$("runReport").onclick=()=>{$("report").innerHTML=reportHtml(state.collections)};
-$("exportBtn").onclick=()=>{let data={format:"muhaimin-dairy-backup",version:1,exported_at:new Date().toISOString(),settings:state.settings,branches:state.branches,farmers:state.farmers,collections:state.collections,payments:state.payments,feedProducts:state.feedProducts,feedPurchases:state.feedPurchases,feedSales:state.feedSales,vetCompanies:state.vetCompanies,vetProducts:state.vetProducts,vetPurchases:state.vetPurchases,vetSales:state.vetSales,agroProducts:state.agroProducts,agroPurchases:state.agroPurchases,agroSales:state.agroSales};let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.download="muhaimin-dairy-backup-"+today()+".json";a.click();URL.revokeObjectURL(a.href);logActivity("Export backup")};
-$("validateImportBtn").onclick=async()=>{let file=$("importFile").files[0];if(!file){$("backupMsg").textContent=lang()==="en"?"Choose a JSON file first.":"আগে JSON ফাইল নির্বাচন করুন।";return}try{let data=JSON.parse(await file.text());let expected=["settings","branches","farmers","collections","payments"];let missing=expected.filter(k=>!(k in data));$("backupMsg").textContent=missing.length?(lang()==="en"?"Invalid/incomplete backup. Missing: ":"ব্যাকআপ অসম্পূর্ণ। অনুপস্থিত: ")+missing.join(", "):(lang()==="en"?"File format looks valid. No data has been restored; restore requires schema-specific safe import.":"ফাইলের কাঠামো ঠিক মনে হচ্ছে। কোনো ডেটা রিস্টোর করা হয়নি; নিরাপদ রিস্টোরের জন্য স্কিমা অনুযায়ী ইমপোর্ট দরকার।")}catch(e){$("backupMsg").textContent=lang()==="en"?"Invalid JSON file.":"JSON ফাইলটি সঠিক নয়।"}};
-$("cdate").value=today();$("pdate").value=today();$("reportTo").value=today();$("ctime").value=currentTime();$("ptime").value=currentTime();setToday();
-async function startApp(){ $("login").classList.add("hidden");$("app").classList.remove("hidden");try{await loadAll()}catch(e){toast("Database error: "+e.message);console.error(e)}}
-(async()=>{try{let r=await sb.auth.getSession();if(r.data.session)await startApp()}catch(e){console.error(e)}})();
+function formObj(form) { return Object.fromEntries(new FormData(form).entries()); }
+function n(value) { const v=Number(value); return Number.isFinite(v) ? v : 0; }
+function setToday() {
+  document.querySelectorAll(".today").forEach(el=>{if(!el.value)el.value=today();});
+  document.querySelectorAll(".currentTime").forEach(el=>{if(!el.value)el.value=currentTime();});
+  ["cdate","pdate","reportTo"].forEach(id=>{const el=$(id);if(el&&!el.value)el.value=today();});
+  ["ctime","ptime"].forEach(id=>{const el=$(id);if(el&&!el.value)el.value=currentTime();});
+}
+function fill(id, items, label) {
+  const select=$(id); if(!select)return;
+  const key=label || "name"; const previous=select.value;
+  select.innerHTML='<option value="">'+(lang()==="en"?"-- Select --":"-- নির্বাচন --")+'</option>'+
+    items.map(item=>'<option value="'+esc(item.id)+'">'+esc(item[key] || item.name || item.product_name || item.company_name || "")+'</option>').join("");
+  if(items.some(item=>String(item.id)===String(previous)))select.value=previous;
+}
+function branchName(id) { const item=state.branches.find(x=>String(x.id)===String(id)); return item ? item.name : ""; }
+function farmerName(id) { const item=state.farmers.find(x=>String(x.id)===String(id)); return item ? item.name : ""; }
+function phoneHref(value) {
+  let phone=String(value || "").trim().replace(/[^0-9+]/g,"");
+  if(phone.startsWith("01") && phone.length===11) phone="+88"+phone;
+  return phone ? "tel:"+phone : "";
+}
+function callButton(value) {
+  const href=phoneHref(value);
+  return href ? '<a class="btn callBtn" href="'+esc(href)+'">📞 '+(lang()==="en"?"Call":"কল")+'</a>' :
+    '<span class="small">'+(lang()==="en"?"No number":"নম্বর নেই")+'</span>';
+}
+function table(head, rows) {
+  return '<table><thead><tr>'+head.map(x=>'<th>'+x+'</th>').join("")+'</tr></thead><tbody>'+
+    rows.map(row=>'<tr>'+row.map(cell=>'<td>'+(cell ?? "")+'</td>').join("")+'</tr>').join("")+'</tbody></table>';
+}
+async function queryRows(tableName, orderColumn) {
+  let query=sb.from(tableName).select("*");
+  if(orderColumn) query=query.order(orderColumn,{ascending:false});
+  const result=await query;
+  if(result.error)throw result.error;
+  return result.data || [];
+}
+async function loadAll() {
+  const settingsResult=await sb.from("app_settings").select("*").limit(1).maybeSingle();
+  if(settingsResult.error)throw settingsResult.error;
+  state.settings=settingsResult.data || {id:null,business_name:"মুহাইমিন ডেইরি",daily_target_liters:2500,default_clr:28,milk_commission:1};
+  const unavailable=[];
+  const optionalRows=async(name,column)=>{
+    try { return await queryRows(name,column); }
+    catch(error) { unavailable.push(name+" — "+(error.message||"unknown error")); return []; }
+  };
+  const data=await Promise.all([
+    queryRows("branches"),queryRows("farmers"),queryRows("milk_collections","collection_date"),
+    queryRows("farmer_payments","payment_date"),queryRows("feed_products"),
+    optionalRows("feed_purchases","purchase_date"),optionalRows("feed_sales","sale_date"),
+    queryRows("vet_companies"),queryRows("vet_products"),
+    optionalRows("vet_purchases","purchase_date"),optionalRows("vet_sales","sale_date"),
+    queryRows("agro_products"),optionalRows("agro_purchases","purchase_date"),optionalRows("agro_sales","sale_date")
+  ]);
+  [state.branches,state.farmers,state.collections,state.payments,state.feedProducts,state.feedPurchases,
+   state.feedSales,state.vetCompanies,state.vetProducts,state.vetPurchases,state.vetSales,
+   state.agroProducts,state.agroPurchases,state.agroSales]=data;
+  render();
+  const warning=$("apiWarning");
+  if(unavailable.length) {
+    warning.classList.remove("hidden");
+    warning.textContent=lang()==="en"
+      ? "Warning: some purchase/sale tables could not be read: "+unavailable.join("; ")+". Check Data API exposure, permissions/RLS, and table/column names. Inventory totals may be incomplete; do not rely on them until verified."
+      : "সতর্কতা: কিছু ক্রয়/বিক্রয় টেবিল পড়া যায়নি: "+unavailable.join("; ")+"। কারণ Data API exposure, অনুমতি/RLS, বা টেবিল/কলামের নাম হতে পারে। স্টকের হিসাব অসম্পূর্ণ হতে পারে; যাচাই না করা পর্যন্ত নির্ভর করবেন না।";
+  } else {
+    warning.classList.add("hidden");
+    warning.textContent="";
+  }
+}
+function render() {
+  if(!state.settings)return;
+  $("appName").textContent=state.settings.business_name || "মুহাইমিন";
+  $("targetView").textContent=Number(state.settings.daily_target_liters ?? 2500).toLocaleString()+" L";
+  $("clrView").textContent=state.settings.default_clr ?? 28;
+  $("commissionView").textContent=money(state.settings.milk_commission ?? 1);
+  const collectedToday=state.collections.filter(x=>x.collection_date===today() && x.accepted!==false);
+  const liters=collectedToday.reduce((sum,x)=>sum+n(x.liters),0);
+  $("todayLiters").textContent=liters.toLocaleString()+" L";
+  $("todayCommission").textContent=money(liters*n(state.settings.milk_commission ?? 1));
+  $("branchCount").textContent=state.branches.length;
+  $("farmerCount").textContent=state.farmers.length;
+  $("homeBranches").innerHTML=state.branches.map(branch=>{
+    const total=collectedToday.filter(x=>String(x.branch_id)===String(branch.id)).reduce((sum,x)=>sum+n(x.liters),0);
+    return '<p><b>'+esc(branch.name)+'</b> — '+total+' L / '+n(branch.target_liters)+' L <span class="small">('+esc(branch.status||"") +')</span></p>';
+  }).join("") || '<p class="small">'+(lang()==="en"?"No branches yet":"কোনো কেন্দ্র নেই")+'</p>';
+  $("branchTable").innerHTML=table(["Code",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Target":"লক্ষ্য",lang()==="en"?"Status":"অবস্থা"],
+    state.branches.map(b=>[esc(b.code),esc(b.name),n(b.target_liters)+" L",esc(b.status||"")]));
+  fill("farmerBranch",state.branches,"name"); fill("collectionBranch",state.branches,"name");
+  fill("paymentFarmer",state.farmers,"name"); fill("ledgerFarmer",state.farmers,"name");
+  updateFarmerSelect();
+  $("farmerTable").innerHTML=table(["Code",lang()==="en"?"Name":"নাম",lang()==="en"?"Mobile":"মোবাইল",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Status":"অবস্থা",lang()==="en"?"Contact":"যোগাযোগ"],
+    state.farmers.map(f=>[esc(f.farmer_code||""),esc(f.name||""),esc(f.mobile||f.phone||""),esc(branchName(f.branch_id)),esc(f.status||""),callButton(f.mobile||f.phone)]));
+  $("collectionTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Branch":"কেন্দ্র",tr("farmerLabel"),"L","CLR",lang()==="en"?"Rate/L":"৳/L"],
+    state.collections.slice(0,100).map(x=>[dateBN(x.collection_date),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),n(x.liters),x.clr ?? "",money(x.purchase_rate)]));
+  $("paymentTable").innerHTML=table([tr("dateLabel"),tr("farmerLabel"),tr("amountLabel"),tr("methodLabel")],
+    state.payments.slice(0,100).map(x=>[dateBN(x.payment_date),esc(farmerName(x.farmer_id)),money(x.amount),esc(x.payment_method||"")]));
+  fill("feedPurchaseProduct",state.feedProducts,"product_name"); fill("feedSaleProduct",state.feedProducts,"product_name");
+  fill("vetCompany",state.vetCompanies,"company_name");
+  fill("vetPurchaseProduct",state.vetProducts,"product_name"); fill("vetSaleProduct",state.vetProducts,"product_name");
+  fill("agroPurchaseProduct",state.agroProducts,"product_name"); fill("agroSaleProduct",state.agroProducts,"product_name");
+  $("feedStock").innerHTML=stockTable(state.feedProducts,state.feedPurchases,state.feedSales,"quantity_kg");
+  $("vetStock").innerHTML=table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Expiry":"মেয়াদ",lang()==="en"?"Status":"অবস্থা"],
+    state.vetProducts.map(p=>{
+      const expiry=p.expiry_date;
+      const days=expiry ? Math.ceil((new Date(expiry+"T00:00:00")-new Date(today()+"T00:00:00"))/86400000) : null;
+      const status=!expiry?(lang()==="en"?"No date":"তারিখ নেই"):days<0?(lang()==="en"?"Expired":"মেয়াদোত্তীর্ণ"):days<=30?(lang()==="en"?"Expiring soon":"শিগগির মেয়াদ শেষ"):(lang()==="en"?"OK":"ঠিক আছে");
+      return [esc(p.product_name||""),dateBN(expiry),status];
+    }));
+  $("agroStock").innerHTML=stockTable(state.agroProducts,state.agroPurchases,state.agroSales,"quantity");
+  $("report").innerHTML=reportHtml(state.collections);
+  $("setName").value=state.settings.business_name || "";
+  $("setTarget").value=state.settings.daily_target_liters ?? 2500;
+  $("setClr").value=state.settings.default_clr ?? 28;
+  $("setCommission").value=state.settings.milk_commission ?? 1;
+  setToday(); renderLedger(); renderAudit();
+}
+function stockTable(products,purchases,sales,quantityField) {
+  return table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Purchased":"ক্রয়",lang()==="en"?"Sold":"বিক্রি",lang()==="en"?"Stock":"স্টক"],
+    products.map(p=>{
+      const bought=purchases.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x[quantityField]),0);
+      const sold=sales.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x[quantityField]),0);
+      return [esc(p.product_name||""),bought,sold,bought-sold];
+    }));
+}
+function reportHtml(rows) {
+  const from=$("reportFrom") ? $("reportFrom").value : "";
+  const to=$("reportTo") ? $("reportTo").value : "";
+  const filtered=rows.filter(x=>x.accepted!==false && (!from || x.collection_date>=from) && (!to || x.collection_date<=to));
+  const total=filtered.reduce((sum,x)=>sum+n(x.liters),0);
+  const commission=total*n(state.settings ? state.settings.milk_commission : 1);
+  return '<p>'+(lang()==="en"?"Accepted milk":"মোট গ্রহণযোগ্য দুধ")+': <b>'+total.toLocaleString()+' L</b></p>'+
+    '<p>'+(lang()==="en"?"Commission":"মোট কমিশন")+': <b>'+money(commission)+'</b></p>'+
+    '<p>'+(lang()==="en"?"Daily target":"দৈনিক লক্ষ্য")+': <b>'+Number(state.settings ? state.settings.daily_target_liters : 2500).toLocaleString()+' L</b></p>'+
+    '<p>'+(lang()==="en"?"Records":"রেকর্ড")+': '+filtered.length+'</p>';
+}
+function updateFarmerSelect() {
+  const branch=$("collectionBranch").value;
+  fill("collectionFarmer",state.farmers.filter(f=>!branch || String(f.branch_id)===String(branch)),"name");
+}
+function logActivity(action) {
+  try {
+    const entries=JSON.parse(localStorage.getItem("muhaimin-audit") || "[]");
+    entries.unshift({at:new Date().toISOString(),action:action,user:$("loginEmail") ? $("loginEmail").value : "signed-in user"});
+    localStorage.setItem("muhaimin-audit",JSON.stringify(entries.slice(0,100)));
+  } catch (_) {}
+}
+function renderAudit() {
+  let entries=[];
+  try { entries=JSON.parse(localStorage.getItem("muhaimin-audit") || "[]"); } catch (_) {}
+  $("auditList").innerHTML=entries.length ? table([lang()==="en"?"Time":"সময়",lang()==="en"?"Action":"কাজ"],
+    entries.map(x=>[esc(new Date(x.at).toLocaleString()),esc(x.action)])) :
+    '<p class="small">'+(lang()==="en"?"No local activity yet":"এখনো কোনো কার্যকলাপ নেই")+'</p>';
+}
+function renderLedger() {
+  const select=$("ledgerFarmer"); const result=$("ledgerResult");
+  const id=select ? select.value : "";
+  if(!id) { result.innerHTML='<p class="small">'+(lang()==="en"?"Choose a farmer to view the ledger.":"লেজার দেখতে একজন কৃষক নির্বাচন করুন।")+'</p>'; return; }
+  const entries=[];
+  state.collections.filter(x=>String(x.farmer_id)===String(id)).forEach(x=>entries.push({
+    date:x.collection_date,type:lang()==="en"?"Milk":"দুধ",debit:n(x.liters)*n(x.purchase_rate),credit:0,detail:n(x.liters)+" L"
+  }));
+  state.payments.filter(x=>String(x.farmer_id)===String(id)).forEach(x=>entries.push({
+    date:x.payment_date,type:lang()==="en"?"Payment":"পেমেন্ট",debit:0,credit:n(x.amount),detail:x.payment_method||""
+  }));
+  entries.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  let balance=0;
+  const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
+  result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
+}
+async function insertRow(tableName,data,form) {
+  const result=await sb.from(tableName).insert(data);
+  if(result.error)throw result.error;
+  if(form)form.reset();
+  logActivity("Insert "+tableName);
+  toast(lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে");
+  await loadAll();
+}
+function bindForm(id,handler) {
+  const form=$(id); if(!form)return;
+  form.addEventListener("submit",async event=>{
+    event.preventDefault();
+    try { await handler(formObj(form),form); }
+    catch(error) { toast(error && error.message ? error.message : String(error)); }
+  });
+}
+$("language").value=lang();
+$("language").addEventListener("change",event=>applyLanguage(event.target.value));
+applyLanguage(lang());
+$("togglePassword").onclick=()=>{const input=$("loginPassword");input.type=input.type==="password"?"text":"password";$("togglePassword").textContent=input.type==="password"?"👁":"🙈";};
+$("loginBtn").onclick=async()=>{
+  try {
+    const email=$("loginEmail").value.trim(), password=$("loginPassword").value;
+    if(!email || !password)throw new Error(lang()==="en"?"Enter email and password.":"ইমেইল ও পাসওয়ার্ড দিন।");
+    const result=await sb.auth.signInWithPassword({email,password}); if(result.error)throw result.error;
+    logActivity("Login"); await startApp();
+  } catch(error) { $("loginMsg").textContent=error.message || String(error); }
+};
+$("signupBtn").onclick=async()=>{
+  try {
+    const email=$("loginEmail").value.trim(), password=$("loginPassword").value;
+    if(!email || password.length<8)throw new Error(lang()==="en"?"Enter an email and password of at least 8 characters.":"ইমেইল ও কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।");
+    const result=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin}});
+    if(result.error)throw result.error;
+    $("loginMsg").textContent=lang()==="en"?"Registration submitted. Check your email to verify the account.":"রেজিস্ট্রেশন হয়েছে। অ্যাকাউন্ট ভেরিফাই করতে ইমেইল দেখুন।";
+  } catch(error) { $("loginMsg").textContent=error.message || String(error); }
+};
+$("resetBtn").onclick=async()=>{
+  try {
+    const email=$("loginEmail").value.trim(); if(!email)throw new Error(lang()==="en"?"Enter your email first.":"আগে ইমেইল লিখুন।");
+    const result=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin}); if(result.error)throw result.error;
+    $("loginMsg").textContent=lang()==="en"?"Password recovery email requested if the account exists.":"অ্যাকাউন্ট থাকলে পাসওয়ার্ড রিকভারি ইমেইল পাঠানো হবে।";
+  } catch(error) { $("loginMsg").textContent=error.message || String(error); }
+};
+$("resendBtn").onclick=async()=>{
+  try {
+    const email=$("loginEmail").value.trim(); if(!email)throw new Error(lang()==="en"?"Enter your email first.":"আগে ইমেইল লিখুন।");
+    const result=await sb.auth.resend({type:"signup",email}); if(result.error)throw result.error;
+    $("loginMsg").textContent=lang()==="en"?"Verification email requested.":"ভেরিফিকেশন ইমেইলের অনুরোধ করা হয়েছে।";
+  } catch(error) { $("loginMsg").textContent=error.message || String(error); }
+};
+$("sendOtpBtn").onclick=async()=>{
+  try {
+    const phone=$("phoneNumber").value.trim(); if(!phone)throw new Error(lang()==="en"?"Enter phone in international format, e.g. +8801...":"আন্তর্জাতিক ফরম্যাটে মোবাইল নম্বর দিন, যেমন +8801...");
+    const result=await sb.auth.signInWithOtp({phone}); if(result.error)throw result.error;
+    $("loginMsg").textContent=lang()==="en"?"OTP requested. Enter the code sent to your phone.":"OTP পাঠানোর অনুরোধ করা হয়েছে। মোবাইলে পাওয়া কোড দিন।";
+  } catch(error) { $("loginMsg").textContent=error.message || String(error); }
+};
+$("verifyOtpBtn").onclick=async()=>{
+  try {
+    const phone=$("phoneNumber").value.trim(), token=$("phoneOtp").value.trim();
+    if(!phone || !token)throw new Error(lang()==="en"?"Enter phone and OTP.":"মোবাইল নম্বর ও OTP দিন।");
+    const result=await sb.auth.verifyOtp({phone,token,type:"sms"}); if(result.error)throw result.error;
+    await startApp();
+  } catch(error) { $("loginMsg").textContent=error.message || String(error); }
+};
+$("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}catch(error){toast(error.message || String(error));}};
+bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes},$("branchForm")));
+bindForm("farmerForm",async f=>insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:f.village,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},$("farmerForm")));
+$("collectionBranch").addEventListener("change",updateFarmerSelect);
+bindForm("collectionForm",async f=>insertRow("milk_collections",{
+  collection_date:f.collection_date,branch_id:f.branch_id,farmer_id:f.farmer_id||null,liters:n(f.liters),clr:n(f.clr||28),
+  purchase_rate:n(f.purchase_rate||50),accepted:f.accepted==="true",notes:f.notes
+},$("collectionForm")));
+bindForm("paymentForm",async f=>insertRow("farmer_payments",{
+  payment_date:f.payment_date,farmer_id:f.farmer_id,amount:n(f.amount),payment_method:f.payment_method,
+  reference:f.reference,notes:f.notes
+},$("paymentForm")));
+bindForm("feedProductForm",async f=>{
+  const name=f.product_name_select==="অন্যান্য" ? f.custom_product_name : f.product_name_select;
+  if(!name)throw new Error("Feed-এর নাম দিন");
+  await insertRow("feed_products",{product_code:f.product_code||null,product_name:name,unit:"kg",
+    purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes:f.notes},$("feedProductForm"));
+});
+bindForm("feedPurchaseForm",async f=>{
+  const quantity=n(f.quantity_kg), price=n(f.purchase_price_per_kg||50), paid=n(f.paid_amount);
+  if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  await insertRow("feed_purchases",{purchase_date:f.purchase_date||today(),product_id:f.product_id||null,
+    supplier_name:f.supplier_name,quantity_kg:quantity,purchase_price_per_kg:price,
+    paid_amount:paid},$("feedPurchaseForm"));
+});
+bindForm("feedSaleForm",async f=>{
+  const quantity=n(f.quantity_kg), price=n(f.sale_price_per_kg||50), paid=n(f.paid_amount);
+  if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  await insertRow("feed_sales",{sale_date:f.sale_date||today(),product_id:f.product_id||null,
+    customer_name:f.customer_name,quantity_kg:quantity,sale_price_per_kg:price,
+    paid_amount:paid},$("feedSaleForm"));
+});
+bindForm("vetCompanyForm",async f=>insertRow("vet_companies",{company_name:f.company_name,notes:f.notes},$("vetCompanyForm")));
+bindForm("vetProductForm",async f=>insertRow("vet_products",{
+  product_code:f.product_code||null,product_name:f.product_name,company_id:f.company_id||null,unit:f.unit,
+  batch_no:f.batch_no,expiry_date:f.expiry_date||null,purchase_price:n(f.purchase_price),sale_price:n(f.sale_price)
+},$("vetProductForm")));
+bindForm("agroProductForm",async f=>insertRow("agro_products",{
+  product_code:f.product_code||null,product_name:f.product_name,category:f.category,company_name:f.company_name,
+  unit:f.unit,purchase_price:n(f.purchase_price),sale_price:n(f.sale_price)
+},$("agroProductForm")));
+const bindInventoryTransaction=(formId,tableName,dateKey,quantityKey,priceKey,partyKey)=>{
+  bindForm(formId,async f=>{
+    const quantity=n(f.quantity), price=n(f[priceKey]), paid=n(f.paid_amount);
+    if(!f.product_id)throw new Error(lang()==="en"?"Select a product first.":"আগে পণ্য নির্বাচন করুন।");
+    if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+    if(price<0 || paid<0)throw new Error(lang()==="en"?"Price and paid amount cannot be negative.":"দাম ও পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+    const row={};
+    row[dateKey]=f[dateKey]||today(); row.product_id=f.product_id; row.quantity=quantity;
+    row[priceKey]=price; row[partyKey]=f[partyKey]||null; row.paid_amount=paid; row.note=f.note||null;
+    await insertRow(tableName,row,$(formId));
+  });
+};
+bindInventoryTransaction("vetPurchaseForm","vet_purchases","purchase_date","quantity","purchase_price","supplier_name");
+bindInventoryTransaction("vetSaleForm","vet_sales","sale_date","quantity","sale_price","customer_name");
+bindInventoryTransaction("agroPurchaseForm","agro_purchases","purchase_date","quantity","purchase_price","supplier_name");
+bindInventoryTransaction("agroSaleForm","agro_sales","sale_date","quantity","sale_price","customer_name");
+bindForm("settingsForm",async f=>{
+  const values={business_name:f.business_name||"মুহাইমিন ডেইরি",daily_target_liters:n(f.daily_target_liters||2500),
+    default_clr:n(f.default_clr||28),milk_commission:n(f.milk_commission||1),updated_at:new Date().toISOString()};
+  const result=state.settings && state.settings.id
+    ? await sb.from("app_settings").update(values).eq("id",state.settings.id)
+    : await sb.from("app_settings").insert(values);
+  if(result.error)throw result.error;
+  logActivity("Update settings"); toast(lang()==="en"?"Settings saved":"সেটিংস সংরক্ষিত"); await loadAll();
+});
+$("feedNameSelect").addEventListener("change",()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য"));
+document.querySelectorAll("#nav button").forEach(button=>button.addEventListener("click",()=>{
+  document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
+  const page=$(button.dataset.page); if(page)page.classList.add("active");
+  document.querySelectorAll("#nav button").forEach(item=>item.classList.remove("active"));
+  button.classList.add("active");
+  if(button.dataset.page==="ledger")renderLedger();
+  if(button.dataset.page==="audit")renderAudit();
+}));
+$("ledgerFarmer").addEventListener("change",renderLedger);
+$("runReport").addEventListener("click",()=>$("report").innerHTML=reportHtml(state.collections));
+$("exportBtn").addEventListener("click",()=>{
+  const backup={format:"muhaimin-dairy-backup",version:1,exported_at:new Date().toISOString(),
+    settings:state.settings,branches:state.branches,farmers:state.farmers,collections:state.collections,payments:state.payments,
+    feedProducts:state.feedProducts,feedPurchases:state.feedPurchases,feedSales:state.feedSales,
+    vetCompanies:state.vetCompanies,vetProducts:state.vetProducts,vetPurchases:state.vetPurchases,vetSales:state.vetSales,
+    agroProducts:state.agroProducts,agroPurchases:state.agroPurchases,agroSales:state.agroSales};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}));
+  const anchor=document.createElement("a"); anchor.href=url; anchor.download="muhaimin-dairy-backup-"+today()+".json";
+  anchor.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); logActivity("Export backup");
+});
+$("validateImportBtn").addEventListener("click",async()=>{
+  const file=$("importFile").files[0];
+  if(!file){$("backupMsg").textContent=lang()==="en"?"Choose a JSON file first.":"আগে JSON ফাইল নির্বাচন করুন।";return;}
+  try {
+    const data=JSON.parse(await file.text());
+    const required=["settings","branches","farmers","collections","payments"];
+    const missing=required.filter(key=>!(key in data));
+    $("backupMsg").textContent=missing.length
+      ? (lang()==="en"?"Invalid/incomplete backup. Missing: ":"ব্যাকআপ অসম্পূর্ণ। অনুপস্থিত: ")+missing.join(", ")
+      : (lang()==="en"?"File structure is valid. No live data was changed; automatic restore is disabled.":"ফাইলের কাঠামো ঠিক আছে। লাইভ ডেটা পরিবর্তন করা হয়নি; স্বয়ংক্রিয় রিস্টোর বন্ধ আছে।");
+  } catch(error) { $("backupMsg").textContent=lang()==="en"?"Invalid JSON file.":"JSON ফাইলটি সঠিক নয়।"; }
+});
+async function startApp() {
+  $("login").classList.add("hidden"); $("app").classList.remove("hidden");
+  try { await loadAll(); } catch(error) { toast("Database error: "+(error.message||String(error))); console.error(error); }
+}
+setToday();
+(async()=>{
+  try { const result=await sb.auth.getSession(); if(result.data && result.data.session)await startApp(); }
+  catch(error) { console.error(error); }
+})();
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{});}</script>
 </body></html>
