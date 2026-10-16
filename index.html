@@ -117,21 +117,30 @@ const currentTime = () => new Intl.DateTimeFormat("en-GB", {
 const dateDisplay = value => {
   if(!value)return "";
   const text=String(value).trim();
-  if(/^\\d{2}-\\d{2}-\\d{4}$/.test(text))return text;
-  const iso=text.slice(0,10).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+  if(/^\d{2}-\d{2}-\d{4}$/.test(text))return text;
+  const iso=text.slice(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
   return iso ? iso[3]+"-"+iso[2]+"-"+iso[1] : text;
 };
 const dateISO = value => {
   if(!value)return "";
   const text=String(value).trim();
-  const iso=text.slice(0,10).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
-  if(iso)return iso[1]+"-"+iso[2]+"-"+iso[3];
-  const display=text.match(/^(\\d{2})-(\\d{2})-(\\d{4})$/);
-  if(!display)return "";
-  const day=Number(display[1]), month=Number(display[2]), year=Number(display[3]);
+  const iso=text.slice(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const display=text.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  const parts=iso ? [Number(iso[1]),Number(iso[2]),Number(iso[3])] :
+    display ? [Number(display[3]),Number(display[2]),Number(display[1])] : null;
+  if(!parts)return "";
+  const [year,month,day]=parts;
   const d=new Date(Date.UTC(year,month-1,day));
   if(d.getUTCFullYear()!==year||d.getUTCMonth()!==month-1||d.getUTCDate()!==day)return "";
-  return display[3]+"-"+display[2]+"-"+display[1];
+  return year+"-"+String(month).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+};
+const formatDateTyping = value => {
+  const raw=String(value||"");
+  if(raw.includes("-"))return raw.replace(/[^\d-]/g,"").slice(0,10);
+  const digits=raw.replace(/\D/g,"").slice(0,8);
+  if(digits.length>4)return digits.slice(0,2)+"-"+digits.slice(2,4)+"-"+digits.slice(4);
+  if(digits.length>2)return digits.slice(0,2)+"-"+digits.slice(2);
+  return digits;
 };
 const dateTimeBD = value => {
   if(!value)return "";
@@ -447,6 +456,14 @@ function bindForm(id,handler) {
 }
 $("language").value=lang();
 $("language").addEventListener("change",event=>applyLanguage(event.target.value));
+document.querySelectorAll("[data-date-input]").forEach(input=>{
+  input.addEventListener("input",()=>{ if(!input.value.includes("-"))input.value=formatDateTyping(input.value); });
+  input.addEventListener("blur",()=>{
+    if(!input.value.trim())return;
+    const iso=dateISO(input.value);
+    if(iso)input.value=dateDisplay(iso);
+  });
+});
 applyLanguage(lang());
 $("togglePassword").onclick=()=>{const input=$("loginPassword");input.type=input.type==="password"?"text":"password";$("togglePassword").textContent=input.type==="password"?"👁":"🙈";};
 $("loginBtn").onclick=async()=>{
