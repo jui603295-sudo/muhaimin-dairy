@@ -1,0 +1,68 @@
+name: Validate Muhaimin Dairy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ["fix/runtime-js-2026-10-16"]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Validate HTML scripts, DOM IDs, forms, and PWA shell
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const uniqueIds = new Set(ids);
+          const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+          if (duplicates.length) throw new Error('Duplicate HTML IDs: ' + [...new Set(duplicates)].join(', '));
+
+          const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
+          let checkedScripts = 0;
+          for (const [, attrs, body] of scripts) {
+            if (/\\bsrc\\s*=/.test(attrs) || !body.trim()) continue;
+            new Function(body);
+            checkedScripts++;
+          }
+          if (!checkedScripts) throw new Error('No inline JavaScript scripts were checked.');
+
+          const inlineCode = scripts.map(([, attrs, body]) => /\\bsrc\\s*=/.test(attrs) ? '' : body).join('\\n');
+          const referencedIds = [...new Set([...inlineCode.matchAll(/\\$\\(["']([A-Za-z][A-Za-z0-9_-]*)["']\\)/g)].map(m => m[1]))];
+          const missingIds = referencedIds.filter(id => !uniqueIds.has(id));
+          if (missingIds.length) throw new Error('JavaScript references missing HTML IDs: ' + missingIds.join(', '));
+
+          const forms = [...html.matchAll(/<form\\b[^>]*\\bid=["']([^"']+)["']/gi)].map(m => m[1]);
+          const boundForms = [...inlineCode.matchAll(/bindForm\\(["']([^"']+)["']/g)].map(m => m[1]);
+          const missingForms = forms.filter(id => !boundForms.includes(id) && !new RegExp('\\$\\(["\\x27]' + id + '["\\x27]\\)\\.addEventListener\\(["\\x27]submit').test(inlineCode));
+          if (missingForms.length) throw new Error('Forms without a submit handler: ' + missingForms.join(', '));
+
+          const sw = fs.readFileSync('sw.js', 'utf8');
+          new Function(sw);
+          const shellMatch = sw.match(/APP_SHELL\\s*=\\s*\\[([\\s\\S]*?)\\]/);
+          if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
+          const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
+          const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\\.\\//, '') || 'index.html'));
+          if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
+
+          console.log(JSON.stringify({
+            inlineScriptsParsed: checkedScripts,
+            htmlIds: ids.length,
+            duplicateIds: 0,
+            missingDomReferences: 0,
+            formsWithHandlers: forms.length,
+            serviceWorkerParsed: true,
+            pwaShellFiles: shell.length
+          }, null, 2));
+          NODE
