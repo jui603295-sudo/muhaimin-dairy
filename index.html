@@ -428,16 +428,20 @@ bindForm("feedProductForm",async f=>{
     purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes:f.notes},$("feedProductForm"));
 });
 bindForm("feedPurchaseForm",async f=>{
-  const quantity=n(f.quantity_kg), price=n(f.purchase_price_per_kg||50), total=quantity*price, paid=n(f.paid_amount);
+  const quantity=n(f.quantity_kg), price=n(f.purchase_price_per_kg||50), paid=n(f.paid_amount);
+  if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
   await insertRow("feed_purchases",{purchase_date:f.purchase_date||today(),product_id:f.product_id||null,
-    supplier_name:f.supplier_name,quantity_kg:quantity,purchase_price_per_kg:price,total_amount:total,
-    paid_amount:paid,due_amount:total-paid},$("feedPurchaseForm"));
+    supplier_name:f.supplier_name,quantity_kg:quantity,purchase_price_per_kg:price,
+    paid_amount:paid},$("feedPurchaseForm"));
 });
 bindForm("feedSaleForm",async f=>{
-  const quantity=n(f.quantity_kg), price=n(f.sale_price_per_kg||50), total=quantity*price, paid=n(f.paid_amount);
+  const quantity=n(f.quantity_kg), price=n(f.sale_price_per_kg||50), paid=n(f.paid_amount);
+  if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
   await insertRow("feed_sales",{sale_date:f.sale_date||today(),product_id:f.product_id||null,
-    customer_name:f.customer_name,quantity_kg:quantity,sale_price_per_kg:price,total_amount:total,
-    paid_amount:paid,due_amount:total-paid},$("feedSaleForm"));
+    customer_name:f.customer_name,quantity_kg:quantity,sale_price_per_kg:price,
+    paid_amount:paid},$("feedSaleForm"));
 });
 bindForm("vetCompanyForm",async f=>insertRow("vet_companies",{company_name:f.company_name,notes:f.notes},$("vetCompanyForm")));
 bindForm("vetProductForm",async f=>insertRow("vet_products",{
