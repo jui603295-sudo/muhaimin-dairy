@@ -373,14 +373,19 @@ function renderLedger() {
   const totalLiters=state.collections.filter(x=>String(x.farmer_id)===String(id) && x.accepted!==false && inRange(x.collection_date)).reduce((sum,x)=>sum+n(x.liters),0);
   const totalMilk=entries.reduce((sum,x)=>sum+x.debit,0);
   const totalPaid=entries.reduce((sum,x)=>sum+x.credit,0);
-  const balanceDue=totalMilk-totalPaid;
+  const beforeStart=date=>!!from && !!date && date<from;
+  const openingMilk=state.collections.filter(x=>String(x.farmer_id)===String(id) && x.accepted!==false && beforeStart(x.collection_date)).reduce((sum,x)=>sum+n(x.liters)*n(x.purchase_rate),0);
+  const openingPaid=state.payments.filter(x=>String(x.farmer_id)===String(id) && beforeStart(x.payment_date)).reduce((sum,x)=>sum+n(x.amount),0);
+  const openingBalance=openingMilk-openingPaid;
+  const closingBalance=openingBalance+totalMilk-totalPaid;
   summary.innerHTML=[
     '<div class="stat"><span>'+(lang()==="en"?"Accepted milk":"গ্রহণযোগ্য দুধ")+'</span><b>'+totalLiters.toLocaleString()+' L</b></div>',
-    '<div class="stat"><span>'+(lang()==="en"?"Milk value":"দুধের মূল্য")+'</span><b>'+money(totalMilk)+'</b></div>',
-    '<div class="stat"><span>'+(lang()==="en"?"Paid":"পরিশোধ")+'</span><b>'+money(totalPaid)+'</b></div>',
-    '<div class="stat"><span>'+(lang()==="en"?"Balance due (+) / advance (-)":"বকেয়া (+) / অগ্রিম (-)")+'</span><b>'+money(balanceDue)+'</b></div>'
+    '<div class="stat"><span>'+(lang()==="en"?"Milk value in period":"সময়ের দুধের মূল্য")+'</span><b>'+money(totalMilk)+'</b></div>',
+    '<div class="stat"><span>'+(lang()==="en"?"Paid in period":"সময়ে পরিশোধ")+'</span><b>'+money(totalPaid)+'</b></div>',
+    '<div class="stat"><span>'+(lang()==="en"?"Opening balance":"শুরুর ব্যালেন্স")+'</span><b>'+money(openingBalance)+'</b></div>',
+    '<div class="stat"><span>'+(lang()==="en"?"Closing balance (+ due / - advance)":"শেষ ব্যালেন্স (+ বকেয়া / - অগ্রিম)")+'</span><b>'+money(closingBalance)+'</b></div>'
   ].join("");
-  let balance=0;
+  let balance=openingBalance;
   const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
   result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
 }
