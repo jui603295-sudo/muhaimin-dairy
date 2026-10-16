@@ -44,7 +44,7 @@ jobs:
           if (missingIds.length) throw new Error('JavaScript references missing HTML IDs: ' + missingIds.join(', '));
 
           const forms = [...html.matchAll(/<form\b[^>]*\bid=["']([^"']+)["']/gi)].map(m => m[1]);
-          const boundForms = [...inlineCode.matchAll(/bindForm\(["']([^"']+)["']/g)].map(m => m[1]);
+          const boundForms = [...inlineCode.matchAll(/(?:bindForm|bindInventoryTransaction)\\(["']([^"']+)["']/g)].map(m => m[1]);
           const missingForms = forms.filter(id => !boundForms.includes(id) && !new RegExp('\\$\\(["\\x27]' + id + '["\\x27]\\)\\.addEventListener\\(["\\x27]submit').test(inlineCode));
           if (missingForms.length) throw new Error('Forms without a submit handler: ' + missingForms.join(', '));
 
