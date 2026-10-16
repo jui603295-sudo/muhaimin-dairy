@@ -63,6 +63,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 
 </nav>
 <main>
+<div id="apiWarning" class="card hidden" role="alert" style="border-color:#d97706;background:#fffbeb;color:#92400e"></div>
 <section id="home" class="page active">
 <div class="grid"><div class="stat"><span data-i18n="todayMilk">আজকের সংগ্রহ</span><b id="todayLiters">0 L</b></div><div class="stat"><span data-i18n="todayCommission">আজকের কমিশন</span><b id="todayCommission">৳0</b></div><div class="stat"><span data-i18n="branchCountLabel">কেন্দ্র</span><b id="branchCount">0</b></div><div class="stat"><span data-i18n="farmerCountLabel">কৃষক</span><b id="farmerCount">0</b></div></div>
 <div class="card"><h3 data-i18n="businessTarget">🎯 ব্যবসার লক্ষ্য</h3><p><span data-i18n="dailyTarget">দৈনিক লক্ষ্য</span>: <b id="targetView">2,500 L</b></p><p>CLR: <b id="clrView">28</b></p><p><span data-i18n="commissionPerL">কমিশন/L</span>: <b id="commissionView">৳1</b></p></div>
@@ -250,9 +251,16 @@ async function loadAll() {
    state.feedSales,state.vetCompanies,state.vetProducts,state.vetPurchases,state.vetSales,
    state.agroProducts,state.agroPurchases,state.agroSales]=data;
   render();
-  if(unavailable.length) toast(lang()==="en"
-    ? "Some purchase/sale tables are unavailable through the Supabase Data API: "+unavailable.join(", ")
-    : "Supabase Data API-তে কিছু ক্রয়/বিক্রয় টেবিল পাওয়া যাচ্ছে না: "+unavailable.join(", "));
+  const warning=$("apiWarning");
+  if(unavailable.length) {
+    warning.classList.remove("hidden");
+    warning.textContent=lang()==="en"
+      ? "Warning: purchase/sale data is unavailable through Supabase Data API for: "+unavailable.join(", ")+". Inventory totals may be incomplete; do not rely on them until these tables are enabled."
+      : "সতর্কতা: Supabase Data API-তে এই ক্রয়/বিক্রয় টেবিলগুলো পাওয়া যাচ্ছে না: "+unavailable.join(", ")+"। স্টকের হিসাব অসম্পূর্ণ হতে পারে; টেবিলগুলো API-তে চালু না করা পর্যন্ত এই হিসাবের ওপর নির্ভর করবেন না।";
+  } else {
+    warning.classList.add("hidden");
+    warning.textContent="";
+  }
 }
 function render() {
   if(!state.settings)return;
