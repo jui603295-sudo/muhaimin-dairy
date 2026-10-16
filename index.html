@@ -233,17 +233,26 @@ async function loadAll() {
   const settingsResult=await sb.from("app_settings").select("*").limit(1).maybeSingle();
   if(settingsResult.error)throw settingsResult.error;
   state.settings=settingsResult.data || {id:null,business_name:"মুহাইমিন ডেইরি",daily_target_liters:2500,default_clr:28,milk_commission:1};
+  const unavailable=[];
+  const optionalRows=async(name,column)=>{
+    try { return await queryRows(name,column); }
+    catch(error) { unavailable.push(name); return []; }
+  };
   const data=await Promise.all([
     queryRows("branches"),queryRows("farmers"),queryRows("milk_collections","collection_date"),
-    queryRows("farmer_payments","payment_date"),queryRows("feed_products"),queryRows("feed_purchases","purchase_date"),
-    queryRows("feed_sales","sale_date"),queryRows("vet_companies"),queryRows("vet_products"),
-    queryRows("vet_purchases","purchase_date"),queryRows("vet_sales","sale_date"),queryRows("agro_products"),
-    queryRows("agro_purchases","purchase_date"),queryRows("agro_sales","sale_date")
+    queryRows("farmer_payments","payment_date"),queryRows("feed_products"),
+    optionalRows("feed_purchases","purchase_date"),optionalRows("feed_sales","sale_date"),
+    queryRows("vet_companies"),queryRows("vet_products"),
+    optionalRows("vet_purchases","purchase_date"),optionalRows("vet_sales","sale_date"),
+    queryRows("agro_products"),optionalRows("agro_purchases","purchase_date"),optionalRows("agro_sales","sale_date")
   ]);
   [state.branches,state.farmers,state.collections,state.payments,state.feedProducts,state.feedPurchases,
    state.feedSales,state.vetCompanies,state.vetProducts,state.vetPurchases,state.vetSales,
    state.agroProducts,state.agroPurchases,state.agroSales]=data;
   render();
+  if(unavailable.length) toast(lang()==="en"
+    ? "Some purchase/sale tables are unavailable through the Supabase Data API: "+unavailable.join(", ")
+    : "Supabase Data API-তে কিছু ক্রয়/বিক্রয় টেবিল পাওয়া যাচ্ছে না: "+unavailable.join(", "));
 }
 function render() {
   if(!state.settings)return;
