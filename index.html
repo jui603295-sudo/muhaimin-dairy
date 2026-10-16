@@ -81,7 +81,7 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
 <section id="vet" class="page"><div class="card"><h3>🏥 Veterinary Company</h3><form id="vetCompanyForm"><label>Company Name<input name="company_name" required></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">Company Save</button></form></div><div class="card"><h3>💊 Veterinary Product</h3><form id="vetProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Company<select name="company_id" id="vetCompany"></select></label></div><div><label>Unit<input name="unit" value="pcs"></label></div></div><div class="row"><div><label>Batch No<input name="batch_no"></label></div><div><label>Expiry<input name="expiry_date" type="date"></label></div></div><div class="row"><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01"></label></div></div><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Veterinary Purchase</h3><form id="vetPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="vetPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Purchase</button></form></div><div class="card"><h3>📤 Veterinary Sale</h3><form id="vetSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="vetSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Sale</button></form></div><div class="card"><h3 data-i18n="vetStock">Veterinary Stock & Expiry</h3><div class="tablewrap" id="vetStock"></div></div></section>
 <section id="agro" class="page"><div class="card"><h3>🌱 Agro Care Product</h3><form id="agroProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Category<input name="category"></label></div><div><label>Company<input name="company_name"></label></div></div><div class="row"><div><label>Unit<input name="unit" value="pcs"></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div></div><label>Sale Price<input name="sale_price" type="number" step=".01"></label><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Agro Care Purchase</h3><form id="agroPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="agroPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Agro Purchase</button></form></div><div class="card"><h3>📤 Agro Care Sale</h3><form id="agroSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="date" class="today" required></label></div><div><label>Product<select name="product_id" id="agroSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Agro Sale</button></form></div><div class="card"><h3 data-i18n="agroStock">Agro Stock</h3><div class="tablewrap" id="agroStock"></div></div></section>
 <section id="reports" class="page"><div class="card"><h3 data-i18n="reportsTitle">📊 রিপোর্ট</h3><div class="row"><div><label data-i18n="fromDate">শুরুর তারিখ<input type="date" id="reportFrom"></label></div><div><label data-i18n="toDate">শেষ তারিখ<input type="date" id="reportTo"></label></div></div><button class="btn" id="runReport" data-i18n="runReport">রিপোর্ট দেখুন</button><div id="report"></div></div></section>
-<section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div id="ledgerResult" class="tablewrap"></div></div></section>
+<section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div class="row"><div><label>শুরুর তারিখ / From<input type="date" id="ledgerFrom"></label></div><div><label>শেষ তারিখ / To<input type="date" id="ledgerTo"></label></div></div><div id="ledgerSummary" class="grid"></div><div id="ledgerResult" class="tablewrap"></div></div></section>
 <section id="settings" class="page"><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div><div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
 <section id="backup" class="page"><div class="card"><h3 data-i18n="backupTitle">💾 ব্যাকআপ ও রিস্টোর</h3><p class="small" data-i18n="backupInfo">JSON ব্যাকআপ ডাউনলোড করুন। রিস্টোরের আগে ডেটা যাচাই করুন; এই সংস্করণে নিরাপদ restore স্বয়ংক্রিয়ভাবে চালানো হয় না।</p><button class="btn primary" id="exportBtn"
 
@@ -347,17 +347,39 @@ function renderAudit() {
     '<p class="small">'+(lang()==="en"?"No local activity yet":"এখনো কোনো কার্যকলাপ নেই")+'</p>';
 }
 function renderLedger() {
-  const select=$("ledgerFarmer"); const result=$("ledgerResult");
+  const select=$("ledgerFarmer"), result=$("ledgerResult"), summary=$("ledgerSummary");
   const id=select ? select.value : "";
-  if(!id) { result.innerHTML='<p class="small">'+(lang()==="en"?"Choose a farmer to view the ledger.":"লেজার দেখতে একজন কৃষক নির্বাচন করুন।")+'</p>'; return; }
+  const from=$("ledgerFrom") ? $("ledgerFrom").value : "";
+  const to=$("ledgerTo") ? $("ledgerTo").value : "";
+  const inRange=date=>!!date && (!from || date>=from) && (!to || date<=to);
+  if(from && to && from>to) {
+    summary.innerHTML="";
+    result.innerHTML='<p class="small">'+(lang()==="en"?"Start date must be on or before end date.":"শুরুর তারিখ শেষ তারিখের পরে হতে পারবে না।")+'</p>';
+    return;
+  }
+  if(!id) {
+    summary.innerHTML="";
+    result.innerHTML='<p class="small">'+(lang()==="en"?"Choose a farmer to view the ledger.":"লেজার দেখতে একজন কৃষক নির্বাচন করুন।")+'</p>';
+    return;
+  }
   const entries=[];
-  state.collections.filter(x=>String(x.farmer_id)===String(id)).forEach(x=>entries.push({
-    date:x.collection_date,type:lang()==="en"?"Milk":"দুধ",debit:n(x.liters)*n(x.purchase_rate),credit:0,detail:n(x.liters)+" L"
+  state.collections.filter(x=>String(x.farmer_id)===String(id) && x.accepted!==false && inRange(x.collection_date)).forEach(x=>entries.push({
+    date:x.collection_date,type:lang()==="en"?"Milk":"দুধ",debit:n(x.liters)*n(x.purchase_rate),credit:0,detail:n(x.liters)+" L × "+money(x.purchase_rate)+"/L"
   }));
-  state.payments.filter(x=>String(x.farmer_id)===String(id)).forEach(x=>entries.push({
+  state.payments.filter(x=>String(x.farmer_id)===String(id) && inRange(x.payment_date)).forEach(x=>entries.push({
     date:x.payment_date,type:lang()==="en"?"Payment":"পেমেন্ট",debit:0,credit:n(x.amount),detail:x.payment_method||""
   }));
-  entries.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  entries.sort((a,b)=>String(a.date).localeCompare(String(b.date)) || (a.debit===0 ? 1 : -1));
+  const totalLiters=state.collections.filter(x=>String(x.farmer_id)===String(id) && x.accepted!==false && inRange(x.collection_date)).reduce((sum,x)=>sum+n(x.liters),0);
+  const totalMilk=entries.reduce((sum,x)=>sum+x.debit,0);
+  const totalPaid=entries.reduce((sum,x)=>sum+x.credit,0);
+  const balanceDue=totalMilk-totalPaid;
+  summary.innerHTML=[
+    '<div class="stat"><span>'+(lang()==="en"?"Accepted milk":"গ্রহণযোগ্য দুধ")+'</span><b>'+totalLiters.toLocaleString()+' L</b></div>',
+    '<div class="stat"><span>'+(lang()==="en"?"Milk value":"দুধের মূল্য")+'</span><b>'+money(totalMilk)+'</b></div>',
+    '<div class="stat"><span>'+(lang()==="en"?"Paid":"পরিশোধ")+'</span><b>'+money(totalPaid)+'</b></div>',
+    '<div class="stat"><span>'+(lang()==="en"?"Balance due (+) / advance (-)":"বকেয়া (+) / অগ্রিম (-)")+'</span><b>'+money(balanceDue)+'</b></div>'
+  ].join("");
   let balance=0;
   const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
   result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
@@ -432,6 +454,9 @@ $("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}
 bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes},$("branchForm")));
 bindForm("farmerForm",async f=>insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:f.village,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},$("farmerForm")));
 $("collectionBranch").addEventListener("change",updateFarmerSelect);
+$("ledgerFarmer").addEventListener("change",renderLedger);
+$("ledgerFrom").addEventListener("change",renderLedger);
+$("ledgerTo").addEventListener("change",renderLedger);
 bindForm("collectionForm",async f=>insertRow("milk_collections",{
   collection_date:f.collection_date,branch_id:f.branch_id,farmer_id:f.farmer_id||null,liters:n(f.liters),clr:n(f.clr||28),
   purchase_rate:n(f.purchase_rate||50),accepted:f.accepted==="true",notes:f.notes
