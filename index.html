@@ -237,7 +237,7 @@ async function loadAll() {
   const unavailable=[];
   const optionalRows=async(name,column)=>{
     try { return await queryRows(name,column); }
-    catch(error) { unavailable.push(name); return []; }
+    catch(error) { unavailable.push(name+" — "+(error.message||"unknown error")); return []; }
   };
   const data=await Promise.all([
     queryRows("branches"),queryRows("farmers"),queryRows("milk_collections","collection_date"),
@@ -255,8 +255,8 @@ async function loadAll() {
   if(unavailable.length) {
     warning.classList.remove("hidden");
     warning.textContent=lang()==="en"
-      ? "Warning: purchase/sale data is unavailable through Supabase Data API for: "+unavailable.join(", ")+". Inventory totals may be incomplete; do not rely on them until these tables are enabled."
-      : "সতর্কতা: Supabase Data API-তে এই ক্রয়/বিক্রয় টেবিলগুলো পাওয়া যাচ্ছে না: "+unavailable.join(", ")+"। স্টকের হিসাব অসম্পূর্ণ হতে পারে; টেবিলগুলো API-তে চালু না করা পর্যন্ত এই হিসাবের ওপর নির্ভর করবেন না।";
+      ? "Warning: some purchase/sale tables could not be read: "+unavailable.join("; ")+". Check Data API exposure, permissions/RLS, and table/column names. Inventory totals may be incomplete; do not rely on them until verified."
+      : "সতর্কতা: কিছু ক্রয়/বিক্রয় টেবিল পড়া যায়নি: "+unavailable.join("; ")+"। কারণ Data API exposure, অনুমতি/RLS, বা টেবিল/কলামের নাম হতে পারে। স্টকের হিসাব অসম্পূর্ণ হতে পারে; যাচাই না করা পর্যন্ত নির্ভর করবেন না।";
   } else {
     warning.classList.add("hidden");
     warning.textContent="";
