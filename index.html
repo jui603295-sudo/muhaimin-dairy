@@ -451,21 +451,20 @@ function renderLedger() {
   result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
 }
 async function insertRow(tableName,data,form) {
-  let result=await sb.from(tableName).insert(data);
-  let timeNotSaved=false;
   const timeKeys=Object.keys(data).filter(key=>/_time$/.test(key));
-  if(result.error && timeKeys.length && /column .* does not exist|schema cache|could not find .*column/i.test(result.error.message||"")) {
-    const compatible={...data};
-    timeKeys.forEach(key=>delete compatible[key]);
-    result=await sb.from(tableName).insert(compatible);
-    timeNotSaved=!result.error;
+  const result=await sb.from(tableName).insert(data);
+  if(result.error) {
+    const message=String(result.error.message||"");
+    if(timeKeys.length && /column .* does not exist|schema cache|could not find .*column/i.test(message)) {
+      throw new Error(lang()==="en"
+        ? "Time could not be saved because Supabase cannot find the time column. No record was saved. Verify the table has the required *_time column, then run NOTIFY pgrst, 'reload schema'; in the Supabase SQL Editor and try again."
+        : "Supabase-এ সময়ের কলাম খুঁজে পাওয়া যায়নি, তাই রেকর্ড সংরক্ষণ হয়নি। সংশ্লিষ্ট টেবিলে *_time কলাম আছে কি না যাচাই করুন; তারপর Supabase SQL Editor-এ NOTIFY pgrst, 'reload schema'; চালিয়ে আবার চেষ্টা করুন।");
+    }
+    throw result.error;
   }
-  if(result.error)throw result.error;
   if(form)form.reset();
   logActivity("Insert "+tableName);
-  toast(timeNotSaved
-    ? (lang()==="en"?"Saved, but time was not stored. Apply the date-time SQL migration.":"সংরক্ষিত হয়েছে, তবে সময় সংরক্ষিত হয়নি। date-time SQL migration চালাতে হবে।")
-    : (lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে"));
+  toast(lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে");
   await loadAll();
 }
 function bindForm(id,handler) {
