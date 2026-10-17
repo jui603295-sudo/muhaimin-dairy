@@ -49,6 +49,13 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <div class="card" style="background:#f8fafc"><h4 data-i18n="phoneOtpTitle">📲 মোবাইল OTP</h4><label data-i18n="phoneLabel">মোবাইল নম্বর<input id="phoneNumber" type="tel" placeholder="+8801XXXXXXXXX" autocomplete="tel"></label><div class="row"><button class="btn" id="sendOtpBtn">OTP পাঠান</button><button class="btn" id="verifyOtpBtn">OTP যাচাই</button></div><label data-i18n="otpLabel">OTP কোড<input id="phoneOtp" inputmode="numeric" autocomplete="one-time-code"></label><p class="small" data-i18n="otpSetupNote">এই বোতামগুলো Supabase Phone Auth ব্যবহার করে; প্রকল্পে Phone provider ও SMS provider সক্রিয় না থাকলে কাজ করবে না।</p></div>
 </section>
 
+<section id="accessGate" class="card hidden" role="status" aria-live="polite" style="max-width:520px;margin:22px auto">
+  <h3 id="accessGateTitle">🔒 নিরাপদ প্রবেশ যাচাই</h3>
+  <p id="accessGateMessage">অ্যাকাউন্টের অনুমতি যাচাই করা হচ্ছে।</p>
+  <p class="small">ব্যবসার তথ্য সুরক্ষার জন্য অনুমতি নিশ্চিত না হওয়া পর্যন্ত কোনো ব্যবসায়িক ডেটা লোড করা হবে না।</p>
+  <button class="btn" id="accessGateLogout">লগআউট</button>
+</section>
+
 <div id="app" class="hidden">
 <nav id="nav" aria-label="Main menu">
 <button data-page="home" class="active"><span class="nav-icon" aria-hidden="true">🏠</span><span data-i18n="navHome">হোম</span></button>
@@ -690,9 +697,58 @@ $("validateImportBtn").addEventListener("click",async()=>{
   } catch(error) { $("backupMsg").textContent=lang()==="en"?"Invalid JSON file.":"JSON ফাইলটি সঠিক নয়।"; }
 });
 async function startApp() {
-  $("login").classList.add("hidden"); $("app").classList.remove("hidden");
-  try { await loadAll(); } catch(error) { toast("Database error: "+(error.message||String(error))); console.error(error); }
+  // Fail closed: never load operational business data until the database confirms main_admin.
+  $("app").classList.add("hidden");
+  $("accessGate").classList.add("hidden");
+  const sessionResult=await sb.auth.getSession();
+  const user=sessionResult.data && sessionResult.data.session && sessionResult.data.session.user;
+  if(!user) {
+    $("login").classList.remove("hidden");
+    return;
+  }
+
+  let roleResult;
+  try {
+    roleResult=await sb.from("app_user_roles").select("role").eq("user_id",user.id).maybeSingle();
+  } catch(error) {
+    roleResult={error};
+  }
+
+  if(roleResult.error || !roleResult.data || roleResult.data.role!=="main_admin") {
+    $("login").classList.add("hidden");
+    $("app").classList.add("hidden");
+    $("accessGate").classList.remove("hidden");
+    $("accessGateTitle").textContent=roleResult.error
+      ? (lang()==="en"?"🔒 Access check unavailable":"🔒 নিরাপত্তা যাচাই করা যাচ্ছে না")
+      : (lang()==="en"?"🔒 Customer account — access restricted":"🔒 Customer অ্যাকাউন্ট — প্রবেশ সীমিত");
+    $("accessGateMessage").textContent=roleResult.error
+      ? (lang()==="en"
+          ?"The role-security setup is missing or could not be verified. Business data was not loaded. Contact the Main Admin."
+          :"ভূমিকা-ভিত্তিক নিরাপত্তা ব্যবস্থা পাওয়া যায়নি বা যাচাই করা যায়নি। ব্যবসার ডেটা লোড করা হয়নি। Main Admin-এর সঙ্গে যোগাযোগ করুন।")
+      : (lang()==="en"
+          ?"This account does not have Main Admin permission. Business data remains protected. Contact the Main Admin if access is needed."
+          :"এই অ্যাকাউন্টে Main Admin অনুমতি নেই। ব্যবসার তথ্য সুরক্ষিত রাখা হয়েছে। অনুমতি প্রয়োজন হলে Main Admin-এর সঙ্গে যোগাযোগ করুন।");
+    return;
+  }
+
+  $("login").classList.add("hidden");
+  $("accessGate").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  try { await loadAll(); }
+  catch(error) {
+    $("app").classList.add("hidden");
+    $("accessGate").classList.remove("hidden");
+    $("accessGateTitle").textContent=lang()==="en"?"Database unavailable":"ডেটাবেসে প্রবেশ করা যাচ্ছে না";
+    $("accessGateMessage").textContent=lang()==="en"
+      ?"The app could not verify/load protected data. No further data will be shown."
+      :"সুরক্ষিত ডেটা যাচাই বা লোড করা যায়নি। আর কোনো ডেটা দেখানো হবে না।";
+    console.error(error);
+  }
 }
+$("accessGateLogout").onclick=async()=>{
+  try { await sb.auth.signOut(); location.reload(); }
+  catch(error) { $("accessGateMessage").textContent=error.message || String(error); }
+};
 setToday();
 (async()=>{
   try { const result=await sb.auth.getSession(); if(result.data && result.data.session)await startApp(); }
