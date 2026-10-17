@@ -620,7 +620,7 @@ $("ledgerFarmer").addEventListener("change",renderLedger);
 $("runReport").addEventListener("click",()=>$("report").innerHTML=reportHtml(state.collections));
 function printableHtml(title, targetId) {
   const target=$(targetId);
-  if(!target || !target.innerHTML.trim()) {
+  if(!target || !target.innerHTML.trim() || (targetId==="ledgerShareContent" && !$("ledgerResult").innerText.trim())) {
     toast(lang()==="en"?"Nothing to export yet.":"এক্সপোর্ট করার মতো কোনো তথ্য নেই।");
     return;
   }
@@ -639,7 +639,9 @@ function printableHtml(title, targetId) {
 }
 function shareText(title,targetId) {
   const target=$(targetId);
-  const content=target ? target.innerText.trim() : "";
+  const clone=target ? target.cloneNode(true) : null;
+  if(clone) clone.querySelectorAll(".reportActions,button").forEach(node=>node.remove());
+  const content=clone ? clone.innerText.trim() : "";
   if(!content) { toast(lang()==="en"?"Nothing to share yet.":"শেয়ার করার মতো কোনো তথ্য নেই।"); return ""; }
   return (state.settings?.business_name || "মুহাইমিন ডেইরি")+"\n"+title+"\nসময় (বাংলাদেশ): "+dateTimeBD(new Date().toISOString())+"\n\n"+content;
 }
