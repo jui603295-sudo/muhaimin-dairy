@@ -112,7 +112,7 @@ const today = () => {
   return p.year+"-"+p.month+"-"+p.day;
 };
 const currentTime = () => new Intl.DateTimeFormat("en-GB", {
-  timeZone:"Asia/Dhaka", hour:"2-digit", minute:"2-digit", hourCycle:"h23"
+  timeZone:"Asia/Dhaka", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"
 }).format(new Date());
 const dateDisplay = value => {
   if(!value)return "";
@@ -378,10 +378,16 @@ function reportHtml(rows) {
   const filtered=rows.filter(x=>x.accepted!==false && (!from || x.collection_date>=from) && (!to || x.collection_date<=to));
   const total=filtered.reduce((sum,x)=>sum+n(x.liters),0);
   const commission=total*n(state.settings ? state.settings.milk_commission : 1);
+  const detailTable=table(
+    [tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Farmer":"কৃষক",lang()==="en"?"Liters":"লিটার",lang()==="en"?"Milk value":"দুধের মূল্য"],
+    filtered.map(x=>[dateBN(x.collection_date),esc(storedTime(x.collection_time,x.created_at)),esc(farmerName(x.farmer_id)),n(x.liters)+" L",money(n(x.liters)*n(x.purchase_rate))])
+  );
   return '<p>'+(lang()==="en"?"Accepted milk":"মোট গ্রহণযোগ্য দুধ")+': <b>'+total.toLocaleString()+' L</b></p>'+
     '<p>'+(lang()==="en"?"Commission":"মোট কমিশন")+': <b>'+money(commission)+'</b></p>'+
     '<p>'+(lang()==="en"?"Daily target":"দৈনিক লক্ষ্য")+': <b>'+Number(state.settings ? state.settings.daily_target_liters : 2500).toLocaleString()+' L</b></p>'+
-    '<p>'+(lang()==="en"?"Records":"রেকর্ড")+': '+filtered.length+'</p>';
+    '<p>'+(lang()==="en"?"Records":"রেকর্ড")+': '+filtered.length+'</p>'+
+    '<h4>'+(lang()==="en"?"Collection details (Bangladesh time)":"সংগ্রহের বিস্তারিত (বাংলাদেশ সময়)")+'</h4>'+
+    '<div class="tablewrap">'+detailTable+'</div>';
 }
 function updateFarmerSelect() {
   const branch=$("collectionBranch").value;
@@ -419,12 +425,12 @@ function renderLedger() {
   }
   const entries=[];
   state.collections.filter(x=>String(x.farmer_id)===String(id) && x.accepted!==false && inRange(x.collection_date)).forEach(x=>entries.push({
-    date:x.collection_date,type:lang()==="en"?"Milk":"দুধ",debit:n(x.liters)*n(x.purchase_rate),credit:0,detail:n(x.liters)+" L × "+money(x.purchase_rate)+"/L"
+    date:x.collection_date,time:storedTime(x.collection_time,x.created_at),type:lang()==="en"?"Milk":"দুধ",debit:n(x.liters)*n(x.purchase_rate),credit:0,detail:n(x.liters)+" L × "+money(x.purchase_rate)+"/L"
   }));
   state.payments.filter(x=>String(x.farmer_id)===String(id) && inRange(x.payment_date)).forEach(x=>entries.push({
-    date:x.payment_date,type:lang()==="en"?"Payment":"পেমেন্ট",debit:0,credit:n(x.amount),detail:x.payment_method||""
+    date:x.payment_date,time:storedTime(x.payment_time,x.created_at),type:lang()==="en"?"Payment":"পেমেন্ট",debit:0,credit:n(x.amount),detail:x.payment_method||""
   }));
-  entries.sort((a,b)=>String(a.date).localeCompare(String(b.date)) || (a.debit===0 ? 1 : -1));
+  entries.sort((a,b)=>String(a.date).localeCompare(String(b.date)) || String(a.time).localeCompare(String(b.time)) || (a.debit===0 ? 1 : -1));
   const totalLiters=state.collections.filter(x=>String(x.farmer_id)===String(id) && x.accepted!==false && inRange(x.collection_date)).reduce((sum,x)=>sum+n(x.liters),0);
   const totalMilk=entries.reduce((sum,x)=>sum+x.debit,0);
   const totalPaid=entries.reduce((sum,x)=>sum+x.credit,0);
@@ -441,8 +447,8 @@ function renderLedger() {
     '<div class="stat"><span>'+(lang()==="en"?"Closing balance (+ due / - advance)":"শেষ ব্যালেন্স (+ বকেয়া / - অগ্রিম)")+'</span><b>'+money(closingBalance)+'</b></div>'
   ].join("");
   let balance=openingBalance;
-  const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
-  result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
+  const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),esc(x.time),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
+  result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
 }
 async function insertRow(tableName,data,form) {
   let result=await sb.from(tableName).insert(data);
