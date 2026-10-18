@@ -451,8 +451,8 @@ function renderMilkSmartInsights(formValues=null){
  const acceptedToday=state.collections.filter(x=>x.collection_date===date&&x.accepted!==false&&(!branchId||String(x.branch_id)===String(branchId)));
  const liters=acceptedToday.reduce((sum,x)=>sum+n(x.liters),0);
  const goal=n(branch?.target_liters||state.settings?.daily_target_liters||2500);
- const pending=state.collections.filter(x=>x.collection_date===date&&(!branchId||String(x.branch_id)===String(branchId))&&(!x.quality_status||x.quality_status==="Pending"||x.quality_status==="Retest Required"||x.quality_status==="Quarantined")).length;
- const lowClr=state.collections.filter(x=>x.collection_date===date&&x.accepted!==false&&(!branchId||String(x.branch_id)===String(branchId))&&n(x.clr)<n(state.settings?.default_clr??28)).length;
+ const pending=state.collections.filter(x=>x.collection_date===date&&(!branchId||String(x.branch_id)===String(branchId))&&(x.quality_status==="Pending"||x.quality_status==="Retest Required"||x.quality_status==="Quarantined"||(!x.quality_status&&x.accepted===false))).length;
+ const lowClr=state.collections.filter(x=>x.collection_date===date&&x.accepted!==false&&x.clr!==null&&x.clr!==undefined&&x.clr!==""&&(!branchId||String(x.branch_id)===String(branchId))&&n(x.clr)<n(state.settings?.default_clr??28)).length;
  const abnormal=state.collections.filter(x=>x.collection_date===date&&(!branchId||String(x.branch_id)===String(branchId))&&(x.smell_check==="Abnormal"||x.visual_check==="Abnormal"||x.adulteration_test==="Fail"||x.quality_status==="Rejected")).length;
  const expected=state.farmers.find(f=>String(f.id)===String(typed.farmer_id||$("collectionFarmer")?.value||""));
  const typedLiters=n(typed.liters);
