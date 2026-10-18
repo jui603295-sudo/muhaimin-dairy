@@ -30,26 +30,14 @@ AS $function$
   );
 $function$;
 
-DO $bootstrap$
-DECLARE
-  admin_user_id uuid;
-BEGIN
-  SELECT u.id INTO admin_user_id
-  FROM auth.users AS u
-  WHERE lower(u.email) = lower('jui603295@gmail.com')
-  LIMIT 1;
-
-  IF admin_user_id IS NULL THEN
-    RAISE EXCEPTION
-      'Expected Main Admin account was not found in auth.users; transaction cancelled.';
-  END IF;
-
-  INSERT INTO public.app_user_roles (user_id, role)
-  VALUES (admin_user_id, 'main_admin')
-  ON CONFLICT (user_id)
-  DO UPDATE SET role = EXCLUDED.role, updated_at = now();
-END;
-$bootstrap$;
+-- Do not hard-code an email or auto-promote an account from a public migration.
+-- After restoring the backup to the separate TEST project, inspect auth.users and
+-- manually assign the verified test account UUID using the SQL Editor:
+--   SELECT id, email FROM auth.users ORDER BY created_at;
+--   INSERT INTO public.app_user_roles (user_id, role)
+--   VALUES ('REPLACE-WITH-VERIFIED-TEST-USER-UUID', 'main_admin');
+-- Keep the placeholder unchanged until the correct UUID is verified.
+-- No Main Admin is assigned automatically by this script.
 
 CREATE UNIQUE INDEX IF NOT EXISTS app_user_roles_one_main_admin
   ON public.app_user_roles ((role))
