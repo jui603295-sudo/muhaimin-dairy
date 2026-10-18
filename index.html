@@ -107,7 +107,7 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
 <section id="backup" class="page"><div class="card"><h3 data-i18n="backupTitle">💾 ব্যাকআপ ও রিস্টোর</h3><p class="small" data-i18n="backupInfo">JSON ব্যাকআপ ডাউনলোড করুন। রিস্টোরের আগে ডেটা যাচাই করুন; এই সংস্করণে নিরাপদ restore স্বয়ংক্রিয়ভাবে চালানো হয় না।</p><button class="btn primary" id="exportBtn"
 
 data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেটা ব্যাকআপ</button><label data-i18n="importBackup">ব্যাকআপ ফাইল নির্বাচন<input type="file" id="importFile" accept="application/json,.json"></label><button class="btn" id="validateImportBtn" data-i18n="validateBackup">ফাইল যাচাই করুন</button><p id="backupMsg" class="small"></p></div></section>
-<section id="audit" class="page"><div class="card"><h3 data-i18n="auditTitle">🧾 অডিট লগ</h3><p class="small" data-i18n="auditInfo">এই সংস্করণে এই ব্রাউজারে হওয়া কার্যকলাপের স্থানীয় তালিকা দেখা যাবে। এটি সার্ভার-সুরক্ষিত Audit Log-এর বিকল্প নয়।</p><div id="auditList"></div></div></section>
+<section id="audit" class="page"><div class="card"><h3 data-i18n="auditTitle">🧾 অডিট লগ</h3><p class="small" data-i18n="auditInfo">এই ব্রাউজারের স্থানীয় তালিকা সার্ভার-সুরক্ষিত লগের বিকল্প নয়।</p><div id="auditList"></div></div><div class="card"><h3>সার্ভার অডিট লগ / Server Audit Trail</h3><p class="small">দুধ সংগ্রহের INSERT/UPDATE/DELETE ইতিহাস দেখতে Test Supabase migration ও Main Admin অনুমতি লাগবে।</p><button type="button" class="btn" id="refreshServerAudit">সার্ভার লগ রিফ্রেশ</button><div id="serverAuditList" class="tablewrap"></div></div></section>
 </main></div>
 <div id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -470,6 +470,20 @@ function logActivity(action) {
     localStorage.setItem("muhaimin-audit",JSON.stringify(entries.slice(0,100)));
   } catch (_) {}
 }
+async function loadServerAudit(){
+ const target=$("serverAuditList");
+ if(!target)return;
+ target.textContent="সার্ভার লগ লোড হচ্ছে…";
+ try{
+  const result=await sb.from("audit_events").select("id,table_name,record_id,action,actor_user_id,changed_at").order("changed_at",{ascending:false}).limit(100);
+  if(result.error)throw result.error;
+  const rows=result.data||[];
+  target.innerHTML=rows.length?table(["সময় (বাংলাদেশ)","টেবিল","কাজ","রেকর্ড ID","ব্যবহারকারী ID"],
+   rows.map(x=>[esc(dateTimeBD(x.changed_at)),esc(x.table_name),esc(x.action),esc(x.record_id||""),esc(x.actor_user_id||"")])):"এখনো কোনো সার্ভার অডিট ইভেন্ট নেই।";
+ }catch(error){
+  target.textContent="সার্ভার লগ এখন পড়া যাচ্ছে না। Migration প্রয়োগ হয়েছে এবং এই অ্যাকাউন্টের Main Admin অনুমতি আছে কি না যাচাই করুন।";
+ }
+}
 function renderAudit() {
   let entries=[];
   try { entries=JSON.parse(localStorage.getItem("muhaimin-audit") || "[]"); } catch (_) {}
@@ -609,6 +623,7 @@ bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,tar
 bindForm("farmerForm",async f=>insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},$("farmerForm")));
 $("collectionBranch").addEventListener("change",()=>updateFarmerSelect($("farmerScanInput")?.value||""));
 $("farmerScanInput").addEventListener("input",e=>updateFarmerSelect(e.target.value));
+$("refreshServerAudit").addEventListener("click",loadServerAudit);
 $("farmerScanInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const s=$("collectionFarmer");if(s.options.length===2&&s.value==="")s.selectedIndex=1;}});
 
 $("ledgerFarmer").addEventListener("change",renderLedger);
@@ -769,6 +784,7 @@ document.querySelectorAll("#nav button").forEach(button=>button.addEventListener
   if(["operations","chiller","loss","finance"].includes(button.dataset.page))loadOperationalRecords();
   if(button.dataset.page==="ledger")renderLedger();
   if(button.dataset.page==="audit")renderAudit();
+   if(button.dataset.page==="audit")loadServerAudit();
 }));
 $("ledgerFarmer").addEventListener("change",renderLedger);
 $("runReport").addEventListener("click",()=>$("report").innerHTML=reportHtml(state.collections));
