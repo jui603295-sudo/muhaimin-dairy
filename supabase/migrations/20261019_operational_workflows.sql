@@ -4,6 +4,25 @@
 -- until role-scoped policies are reviewed and tested with real user JWTs.
 begin;
 
+alter table public.milk_collections
+ add column if not exists batch_id text,
+ add column if not exists milk_temperature_c numeric(6,2),
+ add column if not exists fat_percent numeric(5,2),
+ add column if not exists snf_percent numeric(5,2),
+ add column if not exists acidity_result text,
+ add column if not exists lab_result text,
+ add column if not exists quality_status text not null default 'Pending',
+ add column if not exists quality_reason text,
+ add column if not exists tester_id text,
+ add column if not exists tested_at timestamptz,
+ add column if not exists sample_photo_url text;
+
+alter table public.milk_collections drop constraint if exists milk_collections_quality_status_check;
+alter table public.milk_collections add constraint milk_collections_quality_status_check
+ check (quality_status in ('Pending','Accepted','Retest Required','Quarantined','Rejected'));
+
+
+
 create table if not exists public.milk_batches (
  id uuid primary key default gen_random_uuid(),
  batch_id text not null unique,
