@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS public.app_user_roles (
 
 ALTER TABLE public.app_user_roles ENABLE ROW LEVEL SECURITY;
 
+-- Keep role records inaccessible to anonymous clients; authenticated access is
+-- still constrained by the policies below.
+REVOKE ALL ON TABLE public.app_user_roles FROM anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.app_user_roles TO authenticated;
+
 CREATE OR REPLACE FUNCTION public.has_app_role(required_role text)
 RETURNS boolean
 LANGUAGE sql
@@ -29,6 +34,9 @@ AS $function$
       AND r.role = required_role
   );
 $function$;
+
+REVOKE ALL ON FUNCTION public.has_app_role(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.has_app_role(text) TO authenticated;
 
 -- Do not hard-code an email or auto-promote an account from a public migration.
 -- After restoring the backup to the separate TEST project, inspect auth.users and
