@@ -584,22 +584,17 @@ $("collectionBranch").addEventListener("change",updateFarmerSelect);
 $("ledgerFarmer").addEventListener("change",renderLedger);
 $("ledgerFrom").addEventListener("change",renderLedger);
 $("ledgerTo").addEventListener("change",renderLedger);
-bindForm("collectionForm",async f=>insertRow("milk_collections",{
+bindForm("collectionForm",async f=>{
+ const quality=f.quality_status||"Pending";
+ if(["Rejected","Retest Required","Quarantined"].includes(quality) && !String(f.quality_reason||"").trim()) throw new Error("বাতিল/পুনঃপরীক্ষা/আলাদা রাখার কারণ লিখুন।");
+ await insertRow("milk_collections",{
   collection_date:f.collection_date,collection_time:f.collection_time||currentTime(),branch_id:f.branch_id,farmer_id:f.farmer_id||null,liters:n(f.liters),clr:n(f.clr||28),
-  purchase_rate:n(f.purchase_rate||50),accepted:f.accepted==="true",notes:f.notes
-},$("collectionForm")));
-
-bindForm("batchForm",async f=>insertRow("milk_batches",{batch_id:f.batch_id,batch_date:f.batch_date,branch_id:f.branch_id,quantity_liters:n(f.quantity_liters),chiller_in_at:f.chiller_in_at||null,chiller_out_at:f.chiller_out_at||null,dispatched_liters:n(f.dispatched_liters),buyer_accepted_liters:n(f.buyer_accepted_liters),incident_notes:f.incident_notes},$("batchForm")));
-bindForm("chillerForm",async f=>insertRow("chiller_logs",{branch_id:f.branch_id,chiller_id:f.chiller_id,temperature_c:n(f.temperature_c),recorded_at:f.recorded_at,staff_id:f.staff_id,incident_type:f.incident_type,corrective_action:f.corrective_action},$("chillerForm")));
-bindForm("reconForm",async f=>{
- const expected=n(f.opening_liters)+n(f.accepted_incoming_liters)+n(f.transfers_in_liters)-n(f.dispatch_liters)-n(f.approved_disposal_liters)-n(f.transfers_out_liters);
- const variance=n(f.physical_closing_liters)-expected;
- await insertRow("milk_reconciliations",{branch_id:f.branch_id,recon_date:f.recon_date,opening_liters:n(f.opening_liters),accepted_incoming_liters:n(f.accepted_incoming_liters),transfers_in_liters:n(f.transfers_in_liters),dispatch_liters:n(f.dispatch_liters),approved_disposal_liters:n(f.approved_disposal_liters),transfers_out_liters:n(f.transfers_out_liters),physical_closing_liters:n(f.physical_closing_liters),rejected_liters:n(f.rejected_liters),expected_closing_liters:expected,variance_liters:variance,variance_category:f.variance_category,approved_by:f.approved_by||null,reason:f.reason},$("reconForm"));
-});
-bindForm("financeForm",async f=>{
- const amount=n(f.amount),settled=n(f.cash_settled);
- if(settled>amount) throw new Error("নগদ নিষ্পত্তি মোট অঙ্কের বেশি হতে পারে না।");
- await insertRow("operating_finance_entries",{entry_date:f.entry_date,branch_id:f.branch_id||null,entry_type:f.entry_type,amount,cash_settled:settled,reference:f.reference||null,counterparty:f.counterparty||null,due_date:f.due_date||null,notes:f.notes||null},$("financeForm"));
+  purchase_rate:n(f.purchase_rate||50),accepted:quality==="Accepted" && f.accepted==="true",quality_status:quality,
+  batch_id:f.batch_id||null,milk_temperature_c:f.milk_temperature_c?n(f.milk_temperature_c):null,
+  fat_percent:f.fat_percent?n(f.fat_percent):null,snf_percent:f.snf_percent?n(f.snf_percent):null,
+  acidity_result:f.acidity_result||null,lab_result:f.lab_result||null,tester_id:f.tester_id||null,tested_at:f.tested_at||null,
+  sample_photo_url:f.sample_photo_url||null,quality_reason:f.quality_reason||null,notes:f.notes
+ },$("collectionForm"));
 });
 bindForm("paymentForm",async f=>insertRow("farmer_payments",{
   payment_date:f.payment_date,payment_time:f.payment_time||currentTime(),farmer_id:f.farmer_id,amount:n(f.amount),payment_method:f.payment_method,
