@@ -617,7 +617,7 @@ bindForm("collectionForm",async f=>{
   collection_method:f.collection_method||"Manual",scale_ticket_no:f.scale_ticket_no||null,can_count:n(f.can_count),
   smell_check:f.smell_check||"Not Tested",visual_check:f.visual_check||"Not Tested",adulteration_test:f.adulteration_test||"Not Tested",collector_user_id:collectorUserId,
   batch_id:f.batch_id||null,milk_temperature_c:temp,fat_percent:fat,snf_percent:snf,
-  acidity_result:f.acidity_result||null,lab_result:f.lab_result||null,tester_id:f.tester_id||null,tested_at:f.tested_at||null,
+  acidity_result:f.acidity_result||null,lab_result:f.lab_result||null,tester_id:f.tester_id||null,tested_at:asTimestamp(f.tested_at),
   sample_photo_url:f.sample_photo_url||null,quality_reason:f.quality_reason||null,notes:f.notes
  },$("collectionForm"));
 });
