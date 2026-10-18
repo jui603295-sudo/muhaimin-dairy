@@ -654,6 +654,63 @@ bindInventoryTransaction("vetPurchaseForm","vet_purchases","purchase_date","quan
 bindInventoryTransaction("vetSaleForm","vet_sales","sale_date","quantity","sale_price","customer_name");
 bindInventoryTransaction("agroPurchaseForm","agro_purchases","purchase_date","quantity","purchase_price","supplier_name");
 bindInventoryTransaction("agroSaleForm","agro_sales","sale_date","quantity","sale_price","customer_name");
+// Operational workflows: handlers were missing, so these forms could render but could not save.
+const asTimestamp=value=>{
+  if(!value)return null;
+  const parsed=new Date(value);
+  if(Number.isNaN(parsed.getTime()))throw new Error("তারিখ/সময় সঠিক নয়।");
+  return parsed.toISOString();
+};
+bindForm("batchForm",async f=>{
+  const quantity=n(f.quantity_liters), dispatched=n(f.dispatched_liters), accepted=n(f.buyer_accepted_liters);
+  if(quantity<=0)throw new Error("দুধের পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(dispatched<0||dispatched>quantity)throw new Error("পাঠানো দুধের পরিমাণ মোট ব্যাচের পরিমাণের মধ্যে হতে হবে।");
+  if(accepted<0||accepted>dispatched)throw new Error("ক্রেতা-গৃহীত পরিমাণ পাঠানো দুধের বেশি হতে পারবে না।");
+  await insertRow("milk_batches",{
+    batch_id:String(f.batch_id||"").trim(),batch_date:f.batch_date,branch_id:f.branch_id,
+    quantity_liters:quantity,chiller_in_at:asTimestamp(f.chiller_in_at),
+    chiller_out_at:asTimestamp(f.chiller_out_at),dispatched_liters:dispatched,
+    buyer_accepted_liters:accepted,incident_notes:f.incident_notes||null
+  },$("batchForm"));
+});
+bindForm("chillerForm",async f=>{
+  const temperature=n(f.temperature_c);
+  if(!f.branch_id)throw new Error("কেন্দ্র নির্বাচন করুন।");
+  if(!f.recorded_at||!f.staff_id||!f.chiller_id)throw new Error("চিলার ID, সময় ও কর্মীর পরিচয় দিন।");
+  await insertRow("chiller_logs",{
+    branch_id:f.branch_id,chiller_id:String(f.chiller_id).trim(),temperature_c:temperature,
+    recorded_at:asTimestamp(f.recorded_at),staff_id:String(f.staff_id).trim(),
+    incident_type:f.incident_type||"Routine",corrective_action:f.corrective_action||null
+  },$("chillerForm"));
+});
+bindForm("reconForm",async f=>{
+  const opening=n(f.opening_liters),incoming=n(f.accepted_incoming_liters),transfersIn=n(f.transfers_in_liters);
+  const dispatch=n(f.dispatch_liters),disposal=n(f.approved_disposal_liters),transfersOut=n(f.transfers_out_liters);
+  const physical=n(f.physical_closing_liters),rejected=n(f.rejected_liters);
+  if(!f.branch_id)throw new Error("কেন্দ্র নির্বাচন করুন।");
+  if([opening,incoming,transfersIn,dispatch,disposal,transfersOut,physical,rejected].some(v=>v<0))throw new Error("লিটারের মান ঋণাত্মক হতে পারবে না।");
+  const expected=opening+incoming+transfersIn-dispatch-disposal-transfersOut;
+  if(expected<0)throw new Error("হিসাব অনুযায়ী প্রত্যাশিত স্টক ঋণাত্মক হচ্ছে; ইনপুট যাচাই করুন।");
+  if(!String(f.reason||"").trim())throw new Error("পার্থক্যের কারণ/তদন্ত নোট লিখুন।");
+  await insertRow("milk_reconciliations",{
+    branch_id:f.branch_id,recon_date:f.recon_date,opening_liters:opening,
+    accepted_incoming_liters:incoming,transfers_in_liters:transfersIn,
+    dispatch_liters:dispatch,approved_disposal_liters:disposal,
+    transfers_out_liters:transfersOut,physical_closing_liters:physical,
+    rejected_liters:rejected,expected_closing_liters:expected,
+    variance_liters:physical-expected,variance_category:f.variance_category||"Pending Investigation",
+    approved_by:f.approved_by||null,reason:String(f.reason).trim()
+  },$("reconForm"));
+});
+bindForm("financeForm",async f=>{
+  const amount=n(f.amount),settled=n(f.cash_settled);
+  if(amount<0||settled<0||settled>amount)throw new Error("নগদ নিষ্পত্তি ০ থেকে মোট পরিমাণের মধ্যে হতে হবে।");
+  await insertRow("operating_finance_entries",{
+    entry_date:f.entry_date,branch_id:f.branch_id||null,entry_type:f.entry_type,
+    amount,cash_settled:settled,reference:f.reference||null,
+    counterparty:f.counterparty||null,due_date:f.due_date||null,notes:f.notes||null
+  },$("financeForm"));
+});
 bindForm("settingsForm",async f=>{
   const values={business_name:f.business_name||"মুহাইমিন ডেইরি",daily_target_liters:n(f.daily_target_liters||2500),
     default_clr:n(f.default_clr||28),milk_commission:n(f.milk_commission||1),updated_at:new Date().toISOString()};
