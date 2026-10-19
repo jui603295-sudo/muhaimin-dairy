@@ -84,7 +84,9 @@ jobs:
               !/ব্যাকআপে ব্যক্তিগত কৃষক\/সংগ্রহ তথ্য থাকতে পারে/.test(html)) {
             throw new Error('Pending Milk Collection queue backup must be user-scoped, JSON-exportable, and disclose personal-data sensitivity.');
           }
-          const queueExportFn = html.slice(html.indexOf('async function exportPendingMilkQueue'));
+          const queueExportStart = html.indexOf('async function exportPendingMilkQueue');
+          const queueExportEnd = html.indexOf('$("exportPendingMilkQueue")?.addEventListener', queueExportStart);
+          const queueExportFn = html.slice(queueExportStart, queueExportEnd > queueExportStart ? queueExportEnd : undefined);
           if (!/milkQueueAction\("getAll"\)/.test(queueExportFn) ||
               !/link\.download=/.test(queueExportFn) ||
               /sb\.from\(["']milk_collections["']\)\.insert/.test(queueExportFn)) {
