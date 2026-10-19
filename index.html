@@ -367,10 +367,10 @@ async function loadAll() {
   if(settingsResult.error)throw settingsResult.error;
   state.settings=settingsResult.data || {id:null,business_name:"মুহাইমিন ডেইরি",daily_target_liters:2500,default_clr:28,milk_commission:1};
   try {
-    const mcResult=await sb.from("milk_collection_settings").select("settings").eq("setting_key","default").maybeSingle();
+    const mcResult=await sb.from("milk_collection_settings").select("settings,schema_version,revision").eq("setting_key","default").maybeSingle();
     if(mcResult.error)throw mcResult.error;
     state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS,...(mcResult.data?.settings||{})};
-    $("milkCollectionSettingsStatus").textContent="Milk Collection সেটিংস Supabase থেকে লোড হয়েছে।";
+    $("milkCollectionSettingsStatus").textContent="Milk Collection সেটিংস লোড হয়েছে · Schema v"+(mcResult.data?.schema_version??1)+" · Revision "+(mcResult.data?.revision??1);
   } catch(error) {
     state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS};
     $("milkCollectionSettingsStatus").textContent="TEST migration প্রয়োজন বা সেটিংস লোড হয়নি। ডিফল্ট মান দেখানো হচ্ছে; সংরক্ষণের আগে TEST schema/RLS যাচাই করুন।";
@@ -1255,13 +1255,12 @@ bindForm("milkCollectionSettingsForm",async f=>{
   receipt_print_enabled:$("mcsPrint").checked,
   receipt_share_enabled:$("mcsShare").checked
  };
- const result=await sb.from("milk_collection_settings").upsert({
-  setting_key:"default",settings,updated_by:user.id,updated_at:new Date().toISOString()
- },{onConflict:"setting_key"});
+ const result=await sb.rpc("save_milk_collection_settings",{p_settings:settings});
  if(result.error)throw result.error;
- state.milkCollectionSettings=settings;
+ if(!result.data||typeof result.data!=="object"||Array.isArray(result.data))throw new Error("Supabase থেকে সংরক্ষিত সেটিংস নিশ্চিত করা যায়নি।");
+ state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS,...result.data};
  logActivity("Update Milk Collection future main settings");
- $("milkCollectionSettingsStatus").textContent="Milk Collection সেটিংস Supabase-এ সংরক্ষিত হয়েছে।";
+ $("milkCollectionSettingsStatus").textContent="সেটিংস সংরক্ষিত · Revision "+(result.data.revision??"updated")+" · অজানা ভবিষ্যৎ key অক্ষত রাখা হয়েছে।";
  toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
 });
 $("feedNameSelect").addEventListener("change",()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য"));
