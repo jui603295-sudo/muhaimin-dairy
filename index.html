@@ -89,7 +89,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <div class="row"><div><label>পরীক্ষার সময়<input name="tested_at" type="datetime-local"></label></div><div><label>নমুনার ছবি/রেফারেন্স URL<input name="sample_photo_url" type="url"></label></div></div>
 <label>বাতিল/পুনঃপরীক্ষার কারণ<textarea name="quality_reason"></textarea></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button
 
-class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="recentCollections">সাম্প্রতিক সংগ্রহ</h3><div class="tablewrap" id="collectionTable"></div></div>
+class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="recentCollections">সাম্প্রতিক সংগ্রহ</h3><p class="small">সংগ্রহ রসিদ প্রিন্ট/PDF করুন বা মোবাইলের Share মেনু দিয়ে পাঠান। রসিদ শেয়ারে শুধু নির্বাচিত রেকর্ডের তথ্য যাবে।</p><div class="row"><div><label for="collectionSearch">কৃষক / কেন্দ্র / রসিদ / স্কেল স্লিপ খুঁজুন</label><input id="collectionSearch" type="search" placeholder="নাম, মোবাইল, তারিখ, টিকিট নম্বর…"></div><div style="align-self:end"><button class="btn" type="button" id="exportCollectionsCsv">⬇️ CSV এক্সপোর্ট</button></div></div><div class="tablewrap" id="collectionTable"></div><div id="collectionReceiptStatus" class="small" aria-live="polite"></div></div>
 <div class="card"><h3>🧪 আলাদা মান যাচাই ও অনুমোদন / Quality Review</h3><p class="small">সংগ্রহ সংরক্ষণের পর পরীক্ষক এখানে রেকর্ড বেছে মান যাচাই করবেন। Accepted না হওয়া পর্যন্ত রেকর্ড গ্রহণযোগ্য দুধ হিসেবে গণনা হবে না।</p><form id="qualityReviewForm"><label>পরীক্ষাধীন সংগ্রহ<select name="collection_id" id="qualityReviewCollection" required></select></label><div class="row"><div><label>CLR<input name="clr" type="number" min="0" max="50" step=".1" required></label></div><div><label>দুধের তাপমাত্রা °C<input name="milk_temperature_c" type="number" min="0" max="100" step=".1"></label></div></div><div class="row"><div><label>Fat %<input name="fat_percent" type="number" min="0" max="100" step=".01"></label></div><div><label>SNF %<input name="snf_percent" type="number" min="0" max="100" step=".01"></label></div></div><div class="row"><div><label>গন্ধ পরীক্ষা<select name="smell_check" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Normal">স্বাভাবিক</option><option value="Abnormal">অস্বাভাবিক</option></select></label></div><div><label>দৃশ্যমান পরীক্ষা<select name="visual_check" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Normal">স্বাভাবিক</option><option value="Abnormal">অস্বাভাবিক</option></select></label></div></div><div class="row"><div><label>প্রাথমিক ভেজাল স্ক্রিনিং<select name="adulteration_test" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Pass">প্রাথমিক পরীক্ষায় সমস্যা নেই</option><option value="Fail">ব্যর্থ / পুনঃপরীক্ষা</option></select></label></div><div><label>চূড়ান্ত মানের অবস্থা<select name="quality_status" required><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Retest Required">Retest Required</option><option value="Quarantined">Quarantined</option><option value="Rejected">Rejected</option></select></label></div></div><div class="row"><div><label>পরীক্ষক ID<input name="tester_id" required></label></div><div><label>পরীক্ষার সময়<input name="tested_at" type="datetime-local" required></label></div></div><label>ল্যাব ফল / রেফারেন্স<input name="lab_result"></label><label>নমুনার ছবি/রেফারেন্স URL<input name="sample_photo_url" type="url"></label><label>কারণ / পরীক্ষার নোট<textarea name="quality_reason"></textarea></label><button class="btn primary">মান যাচাই সংরক্ষণ ও রেকর্ড আপডেট</button></form></div></section>
 <section id="payments" class="page"><div class="card"><h3 data-i18n="farmerPayment">💳 কৃষক পেমেন্ট</h3><form id="paymentForm"><div class="row"><div><label data-i18n="dateLabel">তারিখ<input name="payment_date" id="pdate" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" required></label></div><div><label>সময় / Time<input name="payment_time" id="ptime" type="time" step="1" required></label></div><div><label data-i18n="farmerLabel">কৃষক<select name="farmer_id" id="paymentFarmer" required></select></label></div></div><div class="row"><div><label data-i18n="amountLabel">পরিমাণ<input name="amount" type="number" step=".01" min=".01" required></label></div><div><label data-i18n="methodLabel">মাধ্যম<select name="payment_method"><option>Cash</option><option>Bank</option><option>bKash</option><option>Nagad</option><option>Other</option></select></label></div></div><label>Reference<input name="reference"></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary" data-i18n="savePayment">পেমেন্ট সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="paymentList">পেমেন্ট তালিকা</h3><div class="tablewrap" id="paymentTable"></div></div></section>
 <section id="feed" class="page"><div class="card"><h3>🌾 Feed Product</h3><p class="small" data-i18n="feedDefault">ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।</p><form id="feedProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Feed Name<select name="product_name_select" id="feedNameSelect" required><option value="গোয়ালা ফিড">গোয়ালা ফিড</option><option value="নারিশ">নারিশ</option><option value="ACI Feed">ACI Feed</option><option value="Provita Feed">Provita Feed</option><option value="Fresh Feed">Fresh Feed</option><option value="অন্যান্য">অন্যান্য</option></select></label></div></div><label id="customFeedWrap" class="hidden" data-i18n="customFeed">নতুন Feed-এর নাম<input name="custom_product_name"></label><div class="row"><div><label>Purchase Price/kg<input name="purchase_price" type="number" step=".01" value="50"></label></div><div><label>Sale Price/kg<input name="sale_price" type="number" step=".01" value="50"></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">💾 Product Save</button></form></div><div class="card"><h3>📥 Feed Purchase</h3><form id="feedPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today"></label></div><div><label>Time<input name="purchase_time" type="time" step="1" class="currentTime"></label></div><div><label>Product<select name="product_id" id="feedPurchaseProduct"></select></label></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div><div><label>Price/kg<input name="purchase_price_per_kg" type="number" step=".01" value="50"></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid<input name="paid_amount" type="number" step=".01"></label></div></div><button class="btn primary">Purchase Save</button></form></div><div class="card"><h3>📤 Feed Sale</h3><form id="feedSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today"></label></div><div><label>Time<input name="sale_time" type="time" step="1" class="currentTime"></label></div><div><label>Product<select name="product_id" id="feedSaleProduct"></select></label></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div><div><label>Sale Price/kg<input name="sale_price_per_kg" type="number" step=".01" value="50"></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid<input name="paid_amount" type="number"
@@ -400,8 +400,17 @@ function render() {
    qualitySelect.innerHTML='<option value="">সংগ্রহ নির্বাচন করুন</option>'+pendingQuality.map(x=>'<option value="'+esc(x.id)+'">'+esc(dateBN(x.collection_date))+' · '+esc(storedTime(x.collection_time,x.created_at))+' · '+esc(branchName(x.branch_id))+' · '+esc(farmerName(x.farmer_id))+' · '+n(x.liters)+' L · '+esc(x.quality_status||"Pending")+'</option>').join("");
    if(pendingQuality.some(x=>String(x.id)===String(previousQualityId)))qualitySelect.value=previousQualityId;
   }
-  $("collectionTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Branch":"কেন্দ্র",tr("farmerLabel"),"L","CLR","মান / Quality","পদ্ধতি / Method",lang()==="en"?"Rate/L":"৳/L"],
-    state.collections.slice(0,100).map(x=>[dateBN(x.collection_date),esc(storedTime(x.collection_time,x.created_at)),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),n(x.liters),x.clr ?? "",esc(x.quality_status||"Pending"),esc(x.collection_method||"Manual"),money(x.purchase_rate)]));
+  const collectionQuery=String($("collectionSearch")?.value||"").trim().toLowerCase();
+  const visibleCollections=state.collections.filter(x=>{
+    if(!collectionQuery)return true;
+    const farmer=state.farmers.find(f=>String(f.id)===String(x.farmer_id));
+    const values=[x.id,x.collection_date,storedTime(x.collection_time,x.created_at),branchName(x.branch_id),farmer?.name,farmer?.farmer_code,farmer?.mobile,x.scale_ticket_no,x.batch_id,x.quality_status,x.collection_method];
+    return values.some(v=>String(v??"").toLowerCase().includes(collectionQuery));
+  }).slice(0,100);
+  $("collectionTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Branch":"কেন্দ্র",tr("farmerLabel"),"L","CLR","মান / Quality","পদ্ধতি / Method",lang()==="en"?"Rate/L":"৳/L","রসিদ"],
+    visibleCollections.map(x=>[dateBN(x.collection_date),esc(storedTime(x.collection_time,x.created_at)),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),n(x.liters),x.clr ?? "",esc(x.quality_status||"Pending"),esc(x.collection_method||"Manual"),money(x.purchase_rate),'<button type="button" class="btn" data-collection-action="print" data-collection-id="'+esc(x.id)+'">🧾 প্রিন্ট/PDF</button> <button type="button" class="btn" data-collection-action="share" data-collection-id="'+esc(x.id)+'">শেয়ার</button>']));
+  const receiptStatus=$("collectionReceiptStatus");
+  if(receiptStatus)receiptStatus.textContent="দেখানো হচ্ছে "+visibleCollections.length+"টি রেকর্ড (সর্বোচ্চ ১০০টি)। CSV এক্সপোর্টে সব লোড করা সংগ্রহ অন্তর্ভুক্ত হবে।";
   $("paymentTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",tr("farmerLabel"),tr("amountLabel"),tr("methodLabel")],
     state.payments.slice(0,100).map(x=>[dateBN(x.payment_date),esc(storedTime(x.payment_time,x.created_at)),esc(farmerName(x.farmer_id)),money(x.amount),esc(x.payment_method||"")]));
   fill("feedPurchaseProduct",state.feedProducts,"product_name"); fill("feedSaleProduct",state.feedProducts,"product_name");
@@ -481,6 +490,66 @@ function renderMilkSmartInsights(formValues=null){
   '<div class="stat"><span>স্মার্ট প্রি-চেক</span><b>'+alerts.length+' সতর্কতা</b><small>নিয়মভিত্তিক; বাহ্যিক AI পরিষেবা নয়</small></div>',
   '<div class="stat"><span>পরামর্শ</span><small>'+(alerts.length?alerts.map(esc).join("<br>"):"এখন পর্যন্ত ইনপুটে কোনো স্মার্ট সতর্কতা নেই।")+'</small></div>'
  ].join("");
+}
+function collectionReceiptData(id){
+ const row=state.collections.find(x=>String(x.id)===String(id));
+ if(!row)throw new Error("সংগ্রহের রেকর্ড পাওয়া যায়নি।");
+ const farmer=state.farmers.find(f=>String(f.id)===String(row.farmer_id));
+ const liters=n(row.liters),rate=n(row.purchase_rate),amount=liters*rate;
+ return {row,farmer,liters,rate,amount,receiptNo:"MC-"+String(row.collection_date||"").replace(/[^0-9]/g,"")+"-"+String(row.id||"").slice(0,8).toUpperCase()};
+}
+function collectionReceiptText(id){
+ const d=collectionReceiptData(id),r=d.row,f=d.farmer||{};
+ return [
+  state.settings?.business_name||"মুহাইমিন ডেইরি",
+  "দুধ সংগ্রহ রসিদ / Milk Collection Receipt",
+  "রসিদ: "+d.receiptNo,
+  "তারিখ: "+dateBN(r.collection_date)+"  সময় (বাংলাদেশ): "+storedTime(r.collection_time,r.created_at),
+  "কেন্দ্র: "+branchName(r.branch_id),
+  "কৃষক: "+(f.name||"—")+" | কোড: "+(f.farmer_code||"—")+" | মোবাইল: "+(f.mobile||f.phone||"—"),
+  "পরিমাণ: "+d.liters+" L | ক্রয় দর: "+money(d.rate)+"/L",
+  "মোট দুধের মূল্য: "+money(d.amount),
+  "CLR: "+(r.clr??"—")+" | Fat: "+(r.fat_percent??"—")+"% | SNF: "+(r.snf_percent??"—")+"%",
+  "মানের অবস্থা: "+(r.quality_status||"Pending")+" | গ্রহণ নিশ্চিত: "+(r.accepted===true?"হ্যাঁ":"না"),
+  "পদ্ধতি: "+(r.collection_method||"Manual")+" | স্কেল স্লিপ: "+(r.scale_ticket_no||"—")+" | ব্যাচ: "+(r.batch_id||"—"),
+  "সংগ্রহ রেকর্ড ID: "+r.id,
+  "নোট: এই রসিদ সংগ্রহের হিসাব দেখায়; Accepted না হলে চূড়ান্ত পরিশোধযোগ্য দুধ হিসেবে গণনা করবেন না।"
+ ].join("\n");
+}
+function printCollectionReceipt(id){
+ const d=collectionReceiptData(id),r=d.row,f=d.farmer||{};
+ const rows=[
+  ["রসিদ নম্বর",d.receiptNo],["তারিখ",dateBN(r.collection_date)],["সময় (বাংলাদেশ)",storedTime(r.collection_time,r.created_at)],
+  ["কেন্দ্র",branchName(r.branch_id)],["কৃষক",f.name||"—"],["কৃষক কোড",f.farmer_code||"—"],["মোবাইল",f.mobile||f.phone||"—"],
+  ["দুধের পরিমাণ",d.liters+" L"],["ক্রয় দর",money(d.rate)+"/L"],["দুধের মোট মূল্য",money(d.amount)],
+  ["CLR",r.clr??"—"],["Fat / SNF",(r.fat_percent??"—")+"% / "+(r.snf_percent??"—")+"%"],
+  ["মানের অবস্থা",r.quality_status||"Pending"],["গ্রহণ নিশ্চিত",r.accepted===true?"হ্যাঁ":"না"],
+  ["সংগ্রহ পদ্ধতি",r.collection_method||"Manual"],["স্কেল স্লিপ",r.scale_ticket_no||"—"],["ব্যাচ ID",r.batch_id||"—"],["রেকর্ড ID",r.id]
+ ];
+ const popup=window.open("","_blank","width=760,height=760");
+ if(!popup){toast("পপ-আপ ব্লক হয়েছে। ব্রাউজারে পপ-আপ অনুমতি দিন।");return;}
+ popup.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milk Collection Receipt</title><style>body{font-family:system-ui,"Noto Sans Bengali",sans-serif;padding:24px;color:#17202a}h1,h2{text-align:center;margin:6px}p{text-align:center}.receipt{max-width:720px;margin:auto;border:1px solid #cbd5e1;padding:20px;border-radius:12px}table{width:100%;border-collapse:collapse;margin-top:18px}td{padding:9px;border-bottom:1px solid #e5e7eb}td:first-child{font-weight:700;width:42%}.note{font-size:12px;margin-top:18px}@media print{button{display:none}body{padding:0}.receipt{border:0}}</style></head><body><div class="receipt"><h1>'+esc(state.settings?.business_name||"মুহাইমিন ডেইরি")+'</h1><h2>দুধ সংগ্রহ রসিদ</h2><p>Milk Collection Receipt</p><table>'+rows.map(row=>'<tr><td>'+esc(row[0])+'</td><td>'+esc(row[1])+'</td></tr>').join("")+'</table><p class="note">এই রসিদ সংগ্রহের রেকর্ডের ভিত্তিতে তৈরি। মান যাচাই সম্পন্ন না হলে Accepted দুধ হিসেবে গণনা করবেন না।</p><p><button onclick="window.print()">প্রিন্ট / Save as PDF</button></p></div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');
+ popup.document.close();
+}
+async function shareCollectionReceipt(id){
+ const textValue=collectionReceiptText(id);
+ try{
+  if(navigator.share)await navigator.share({title:"মুহাইমিন ডেইরি — দুধ সংগ্রহ রসিদ",text:textValue});
+  else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(textValue);toast("রসিদের তথ্য কপি হয়েছে; WhatsApp-এ পেস্ট করুন।");}
+  else {const w=window.open("https://wa.me/?text="+encodeURIComponent(textValue),"_blank");if(!w)throw new Error("পপ-আপ ব্লক হয়েছে।");}
+ }catch(error){if(error?.name!=="AbortError")toast(error.message||"শেয়ার করা যায়নি।");}
+}
+function exportMilkCollectionsCsv(){
+ const rows=[["Receipt","Date","Time Bangladesh","Branch","Farmer","Farmer Code","Mobile","Liters","Rate","Milk Value","CLR","Fat %","SNF %","Quality","Accepted","Method","Scale Ticket","Batch ID","Record ID"]];
+ state.collections.forEach(r=>{
+  const f=state.farmers.find(x=>String(x.id)===String(r.farmer_id))||{};
+  rows.push(["MC-"+String(r.collection_date||"").replace(/[^0-9]/g,"")+"-"+String(r.id||"").slice(0,8).toUpperCase(),dateBN(r.collection_date),storedTime(r.collection_time,r.created_at),branchName(r.branch_id),f.name||"",f.farmer_code||"",f.mobile||f.phone||"",n(r.liters),n(r.purchase_rate),n(r.liters)*n(r.purchase_rate),r.clr??"",r.fat_percent??"",r.snf_percent??"",r.quality_status||"Pending",r.accepted===true?"Yes":"No",r.collection_method||"Manual",r.scale_ticket_no||"",r.batch_id||"",r.id]);
+ });
+ const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="muhaimin-milk-collections-"+today()+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ toast("CSV ফাইল তৈরি হয়েছে।");
 }
 function updateFarmerSelect(query="") {
   const branch=$("collectionBranch").value;
@@ -662,6 +731,17 @@ $("verifyOtpBtn").onclick=async()=>{
 $("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}catch(error){toast(error.message || String(error));}};
 bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes,country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null},$("branchForm")));
 bindForm("farmerForm",async f=>insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},$("farmerForm")));
+$("collectionSearch").addEventListener("input",()=>render());
+$("exportCollectionsCsv").addEventListener("click",exportMilkCollectionsCsv);
+$("collectionTable").addEventListener("click",event=>{
+ const button=event.target.closest("[data-collection-action]");
+ if(!button)return;
+ try{
+  const id=button.dataset.collectionId;
+  if(button.dataset.collectionAction==="print")printCollectionReceipt(id);
+  else if(button.dataset.collectionAction==="share")shareCollectionReceipt(id);
+ }catch(error){toast(error.message||String(error));}
+});
 $("collectionBranch").addEventListener("change",()=>updateFarmerSelect($("farmerScanInput")?.value||""));
 $("farmerScanInput").addEventListener("input",e=>updateFarmerSelect(e.target.value));
 $("collectionForm").addEventListener("input",()=>renderMilkSmartInsights());
