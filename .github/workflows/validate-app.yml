@@ -181,6 +181,24 @@ jobs:
           const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
           if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
 
+          // Keep the TEST execution runbook and read-only SQL preflight available and safety-scoped.
+          const runbookPath = 'docs/MILK_COLLECTION_V3_TEST_RUNBOOK.md';
+          const preflightPath = 'docs/MILK_COLLECTION_TEST_PREFLIGHT_SQL.md';
+          if (!fs.existsSync(runbookPath) || !fs.existsSync(preflightPath)) {
+            throw new Error('TEST runbook and SQL preflight documents must remain present.');
+          }
+          const runbook = fs.readFileSync(runbookPath, 'utf8');
+          const preflight = fs.readFileSync(preflightPath, 'utf8');
+          if (!/separate TEST Supabase project/i.test(runbook) ||
+              !/real-JWT/i.test(runbook) ||
+              !/Do not enable queue replay/i.test(runbook) ||
+              !/Read-only diagnostics/i.test(preflight) ||
+              !/production project ref/i.test(preflight) ||
+              !/pg_policies/i.test(preflight) ||
+              !/Do not enable production migration/i.test(preflight)) {
+            throw new Error('TEST runbook or SQL preflight is missing required environment, JWT/RLS, read-only, or release-gate safeguards.');
+          }
+
           // Validate the offline idempotency migration as source text only; never run SQL in CI.
           const migrationPath = 'supabase/migrations/20261023_milk_collection_idempotency.sql';
           if (!fs.existsSync(migrationPath)) throw new Error('Milk Collection idempotency migration is missing.');
