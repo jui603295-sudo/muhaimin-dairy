@@ -58,19 +58,21 @@ jobs:
           if (!networkCatch || !/offline_queue_enabled===false/.test(networkCatch[1]) || networkCatch[1].indexOf('offline_queue_enabled===false') > networkCatch[1].indexOf('queueMilkCollection(')) {
             throw new Error('Offline-disabled network failures must not be placed in the local queue.');
           }
-          if (!/MILK_QUEUE_REPLAY_ENABLED!==true/.test(networkCatch[1]) ||
-              networkCatch[1].indexOf('MILK_QUEUE_REPLAY_ENABLED!==true') > networkCatch[1].indexOf('queueMilkCollection(')) {
-            throw new Error('Unverified offline collections must not be queued when safe replay is disabled.');
-          }
-          // Do not replay queued collections until real-JWT RLS/idempotency tests pass in TEST Supabase.
           const queueSync = html.slice(html.indexOf('async function syncMilkCollectionQueue'));
-          if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html) ||
-              !/if\(MILK_QUEUE_REPLAY_ENABLED!==true\)/.test(queueSync) ||
-              queueSync.indexOf('MILK_QUEUE_REPLAY_ENABLED!==true') > queueSync.indexOf('sb.from("milk_collections").insert(item.payload)')) {
-            throw new Error('Offline queue replay must remain disabled until TEST RLS/idempotency verification.');
+          if (!/const MILK_QUEUE_REPLAY_ENABLED = true/.test(html) ||
+              !/await queueMilkCollection\(payload,collectorUserId,saved\.error\)/.test(networkCatch[1]) ||
+              !/if\(!navigator\.onLine\)return/.test(queueSync) ||
+              queueSync.indexOf('await milkQueueAction("getAll")') > queueSync.indexOf('if(!navigator.onLine)return')) {
+            throw new Error('Milk Collection must persist offline records locally and attempt sync when online.');
           }
-          if (!/নিরাপত্তা যাচাই বাকি/.test(html)) {
-            throw new Error('The UI must warn that offline queue auto-upload is not yet verified.');
+          if (!/function saveOfflineSnapshot\(userId\)/.test(html) ||
+              !/function restoreOfflineSnapshot\(userId\)/.test(html) ||
+              !/localStorage\.getItem\(OFFLINE_ADMIN_KEY\)===user\.id/.test(html)) {
+            throw new Error('Offline app access must be limited to the previously verified Main Admin on this device.');
+          }
+          if (!/id="offlineCacheEnabled"/.test(html) || !/id="saveOfflineSettings"/.test(html) ||
+              !/id="retryOfflineSync"/.test(html)) {
+            throw new Error('Settings must expose offline cache control and retry-sync actions.');
           }
 
           // Verify the saved Milk Collection settings affect the visible and validation paths.
@@ -107,6 +109,12 @@ jobs:
 
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
+          if (!/const CACHE_NAME = "muhaimin-v4"/.test(sw) ||
+              !/const SUPABASE_JS = "https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/.test(sw) ||
+              !/cache\.add\(SUPABASE_JS\)/.test(sw) ||
+              !/url\.href === SUPABASE_JS/.test(sw)) {
+            throw new Error('PWA service worker must cache the Supabase client needed for offline app startup.');
+          }
           const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
           if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
           const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
