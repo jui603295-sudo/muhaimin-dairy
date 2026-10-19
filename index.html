@@ -1411,6 +1411,19 @@ async function startApp() {
   $("app").classList.remove("hidden");
   try { await loadAll(); await syncMilkCollectionQueue(); }
   catch(error) {
+    const currentSession=await sb.auth.getSession().catch(()=>null);
+    const currentUserId=currentSession?.data?.session?.user?.id;
+    if(currentUserId && localStorage.getItem(OFFLINE_ADMIN_KEY)===currentUserId &&
+       ( !navigator.onLine || isMilkNetworkError(error) ) && restoreOfflineSnapshot(currentUserId)){
+      $("app").classList.remove("hidden");
+      $("login").classList.add("hidden");
+      $("accessGate").classList.add("hidden");
+      const pending=await milkQueueAction("getAll").catch(()=>[]);
+      updateMilkQueueStatus(pending.length);
+      setOfflineModeStatus("নেটওয়ার্ক/ডেটাবেস অনুপলব্ধ: শেষ ক্যাশে থেকে অ্যাপ চালু হয়েছে।");
+      console.warn("Using previously cached offline data:",error);
+      return;
+    }
     $("app").classList.add("hidden");
     $("accessGate").classList.remove("hidden");
     $("accessGateTitle").textContent=lang()==="en"?"Database unavailable":"ডেটাবেসে প্রবেশ করা যাচ্ছে না";
