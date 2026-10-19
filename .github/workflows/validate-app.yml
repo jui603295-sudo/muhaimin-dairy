@@ -74,6 +74,12 @@ jobs:
               !/id="retryOfflineSync"/.test(html)) {
             throw new Error('Settings must expose offline cache control and retry-sync actions.');
           }
+          const offlineSettingsHandler = html.slice(html.indexOf('$("saveOfflineSettings").addEventListener'));
+          if (!/window\.confirm\("অফলাইন ক্যাশে বন্ধ করলে/.test(offlineSettingsHandler) ||
+              !/if\(!confirmed\)[\s\S]*?return;/.test(offlineSettingsHandler) ||
+              !/অপেক্ষমাণ Milk Collection সারি আলাদা আছে/.test(offlineSettingsHandler)) {
+            throw new Error('Disabling offline cache must require confirmation, preserve the pending queue, and support cancellation.');
+          }
 
           // Pending queue backup must be explicit, local-only, and scoped to the current authenticated user.
           if (!/id="exportPendingMilkQueue"/.test(html) ||
