@@ -58,6 +58,16 @@ jobs:
           if (!networkCatch || !/offline_queue_enabled===false/.test(networkCatch[1]) || networkCatch[1].indexOf('offline_queue_enabled===false') > networkCatch[1].indexOf('queueMilkCollection(')) {
             throw new Error('Offline-disabled network failures must not be placed in the local queue.');
           }
+          // Do not replay queued collections until real-JWT RLS/idempotency tests pass in TEST Supabase.
+          const queueSync = html.slice(html.indexOf('async function syncMilkCollectionQueue'));
+          if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html) ||
+              !/if\(MILK_QUEUE_REPLAY_ENABLED!==true\)/.test(queueSync) ||
+              queueSync.indexOf('MILK_QUEUE_REPLAY_ENABLED!==true') > queueSync.indexOf('sb.from("milk_collections").insert(item.payload)')) {
+            throw new Error('Offline queue replay must remain disabled until TEST RLS/idempotency verification.');
+          }
+          if (!/নিরাপত্তা যাচাই বাকি/.test(html)) {
+            throw new Error('The UI must warn that offline queue auto-upload is not yet verified.');
+          }
 
           // Verify the saved Milk Collection settings affect the visible and validation paths.
           const settingsRenderer = html.slice(html.indexOf('function renderMilkCollectionSettings'));
