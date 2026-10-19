@@ -1373,10 +1373,18 @@ bindForm("milkCollectionSettingsForm",async f=>{
 $("offlineCacheEnabled").checked=offlineCacheEnabled();
 $("saveOfflineSettings").addEventListener("click",()=>{
  const enabled=$("offlineCacheEnabled").checked;
+ if(!enabled){
+  const confirmed=window.confirm("অফলাইন ক্যাশে বন্ধ করলে এই ফোনে আগে সংরক্ষিত ব্যবসার তথ্য মুছে যাবে। অপেক্ষমাণ দুধ সংগ্রহের সারি আলাদা থাকবে। আপনি কি এগোতে চান?");
+  if(!confirmed){
+   $("offlineCacheEnabled").checked=offlineCacheEnabled();
+   setOfflineModeStatus("ক্যাশে বন্ধ করার কাজ বাতিল হয়েছে; সংরক্ষিত তথ্য অপরিবর্তিত আছে।");
+   return;
+  }
+ }
  localStorage.setItem(OFFLINE_ENABLED_KEY,enabled?"true":"false");
  if(!enabled){
   const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);if(userId)localStorage.removeItem(OFFLINE_CACHE_PREFIX+userId);
-  setOfflineModeStatus("অফলাইন ক্যাশে বন্ধ। ইন্টারনেট ছাড়া ব্যবসার তথ্য খোলা যাবে না।");
+  setOfflineModeStatus("অফলাইন ক্যাশে বন্ধ এবং এই ফোনের সংরক্ষিত ব্যবসার তথ্য মুছে ফেলা হয়েছে। অপেক্ষমাণ Milk Collection সারি আলাদা আছে; তা স্বয়ংক্রিয়ভাবে পাঠানো হয়নি।");
  }else{
   setOfflineModeStatus(offlineSnapshotForUser(localStorage.getItem(OFFLINE_ADMIN_KEY)||"")
    ?"অফলাইন ক্যাশে চালু; শেষ সংরক্ষিত তথ্য ব্যবহার করা যাবে।"
