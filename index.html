@@ -1037,14 +1037,16 @@ function isMilkNetworkError(error){
 async function queueMilkCollection(payload,userId,error){
  await milkQueueAction("put",{id:payload.client_record_id,user_id:userId,payload,queued_at:new Date().toISOString(),last_error:String(error?.message||error||"network unavailable")});
  const all=await milkQueueAction("getAll");
- updateMilkQueueStatus(all.length);
+ updateMilkQueueStatus(all.filter(item=>item.user_id===userId).length);
 }
 // Safety gate: keep queued records local until TEST verifies the unique index and real-JWT RLS.
 const MILK_QUEUE_REPLAY_ENABLED = false;
 async function syncMilkCollectionQueue(){
  if(MILK_QUEUE_REPLAY_ENABLED!==true){
+  const sessionResult=await sb.auth.getSession();
+  const user=sessionResult.data?.session?.user;
   const pending=await milkQueueAction("getAll");
-  updateMilkQueueStatus(pending.length);
+  updateMilkQueueStatus(user?pending.filter(item=>item.user_id===user.id).length:0);
   return;
  }
  if(state.milkCollectionSettings?.offline_queue_enabled===false)return;
@@ -1070,8 +1072,8 @@ async function syncMilkCollectionQueue(){
    if(isMilkNetworkError(result.error))break;
   }
   const remaining=await milkQueueAction("getAll");
-  updateMilkQueueStatus(remaining.length);
-  if(mine.length&&remaining.length<all.length){
+  updateMilkQueueStatus(remaining.filter(item=>item.user_id===user.id).length);
+  if(mine.length&&remaining.filter(item=>item.user_id===user.id).length<mine.length){
    toast("অপেক্ষমাণ দুধ সংগ্রহ সারির কিছু রেকর্ড Supabase-এ পাঠানো হয়েছে।");
    try{await loadAll();}catch(refreshError){console.warn("Synced records but could not refresh online cache:",refreshError);}
   }
