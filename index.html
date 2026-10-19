@@ -1094,7 +1094,7 @@ async function exportPendingMilkQueue(){
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
   toast(mine.length+"টি অপেক্ষমাণ রেকর্ডের স্থানীয় ব্যাকআপ তৈরি করা হয়েছে।");
  }catch(error){
   toast("ব্যাকআপ তৈরি হয়নি: "+(error?.message||String(error)));
