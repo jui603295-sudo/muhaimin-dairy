@@ -1,6 +1,6 @@
 # Muhaimin Projects — Master Checklist
 
-Version: 1.2. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
+Version: 1.3. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
 
 ## A. Governance and non-disruptive development
 - [ ] GOV-01 Inventory earlier requirements and current implementation.
@@ -84,12 +84,25 @@ Version: 1.2. This checklist is the single source of truth. An unchecked item is
 - [ ] RELEASE-08 Actual deployment and live smoke test are verified and release version recorded.
 - [ ] RELEASE-09 New development can continue on isolated branches without changing the released version.
 
+## G. Configurable community-service and national-development messages — every app
+- [ ] SLOGAN-01 Authorized administrators can configure message text and language.
+- [ ] SLOGAN-02 Placement, visibility and active period can be configured.
+- [ ] SLOGAN-03 Messages are appropriate, readable on mobile and do not disrupt critical tasks.
+- [ ] SLOGAN-04 Approval ownership, permissions and change history are documented.
+- [ ] SLOGAN-05 Messages do not falsely imply official endorsement or affiliation.
+- [ ] SLOGAN-06 Standalone app messages work without an ecosystem connector.
+- [ ] SLOGAN-07 Edit, publish, hide, language and role tests pass.
+
 ## Current ledger
 | ID | Requirement | Status | Next evidence needed |
 |---|---|---|---|
 | BASE-01 | Consolidate previous requirements against current code | IN PROGRESS | Verified gap inventory |
 | OFF-01 | Offline cache/startup | IN PROGRESS | Privacy, quota, role and device tests |
-| OFF-02 | Milk collection queue/sync | IN PROGRESS | TEST JWT/RLS and idempotent replay tests |
+| OFF-02 | Milk collection queue/sync | IN PROGRESS | Replay intentionally disabled; TEST JWT/RLS, unique index and idempotent replay tests |
+| MILK-UI-01 | Milk collection settings labels accurately describe implemented features | CODE COMPLETE | Static workflow and browser/device acceptance tests |
+| MILK-OFF-01 | Prevent unverified queued writes from replaying to Supabase | CODE COMPLETE | Replay disabled on feature branch; TEST security/idempotency gate still required |
+| MILK-PHOTO-01 | Actual sample photo upload/storage | PLANNED | Choose TEST storage bucket, size/type limits, access policy and retention |
+| MILK-SCALE-01 | Physical scale integration | PLANNED | Identify device/protocol and test hardware; current toggle is configuration only |
 | SEC-01 | Main Admin/restricted-role security | IN PROGRESS | PR #13 remains unmerged; test real JWT/RLS |
 | ECO-01 | Ecosystem portability | IN PROGRESS | Apply checklist and test extraction per app |
 | RELIAB-01 | Backup, restore and server resilience | PLANNED | Define per-app targets, providers and tested recovery |
