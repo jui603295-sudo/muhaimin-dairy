@@ -121,6 +121,26 @@ jobs:
           const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
           if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
 
+          // Validate the offline idempotency migration as source text only; never run SQL in CI.
+          const migrationPath = 'supabase/migrations/20261023_milk_collection_idempotency.sql';
+          if (!fs.existsSync(migrationPath)) throw new Error('Milk Collection idempotency migration is missing.');
+          const migration = fs.readFileSync(migrationPath, 'utf8');
+          if (!/TEST project only/i.test(migration) ||
+              !/begin\s*;/i.test(migration) || !/commit\s*;/i.test(migration) ||
+              !/add column if not exists client_record_id uuid/i.test(migration) ||
+              !/create unique index if not exists milk_collections_client_record_id_uidx/i.test(migration) ||
+              !/where client_record_id is not null/i.test(migration) ||
+              !/real-JWT RLS tests pass/i.test(migration)) {
+            throw new Error('Milk Collection migration is missing its TEST-only, transaction, idempotency-index, or RLS safety requirements.');
+          }
+          if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html)) {
+            throw new Error('Offline replay must remain disabled until separate TEST acceptance passes.');
+          }
+          const samplePhotoLabel = html.match(/name="sample_photo_required"[^>]*>\s*([^<]+)/);
+          if (!/ফাইল আপলোড এখনো নেই/.test(html)) {
+            throw new Error('Milk Collection must disclose that sample photo file upload is not implemented yet.');
+          }
+
           console.log(JSON.stringify({
             inlineScriptsParsed: checkedScripts,
             htmlIds: ids.length,
