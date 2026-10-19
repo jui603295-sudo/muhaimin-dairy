@@ -975,7 +975,14 @@ async function milkQueueAction(mode,item){
 }
 function updateMilkQueueStatus(count){
  const el=$("milkQueueStatus");
- if(el)el.textContent=count
+ if(!el)return;
+ if(MILK_QUEUE_REPLAY_ENABLED!==true){
+  el.textContent=count
+   ?"নিরাপত্তা যাচাই বাকি: "+count+"টি অফলাইন রেকর্ড স্থানীয়ভাবে অপেক্ষমাণ; স্বয়ংক্রিয় আপলোড বন্ধ আছে।"
+   :"নিরাপত্তা যাচাই বাকি: স্বয়ংক্রিয় অফলাইন আপলোড বন্ধ আছে।";
+  return;
+ }
+ el.textContent=count
   ?"অফলাইন/পুনঃচেষ্টার অপেক্ষায় "+count+"টি দুধ সংগ্রহ আছে। সংযোগ ফিরলে একই রেকর্ড আইডি দিয়ে পাঠানো হবে।"
   :"অফলাইন সংগ্রহ সারি খালি।";
 }
@@ -987,7 +994,14 @@ async function queueMilkCollection(payload,userId,error){
  const all=await milkQueueAction("getAll");
  updateMilkQueueStatus(all.length);
 }
+// Keep automatic replay disabled until real-JWT RLS and idempotency tests pass in a separate TEST Supabase project.
+const MILK_QUEUE_REPLAY_ENABLED = false;
 async function syncMilkCollectionQueue(){
+ if(MILK_QUEUE_REPLAY_ENABLED!==true){
+  const el=$("milkQueueStatus");
+  if(el)el.textContent="নিরাপত্তা যাচাই বাকি: অপেক্ষমাণ অফলাইন রেকর্ড স্বয়ংক্রিয়ভাবে পাঠানো আপাতত বন্ধ।";
+  return;
+ }
  if(state.milkCollectionSettings?.offline_queue_enabled===false)return;
  if(!navigator.onLine)return;
  try{
