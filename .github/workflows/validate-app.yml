@@ -58,6 +58,10 @@ jobs:
           if (!networkCatch || !/offline_queue_enabled===false/.test(networkCatch[1]) || networkCatch[1].indexOf('offline_queue_enabled===false') > networkCatch[1].indexOf('queueMilkCollection(')) {
             throw new Error('Offline-disabled network failures must not be placed in the local queue.');
           }
+          if (!/MILK_QUEUE_REPLAY_ENABLED!==true/.test(networkCatch[1]) ||
+              networkCatch[1].indexOf('MILK_QUEUE_REPLAY_ENABLED!==true') > networkCatch[1].indexOf('queueMilkCollection(')) {
+            throw new Error('Unverified offline collections must not be queued when safe replay is disabled.');
+          }
           // Do not replay queued collections until real-JWT RLS/idempotency tests pass in TEST Supabase.
           const queueSync = html.slice(html.indexOf('async function syncMilkCollectionQueue'));
           if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html) ||
