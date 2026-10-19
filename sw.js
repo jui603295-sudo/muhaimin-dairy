@@ -1,5 +1,5 @@
-const CACHE_NAME = "muhaimin-v2";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png"];
+const CACHE_NAME = "muhaimin-v3";
+const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png", "./assets/milk-collection-3d.svg"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
