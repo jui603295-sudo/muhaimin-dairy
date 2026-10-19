@@ -78,6 +78,7 @@ as $function$
 declare
   v_old jsonb;
   v_new jsonb;
+  v_revision bigint;
 begin
   if auth.uid() is null or not public.has_app_role('main_admin') then
     raise exception 'Main Admin role required to change Milk Collection settings'
@@ -132,13 +133,13 @@ begin
         revision = public.milk_collection_settings.revision + 1,
         updated_by = auth.uid(),
         updated_at = now()
-  returning settings into v_new;
+  returning settings, revision into v_new, v_revision;
 
   insert into public.milk_collection_settings_audit
     (setting_key, previous_settings, new_settings, changed_by)
   values ('default', v_old, v_new, auth.uid());
 
-  return v_new;
+  return jsonb_build_object('settings', v_new, 'schema_version', 1, 'revision', v_revision);
 end;
 $function$;
 
