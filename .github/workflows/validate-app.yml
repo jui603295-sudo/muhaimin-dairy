@@ -59,11 +59,11 @@ jobs:
             throw new Error('Offline-disabled network failures must not be placed in the local queue.');
           }
           const queueSync = html.slice(html.indexOf('async function syncMilkCollectionQueue'));
-          if (!/const MILK_QUEUE_REPLAY_ENABLED = true/.test(html) ||
+          if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html) ||
               !/await queueMilkCollection\(payload,collectorUserId,saved\.error\)/.test(networkCatch[1]) ||
-              !/if\(!navigator\.onLine\)return/.test(queueSync) ||
-              queueSync.indexOf('await milkQueueAction("getAll")') > queueSync.indexOf('if(!navigator.onLine)return')) {
-            throw new Error('Milk Collection must persist offline records locally and attempt sync when online.');
+              !/if\(MILK_QUEUE_REPLAY_ENABLED!==true\)/.test(queueSync) ||
+              queueSync.indexOf('if(MILK_QUEUE_REPLAY_ENABLED!==true)') > queueSync.indexOf('await sb\.from\("milk_collections"\)\.insert\(item\.payload\)')) {
+            throw new Error('Milk Collection queue must retain local records but block replay until TEST JWT/RLS and idempotency verification.');
           }
           if (!/function saveOfflineSnapshot\(userId\)/.test(html) ||
               !/function restoreOfflineSnapshot\(userId\)/.test(html) ||
