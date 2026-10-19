@@ -199,6 +199,21 @@ jobs:
             throw new Error('TEST runbook or SQL preflight is missing required environment, JWT/RLS, read-only, or release-gate safeguards.');
           }
 
+          // Keep a sanitized TEST evidence template so real-JWT/RLS work has an auditable record.
+          const evidencePath = 'docs/MILK_COLLECTION_TEST_EVIDENCE_TEMPLATE.md';
+          if (!fs.existsSync(evidencePath)) {
+            throw new Error('Milk Collection TEST evidence template is missing.');
+          }
+          const evidence = fs.readFileSync(evidencePath, 'utf8');
+          if (!/Real-JWT role authorization matrix/i.test(evidence) ||
+              !/Idempotency checks/i.test(evidence) ||
+              !/Offline backup validation checks/i.test(evidence) ||
+              !/NOT RUN/i.test(evidence) ||
+              !/Never include passwords, JWTs, service-role keys/i.test(evidence) ||
+              !/UI-hidden button is not proof of server-side authorization/i.test(evidence)) {
+            throw new Error('TEST evidence template is missing role, idempotency, backup, no-secrets, or server-side authorization safeguards.');
+          }
+
           // Validate the offline idempotency migration as source text only; never run SQL in CI.
           const migrationPath = 'supabase/migrations/20261023_milk_collection_idempotency.sql';
           if (!fs.existsSync(migrationPath)) throw new Error('Milk Collection idempotency migration is missing.');
