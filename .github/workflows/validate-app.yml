@@ -48,6 +48,17 @@ jobs:
           const missingForms = forms.filter(id => !boundForms.includes(id) && !new RegExp('\\$\\(["\\x27]' + id + '["\\x27]\\)\\.addEventListener\\(["\\x27]submit').test(inlineCode));
           if (missingForms.length) throw new Error('Forms without a submit handler: ' + missingForms.join(', '));
 
+          // Guard offline queue behavior with the persisted Milk Collection setting.
+          const syncFn = html.match(/async function syncMilkCollectionQueue\\(\\)\\{([\\s\\S]*?)\\n\\}/);
+          if (!syncFn || !/state\\.milkCollectionSettings\\?\.offline_queue_enabled===false/.test(syncFn[1])) {
+            throw new Error('Offline queue sync must stop when offline_queue_enabled is false.');
+          }
+          const collectionHandler = html.slice(html.indexOf('bindForm("collectionForm"'));
+          const networkCatch = collectionHandler.match(/if\\(isMilkNetworkError\\(saved\\.error\\)\\)\\{([\\s\\S]*?)\\n  \\}/);
+          if (!networkCatch || !/offline_queue_enabled===false/.test(networkCatch[1]) || networkCatch[1].indexOf('offline_queue_enabled===false') > networkCatch[1].indexOf('queueMilkCollection(')) {
+            throw new Error('Offline-disabled network failures must not be placed in the local queue.');
+          }
+
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
           const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
