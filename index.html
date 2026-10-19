@@ -1257,8 +1257,8 @@ bindForm("milkCollectionSettingsForm",async f=>{
  };
  const result=await sb.rpc("save_milk_collection_settings",{p_settings:settings});
  if(result.error)throw result.error;
- if(!result.data||typeof result.data!=="object"||Array.isArray(result.data))throw new Error("Supabase থেকে সংরক্ষিত সেটিংস নিশ্চিত করা যায়নি।");
- state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS,...result.data};
+ if(!result.data||typeof result.data!=="object"||Array.isArray(result.data)||!result.data.settings||typeof result.data.settings!=="object")throw new Error("Supabase থেকে সংরক্ষিত সেটিংস নিশ্চিত করা যায়নি।");
+ state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS,...result.data.settings};
  logActivity("Update Milk Collection future main settings");
  $("milkCollectionSettingsStatus").textContent="সেটিংস সংরক্ষিত · Revision "+(result.data.revision??"updated")+" · অজানা ভবিষ্যৎ key অক্ষত রাখা হয়েছে।";
  toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
