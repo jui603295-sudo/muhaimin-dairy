@@ -1,6 +1,6 @@
 # Muhaimin Projects — Master Checklist
 
-Version: 1.3. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
+Version: 1.4. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
 
 ## A. Governance and non-disruptive development
 - [ ] GOV-01 Inventory earlier requirements and current implementation.
@@ -100,6 +100,7 @@ Version: 1.3. This checklist is the single source of truth. An unchecked item is
 | OFF-01 | Offline cache/startup | IN PROGRESS | Privacy, quota, role and device tests |
 | OFF-02 | Milk collection queue/sync | IN PROGRESS | Replay intentionally disabled; TEST JWT/RLS, unique index and idempotent replay tests |
 | MILK-UI-01 | Milk collection settings labels accurately describe implemented features | CODE COMPLETE | Static workflow and browser/device acceptance tests |
+| MILK-CI-01 | Static CI guard for TEST-only idempotency migration and replay safety | CODE COMPLETE | Validate Muhaimin Dairy run #101 passed (commit `31fe05898a86aae7d78540767f41fe347fc05ee5`); SQL/RLS not executed |
 | MILK-OFF-01 | Prevent unverified queued writes from replaying to Supabase | CODE COMPLETE | Replay disabled on feature branch; TEST security/idempotency gate still required |
 | MILK-PHOTO-01 | Actual sample photo upload/storage | PLANNED | Choose TEST storage bucket, size/type limits, access policy and retention |
 | MILK-SCALE-01 | Physical scale integration | PLANNED | Identify device/protocol and test hardware; current toggle is configuration only |
