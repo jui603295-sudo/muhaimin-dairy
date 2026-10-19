@@ -93,6 +93,14 @@ jobs:
             throw new Error('Pending queue backup must download local records without writing them to Supabase.');
           }
 
+          // Operational tables are not part of the local offline snapshot; disclose this rather than implying cached data.
+          const operationalLoader = html.slice(html.indexOf('async function loadOperationalRecords'));
+          if (!/if\(!navigator\.onLine\)/.test(operationalLoader) ||
+              !/এই অপারেশনাল টেবিলের তথ্য দেখানো যাচ্ছে না/.test(operationalLoader) ||
+              !/ফোনে ক্যাশ করা নেই/.test(operationalLoader)) {
+            throw new Error('Offline operational views must disclose that their records are not cached.');
+          }
+
           // Verify the saved Milk Collection settings affect the visible and validation paths.
           const settingsRenderer = html.slice(html.indexOf('function renderMilkCollectionSettings'));
           if (!/farmerScanInput\"\)\.disabled=!scannerEnabled/.test(settingsRenderer) || !/startFarmerCamera\"\)\.hidden=!scannerEnabled/.test(settingsRenderer)) {
