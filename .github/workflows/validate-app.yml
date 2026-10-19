@@ -102,6 +102,11 @@ jobs:
             throw new Error('Offline operational views must disclose that their records are not cached.');
           }
 
+          // When connectivity returns while an operational view is open, refresh those online-only tables.
+          if (!/window\.addEventListener\("online",\(\)=>\{[\s\S]*?\["operations","chiller","loss","finance"\]\.some\(id=>\$\(id\)\?\.classList\.contains\("active"\)\)\)loadOperationalRecords\(\)/.test(html)) {
+            throw new Error('Operational tables must refresh after connectivity returns when an operational view is active.');
+          }
+
           // Verify the saved Milk Collection settings affect the visible and validation paths.
           const settingsRenderer = html.slice(html.indexOf('function renderMilkCollectionSettings'));
           if (!/farmerScanInput\"\)\.disabled=!scannerEnabled/.test(settingsRenderer) || !/startFarmerCamera\"\)\.hidden=!scannerEnabled/.test(settingsRenderer)) {
