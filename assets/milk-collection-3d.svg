@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Milk collection">
+  <defs>
+    <linearGradient id="bg" x1="12" y1="8" x2="82" y2="90" gradientUnits="userSpaceOnUse"><stop stop-color="#e9fffb"/><stop offset=".55" stop-color="#bcebe3"/><stop offset="1" stop-color="#7bc9bc"/></linearGradient>
+    <linearGradient id="steel" x1="30" y1="28" x2="66" y2="76" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".22" stop-color="#dce7eb"/><stop offset=".48" stop-color="#fff"/><stop offset=".72" stop-color="#9eb2ba"/><stop offset="1" stop-color="#f7fbfc"/></linearGradient>
+    <linearGradient id="milk" x1="37" y1="15" x2="61" y2="52" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".6" stop-color="#f6ffff"/><stop offset="1" stop-color="#c8f3ef"/></linearGradient>
+    <linearGradient id="teal" x1="20" y1="18" x2="75" y2="78" gradientUnits="userSpaceOnUse"><stop stop-color="#2dd4bf"/><stop offset=".48" stop-color="#0f9488"/><stop offset="1" stop-color="#115e59"/></linearGradient>
+    <filter id="shadow" x="5" y="5" width="86" height="90" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#064e49" flood-opacity=".25"/></filter>
+  </defs>
+  <circle cx="48" cy="48" r="44" fill="url(#bg)"/>
+  <circle cx="48" cy="48" r="41" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1.5"/>
+  <g filter="url(#shadow)">
+    <path d="M20 58c-3-14 7-27 20-31 10-3 21 0 29 7" fill="none" stroke="url(#teal)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M69 27l3 9-10-1" fill="none" stroke="#0f766e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 41h40l-4 34c-.4 4-3.5 7-7.5 7h-17c-4 0-7.1-3-7.5-7z" fill="url(#steel)" stroke="#8da6ad" stroke-width="1.2"/>
+    <path d="M31 42h34l-1.2 8H32.2z" fill="#b8cbd0" opacity=".8"/>
+    <path d="M34 39v-5c0-2.8 2.2-5 5-5h18c2.8 0 5 2.2 5 5v5" fill="none" stroke="#f8ffff" stroke-width="5" stroke-linecap="round"/>
+    <path d="M37 53h22v19c0 3-2 5-5 5H42c-3 0-5-2-5-5z" fill="#0f766e" opacity=".95"/>
+    <path d="M40 58h16M40 63h16M40 68h11" stroke="#d8fffa" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/>
+    <path d="M47 10c-5 8-11 14-11 21a12 12 0 0 0 24 0c0-7-7-15-13-21z" fill="url(#milk)" stroke="#fff" stroke-width="1.5"/>
+    <path d="M42 29c1-3 3-5 5-7" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M23 68c-2-3-2-7 1-10 4 3 6 6 5 10a4 4 0 0 1-6 0z" fill="#fff" opacity=".95"/>
+    <circle cx="70" cy="61" r="3" fill="#fff" opacity=".9"/>
+  </g>
+  <path d="M17 49a31 31 0 0 0 8 25" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+</svg>
