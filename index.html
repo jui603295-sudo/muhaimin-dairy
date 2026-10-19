@@ -78,7 +78,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 </section>
 <section id="branches" class="page"><div class="card"><h3 data-i18n="branchList">🏢 সংগ্রহ কেন্দ্র</h3><div class="tablewrap" id="branchTable"></div></div><div class="card"><h3 data-i18n="newBranch">➕ নতুন কেন্দ্র</h3><form id="branchForm"><div class="row"><div><label>Code<input name="code" placeholder="B006" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="branch_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="branch_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="branch_district" list="branch_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="branch_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="branch_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="branch_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="branch_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="dailyTargetLiters">দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label data-i18n="statusLabel">অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><div class="row"><button class="btn" type="button" id="saveCollectionDraft">📝 ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="restoreCollectionDraft">↩️ ড্রাফট ফিরিয়ে আনুন</button><button class="btn" type="button" id="clearCollectionDraft">🗑️ ড্রাফট মুছুন</button></div><p class="small">ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।</p><button class="btn primary" data-i18n="save">সংরক্ষণ</button></form></div></section>
 <section id="farmers" class="page"><div class="card"><h3 data-i18n="addFarmer">👨‍🌾 কৃষক যোগ করুন</h3><form id="farmerForm"><div class="row"><div><label>Farmer Code<input name="farmer_code" placeholder="F00001" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><div class="row"><div><label data-i18n="mobileLabel">মোবাইল<input name="mobile" required type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></label></div><div><label>পুরোনো ঠিকানা / অতিরিক্ত ঠিকানা<input name="village" placeholder="ঐচ্ছিক"></label></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="farmer_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="farmer_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="farmer_district" list="farmer_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="farmer_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="farmer_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="farmer_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="farmer_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="farmerBranch" required></select></label></div><div><label data-i18n="expectedMilk">আনুমানিক L/day<input name="expected_liters" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveFarmer">কৃষক সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="farmerList">📋 কৃষক তালিকা</h3><div class="tablewrap" id="farmerTable"></div></div></section>
-<section id="collection" class="page"><div class="card"><h3 data-i18n="milkCollection">🥛 দৈনিক দুধ সংগ্রহ</h3><div id="milkSmartInsights" class="statgrid" aria-live="polite"><p class="small">সংগ্রহের স্মার্ট বিশ্লেষণ প্রস্তুত হচ্ছে…</p></div><form id="collectionForm"><input type="hidden" name="client_record_id" value=""><label data-i18n="dateLabel">তারিখ<input name="collection_date" id="cdate" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" required></label><label>সময় / Time<input name="collection_time" id="ctime" type="time" step="1" required></label><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="collectionBranch" required></select></label></div><div><label>কৃষক QR / বারকোড / মোবাইল স্ক্যান বা লিখুন<input id="farmerScanInput" type="text" inputmode="text" autocomplete="off" placeholder="Farmer Code / 01XXXXXXXXX"><small id="farmerScanStatus" class="small">স্ক্যানার ইনপুট বা কৃষক কোড লিখলে কৃষক নির্বাচন হবে।</small><div class="row"><button type="button" class="btn" id="startFarmerCamera">📷 ক্যামেরা দিয়ে QR স্ক্যান</button><button type="button" class="btn" id="stopFarmerCamera" disabled>স্ক্যান বন্ধ</button></div><video id="farmerCameraVideo" class="hidden" playsinline muted style="width:100%;max-height:240px;object-fit:cover;border-radius:10px;margin-top:8px"></video><small id="farmerCameraStatus" class="small">ক্যামেরা স্ক্যানের জন্য ব্রাউজার সাপোর্ট ও ক্যামেরা অনুমতি দরকার; USB/Bluetooth স্ক্যানারও ব্যবহার করা যাবে।</small></label><label data-i18n="farmerLabel">কৃষক<select name="farmer_id" id="collectionFarmer" required></select></label></div></div><div class="row"><div><label data-i18n="litersLabel">লিটার<input name="liters" type="number" step=".01" min="0" required></label></div><div><label>CLR<input name="clr" type="number" step=".1" value="28"></label></div></div><div class="row"><div><label data-i18n="purchaseRate">ক্রয় মূল্য/L<input name="purchase_rate" type="number" step=".01" value="50"></label></div><div><label>গ্রহণ নিশ্চিতকরণ / Accept Confirmation<select name="accepted" required><option value="true">হ্যাঁ / Yes</option><option value="false" selected>না / No</option></select></label></div></div>
+<section id="collection" class="page"><div class="card"><h3 data-i18n="milkCollection">🥛 দৈনিক দুধ সংগ্রহ</h3><div id="milkSmartInsights" class="statgrid" aria-live="polite"><p class="small">সংগ্রহের স্মার্ট বিশ্লেষণ প্রস্তুত হচ্ছে…</p></div><p id="milkQueueStatus" class="small" aria-live="polite">অফলাইন সংগ্রহ সারি: যাচাই হচ্ছে…</p><form id="collectionForm"><input type="hidden" name="client_record_id" value=""><label data-i18n="dateLabel">তারিখ<input name="collection_date" id="cdate" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" required></label><label>সময় / Time<input name="collection_time" id="ctime" type="time" step="1" required></label><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="collectionBranch" required></select></label></div><div><label>কৃষক QR / বারকোড / মোবাইল স্ক্যান বা লিখুন<input id="farmerScanInput" type="text" inputmode="text" autocomplete="off" placeholder="Farmer Code / 01XXXXXXXXX"><small id="farmerScanStatus" class="small">স্ক্যানার ইনপুট বা কৃষক কোড লিখলে কৃষক নির্বাচন হবে।</small><div class="row"><button type="button" class="btn" id="startFarmerCamera">📷 ক্যামেরা দিয়ে QR স্ক্যান</button><button type="button" class="btn" id="stopFarmerCamera" disabled>স্ক্যান বন্ধ</button></div><video id="farmerCameraVideo" class="hidden" playsinline muted style="width:100%;max-height:240px;object-fit:cover;border-radius:10px;margin-top:8px"></video><small id="farmerCameraStatus" class="small">ক্যামেরা স্ক্যানের জন্য ব্রাউজার সাপোর্ট ও ক্যামেরা অনুমতি দরকার; USB/Bluetooth স্ক্যানারও ব্যবহার করা যাবে।</small></label><label data-i18n="farmerLabel">কৃষক<select name="farmer_id" id="collectionFarmer" required></select></label></div></div><div class="row"><div><label data-i18n="litersLabel">লিটার<input name="liters" type="number" step=".01" min="0" required></label></div><div><label>CLR<input name="clr" type="number" step=".1" value="28"></label></div></div><div class="row"><div><label data-i18n="purchaseRate">ক্রয় মূল্য/L<input name="purchase_rate" type="number" step=".01" value="50"></label></div><div><label>গ্রহণ নিশ্চিতকরণ / Accept Confirmation<select name="accepted" required><option value="true">হ্যাঁ / Yes</option><option value="false" selected>না / No</option></select></label></div></div>
 <div class="row"><div><label>ব্যাচ ID / Batch ID<input name="batch_id"></label></div><div><label>দুধের তাপমাত্রা °C<input name="milk_temperature_c" type="number" step=".1" min="0"></label></div></div>
 <div class="row"><div><label>সংগ্রহ পদ্ধতি / Method<select name="collection_method" required><option value="Manual">ম্যানুয়াল</option><option value="Weighing Scale">ডিজিটাল ওজন মেশিন</option><option value="Flow Meter">ফ্লো মিটার</option></select></label></div><div><label>স্কেল স্লিপ / Ticket No<input name="scale_ticket_no" placeholder="ঐচ্ছিক স্লিপ নম্বর"></label></div></div>
 <div class="row"><div><label>ক্যান সংখ্যা<input name="can_count" type="number" min="0" step="1" value="0"></label></div><div><label>গন্ধ পরীক্ষা<select name="smell_check" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Normal">স্বাভাবিক</option><option value="Abnormal">অস্বাভাবিক</option></select></label></div></div>
@@ -877,6 +877,74 @@ bindForm("qualityReviewForm",async f=>{
  $("qualityReviewForm").reset();
  await loadAll();
 });
+function openMilkQueueDb(){
+ return new Promise((resolve,reject)=>{
+  if(!("indexedDB" in globalThis)){reject(new Error("এই ব্রাউজারে IndexedDB নেই; অফলাইন সংগ্রহ সারি ব্যবহার করা যাবে না।"));return;}
+  const request=indexedDB.open("muhaimin-milk-collection-queue",1);
+  request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains("pending"))db.createObjectStore("pending",{keyPath:"id"});};
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error||new Error("অফলাইন সারি ডেটাবেস খোলা যায়নি।"));
+ });
+}
+async function milkQueueAction(mode,item){
+ const db=await openMilkQueueDb();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction("pending",mode==="getAll"?"readonly":"readwrite");
+  const store=tx.objectStore("pending");
+  let request;
+  if(mode==="put")request=store.put(item);
+  else if(mode==="delete")request=store.delete(item);
+  else request=store.getAll();
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error||new Error("অফলাইন সংগ্রহ সারি পড়া/লেখা যায়নি।"));
+  tx.oncomplete=()=>db.close();
+  tx.onerror=()=>{db.close();reject(tx.error||new Error("অফলাইন সারি লেনদেন ব্যর্থ হয়েছে।"));};
+ });
+}
+function updateMilkQueueStatus(count){
+ const el=$("milkQueueStatus");
+ if(el)el.textContent=count
+  ?"অফলাইন/পুনঃচেষ্টার অপেক্ষায় "+count+"টি দুধ সংগ্রহ আছে। সংযোগ ফিরলে একই রেকর্ড আইডি দিয়ে পাঠানো হবে।"
+  :"অফলাইন সংগ্রহ সারি খালি।";
+}
+function isMilkNetworkError(error){
+ return !navigator.onLine||/failed to fetch|networkerror|network request failed|fetch failed|load failed|connection|offline/i.test(String(error?.message||error||""));
+}
+async function queueMilkCollection(payload,userId,error){
+ await milkQueueAction("put",{id:payload.client_record_id,user_id:userId,payload,queued_at:new Date().toISOString(),last_error:String(error?.message||error||"network unavailable")});
+ const all=await milkQueueAction("getAll");
+ updateMilkQueueStatus(all.length);
+}
+async function syncMilkCollectionQueue(){
+ if(!navigator.onLine)return;
+ try{
+  const sessionResult=await sb.auth.getSession();
+  const user=sessionResult.data?.session?.user;
+  if(!user)return;
+  const all=await milkQueueAction("getAll");
+  const mine=all.filter(item=>item.user_id===user.id);
+  updateMilkQueueStatus(all.length);
+  for(const item of mine){
+   const result=await sb.from("milk_collections").insert(item.payload);
+   if(!result.error){
+    await milkQueueAction("delete",item.id);
+    continue;
+   }
+   if(result.error.code==="23505"&&/client_record_id/i.test(String(result.error.message||""))){
+    const existing=await sb.from("milk_collections").select("id").eq("client_record_id",item.id).maybeSingle();
+    if(!existing.error&&existing.data){await milkQueueAction("delete",item.id);continue;}
+   }
+   await milkQueueAction("put",{...item,last_error:String(result.error.message||"sync failed")});
+   if(isMilkNetworkError(result.error))break;
+  }
+  const remaining=await milkQueueAction("getAll");
+  updateMilkQueueStatus(remaining.length);
+  if(mine.length&&remaining.length<all.length)toast("অপেক্ষমাণ দুধ সংগ্রহ সারির কিছু রেকর্ড Supabase-এ পাঠানো হয়েছে।");
+ }catch(error){
+  console.warn("Milk collection queue sync deferred:",error);
+ }
+}
+window.addEventListener("online",syncMilkCollectionQueue);
 const collectionForm=$("collectionForm");
 collectionForm?.addEventListener("input",event=>{
  if(event.target?.name!=="client_record_id"){
@@ -933,9 +1001,9 @@ bindForm("collectionForm",async f=>{
  if(f.accepted==="true")throw new Error("সংগ্রহের সময় গ্রহণ নিশ্চিত করবেন না। মান যাচাই ফর্মে অনুমোদনের পর রেকর্ড গ্রহণযোগ্য হবে।");
  if((failedScreen||["Rejected","Retest Required","Quarantined"].includes(quality))&&!String(f.quality_reason||"").trim())throw new Error("অস্বাভাবিক ফল, বাতিল, পুনঃপরীক্ষা বা আলাদা রাখার কারণ লিখুন।");
  if(quality==="Accepted"&&(f.smell_check==="Not Tested"||f.visual_check==="Not Tested"||f.adulteration_test==="Not Tested"))throw new Error("দুধ Accepted করার আগে গন্ধ, দৃশ্যমান ও প্রাথমিক ভেজাল স্ক্রিনিং সম্পন্ন করুন।");
- const authResult=await sb.auth.getUser();
- const collectorUserId=authResult.data&&authResult.data.user?authResult.data.user.id:null;
- if(authResult.error||!collectorUserId)throw new Error("দুধ সংগ্রহ সংরক্ষণের আগে আবার লগইন করুন।");
+ const authResult=await sb.auth.getSession();
+ const collectorUserId=authResult.data?.session?.user?.id||null;
+ if(!collectorUserId)throw new Error("দুধ সংগ্রহ সংরক্ষণের আগে লগইন সেশন যাচাই করুন।");
  const payload={
   client_record_id:f.client_record_id,
   collection_date:f.collection_date,collection_time:f.collection_time||currentTime(),branch_id:f.branch_id,farmer_id:f.farmer_id||null,liters,
@@ -950,6 +1018,12 @@ bindForm("collectionForm",async f=>{
  if(saved.error){
   const msg=String(saved.error.message||"");
   if(/client_record_id.*does not exist|could not find .*client_record_id|schema cache/i.test(msg))throw new Error("নিরাপদ রিকোয়েস্ট আইডি কলাম Supabase-এ নেই। আগে TEST-এ 20261023_milk_collection_idempotency.sql মাইগ্রেশন চালিয়ে যাচাই করুন।");
+  if(isMilkNetworkError(saved.error)){
+   await queueMilkCollection(payload,collectorUserId,saved.error);
+   $("collectionForm").reset();
+   toast("সংযোগ নেই: দুধ সংগ্রহটি এই ডিভাইসের IndexedDB সারিতে রাখা হয়েছে; Supabase-এ পাঠানো এখনও নিশ্চিত নয়।");
+   return;
+  }
   if(saved.error.code==="23505"&&/client_record_id/i.test(msg)){
    const existing=await sb.from("milk_collections").select("id").eq("client_record_id",f.client_record_id).maybeSingle();
    if(existing.error||!existing.data)throw saved.error;
@@ -1219,7 +1293,7 @@ async function startApp() {
   $("login").classList.add("hidden");
   $("accessGate").classList.add("hidden");
   $("app").classList.remove("hidden");
-  try { await loadAll(); }
+  try { await loadAll(); await syncMilkCollectionQueue(); }
   catch(error) {
     $("app").classList.add("hidden");
     $("accessGate").classList.remove("hidden");
