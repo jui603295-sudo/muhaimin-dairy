@@ -59,6 +59,22 @@ jobs:
             throw new Error('Offline-disabled network failures must not be placed in the local queue.');
           }
 
+          // Verify the saved Milk Collection settings affect the visible and validation paths.
+          const settingsRenderer = html.slice(html.indexOf('function renderMilkCollectionSettings'));
+          if (!/farmerScanInput\"\)\.disabled=!scannerEnabled/.test(settingsRenderer) || !/startFarmerCamera\"\)\.hidden=!scannerEnabled/.test(settingsRenderer)) {
+            throw new Error('Barcode scanner setting must disable scanner input and camera controls.');
+          }
+          const receiptRow = html.slice(html.indexOf('visibleCollections.map(x=>[dateBN(x.collection_date)'));
+          if (!/receipt_print_enabled!==false/.test(receiptRow) || !/receipt_share_enabled!==false/.test(receiptRow)) {
+            throw new Error('Receipt print/share settings must control collection receipt actions.');
+          }
+          if ((html.match(/sample_photo_required===true/g) || []).length < 2) {
+            throw new Error('Required sample photo setting must be enforced on collection and quality review.');
+          }
+          if (!/quality_reason_required!==false/.test(html)) {
+            throw new Error('Quality reason setting must affect validation.');
+          }
+
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
           const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
