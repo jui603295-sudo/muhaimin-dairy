@@ -191,11 +191,11 @@ jobs:
           const preflight = fs.readFileSync(preflightPath, 'utf8');
           if (!/separate TEST Supabase project/i.test(runbook) ||
               !/real-JWT/i.test(runbook) ||
-              !/Do not enable queue replay/i.test(runbook) ||
+              !/MILK_QUEUE_REPLAY_ENABLED = false/.test(runbook) ||
               !/Read-only diagnostics/i.test(preflight) ||
               !/production project ref/i.test(preflight) ||
               !/pg_policies/i.test(preflight) ||
-              !/Do not enable production migration/i.test(preflight)) {
+              !/stop immediately if the SQL editor is connected to that project/i.test(preflight)) {
             throw new Error('TEST runbook or SQL preflight is missing required environment, JWT/RLS, read-only, or release-gate safeguards.');
           }
 
