@@ -1,16 +1,18 @@
 # Muhaimin Projects — Master Checklist
 
-Version: 1.1. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
+Version: 1.2. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
 
-## Governance
-- [ ] GOV-01 Inventory all earlier requirements and current implementation.
+## A. Governance and non-disruptive development
+- [ ] GOV-01 Inventory earlier requirements and current implementation.
 - [ ] GOV-02 Assign stable IDs, acceptance criteria and dependencies.
 - [ ] GOV-03 Record branch, PR, commit SHA and test evidence.
 - [ ] GOV-04 Preserve working code; prefer focused changes over rewrites.
 - [ ] GOV-05 Track limitations and blockers honestly.
-- [ ] GOV-06 Keep TEST and LIVE projects, credentials and data separate.
+- [ ] GOV-06 Keep TEST, STAGING and LIVE projects, credentials and data separate.
+- [ ] GOV-07 Keep new development isolated from released customer versions.
+- [ ] GOV-08 Version releases and define rollback before production change.
 
-## Ecosystem portability — required for every Muhaimin app
+## B. Ecosystem portability and independent server migration — every app
 - [ ] ECO-01 Separate domain logic, UI, data access and integrations.
 - [ ] ECO-02 Document versioned APIs/events for app-to-app communication.
 - [ ] ECO-03 Use replaceable connectors/adapters for ecosystem services.
@@ -23,8 +25,23 @@ Version: 1.1. This checklist is the single source of truth. An unchecked item is
 - [ ] ECO-10 Test core app features without another app's UI.
 - [ ] ECO-11 Test ecosystem-connected and standalone modes.
 - [ ] ECO-12 Document essential external services and safe alternatives/degraded mode.
+- [ ] ECO-13 Rehearse clean deployment to a separate test host/environment.
+- [ ] ECO-14 Document DNS/TLS, secrets, storage, jobs, database migration, cutover and rollback.
+- [ ] ECO-15 Reconcile data counts/integrity after test migration.
 
-## Code and TEST database
+## C. Reliability, backup and disaster recovery
+- [ ] RELIAB-01 Define availability target, Recovery Point Objective and Recovery Time Objective.
+- [ ] RELIAB-02 Configure automated backups and documented retention.
+- [ ] RELIAB-03 Keep protected independent backup copies where feasible.
+- [ ] RELIAB-04 Perform and record restore drills in TEST.
+- [ ] RELIAB-05 Monitor uptime, errors, database/storage capacity, jobs and backup status.
+- [ ] RELIAB-06 Define alerts, incident owner, customer communication and escalation.
+- [ ] RELIAB-07 Document rollback, disaster restore and data reconciliation steps.
+- [ ] RELIAB-08 Identify single points of failure and assess redundancy/failover against budget.
+- [ ] RELIAB-09 Test graceful network failure and safe recovery for supported offline workflows.
+- [ ] RELIAB-10 Never claim zero downtime or zero data-loss risk; report measured evidence and residual risks.
+
+## D. Code and TEST database
 - [ ] CODE-01 Validate syntax, DOM references, forms and assets.
 - [ ] CODE-02 Build and static checks pass.
 - [ ] CODE-03 Review changes for security, error handling and minimal scope.
@@ -37,7 +54,7 @@ Version: 1.1. This checklist is the single source of truth. An unchecked item is
 - [ ] DB-07 Confirm unauthorized operations fail and authorized operations succeed.
 - [ ] DB-08 Verify audit log, identity and timestamps.
 
-## Muhaimin Dairy feature acceptance
+## E. Muhaimin Dairy feature acceptance
 - [ ] DAIRY-01 Branches, targets and statuses.
 - [ ] DAIRY-02 Farmer records, branch association, phone and validation.
 - [ ] DAIRY-03 Milk collection calculations and saved values.
@@ -56,13 +73,16 @@ Version: 1.1. This checklist is the single source of truth. An unchecked item is
 - [ ] DAIRY-16 Core operations work without optional AI.
 - [ ] DAIRY-17 Assets and mobile UI verified.
 
-## Release gate
-- [ ] REL-01 Applicable acceptance tests pass and evidence is recorded.
-- [ ] REL-02 No blocking defect remains, or exception is explicitly approved.
-- [ ] REL-03 Backup and rollback plan verified.
-- [ ] REL-04 Target commit and migration list identified.
-- [ ] REL-05 User explicitly approves live deployment.
-- [ ] REL-06 Deployment and live smoke test are actually verified.
+## F. Customer release gate
+- [ ] RELEASE-01 Applicable acceptance tests pass and evidence is recorded.
+- [ ] RELEASE-02 No blocking defect remains, or exception is explicitly approved.
+- [ ] RELEASE-03 Backup, restore and rollback plan verified.
+- [ ] RELEASE-04 Monitoring, alerting, incident response and recovery objectives documented.
+- [ ] RELEASE-05 Target commit, migration list and deployment target identified.
+- [ ] RELEASE-06 Customer usability, access control and production smoke tests pass.
+- [ ] RELEASE-07 User explicitly approves live deployment.
+- [ ] RELEASE-08 Actual deployment and live smoke test are verified and release version recorded.
+- [ ] RELEASE-09 New development can continue on isolated branches without changing the released version.
 
 ## Current ledger
 | ID | Requirement | Status | Next evidence needed |
@@ -71,5 +91,6 @@ Version: 1.1. This checklist is the single source of truth. An unchecked item is
 | OFF-01 | Offline cache/startup | IN PROGRESS | Privacy, quota, role and device tests |
 | OFF-02 | Milk collection queue/sync | IN PROGRESS | TEST JWT/RLS and idempotent replay tests |
 | SEC-01 | Main Admin/restricted-role security | IN PROGRESS | PR #13 remains unmerged; test real JWT/RLS |
-| ECO-01 | Ecosystem portability | PLANNED | Apply this checklist and test extraction per app |
-| REL-01 | TEST → Build → Verify → Fix → Re-test → Lock | PLANNED | Do not skip gates or alter LIVE without approval |
+| ECO-01 | Ecosystem portability | IN PROGRESS | Apply checklist and test extraction per app |
+| RELIAB-01 | Backup, restore and server resilience | PLANNED | Define per-app targets, providers and tested recovery |
+| RELEASE-01 | Independent customer release | PLANNED | Complete release gate and explicit approval |
