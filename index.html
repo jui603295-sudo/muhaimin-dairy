@@ -354,6 +354,13 @@ function renderMilkCollectionSettings(settings){
  $("mcsScale").checked=!!value.scale_integration_enabled;
  $("mcsPrint").checked=!!value.receipt_print_enabled;
  $("mcsShare").checked=!!value.receipt_share_enabled;
+ const collectionForm=$("collectionForm");
+ if(collectionForm){
+  const rateField=collectionForm.elements.namedItem("purchase_rate");
+  const clrField=collectionForm.elements.namedItem("clr");
+  if(rateField)rateField.value=value.default_purchase_rate;
+  if(clrField)clrField.value=state.settings?.default_clr??28;
+ }
 }
 async function loadAll() {
   const settingsResult=await sb.from("app_settings").select("*").limit(1).maybeSingle();
