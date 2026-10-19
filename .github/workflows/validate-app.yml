@@ -75,6 +75,22 @@ jobs:
             throw new Error('Quality reason setting must affect validation.');
           }
 
+          // Protect the two-step Milk Collection quality workflow.
+          const qualityCollection = html.slice(html.indexOf('bindForm("collectionForm"'));
+          const qualityReview = html.slice(html.indexOf('bindForm("qualityReviewForm"'), html.indexOf('function openMilkQueueDb'));
+          if (!/if\(quality==="Accepted"\)throw new Error/.test(qualityCollection)) {
+            throw new Error('Collection entry must not bypass separate quality approval.');
+          }
+          if (!/f\.quality_status==="Accepted"&&\(failed\|\|f\.smell_check==="Not Tested"\|\|f\.visual_check==="Not Tested"\|\|f\.adulteration_test==="Not Tested"\)/.test(qualityReview)) {
+            throw new Error('Quality review must block acceptance when screening is failed or incomplete.');
+          }
+          if (!/!String\(f\.tester_id\|\|""\)\.trim\(\)\|\|!f\.tested_at/.test(qualityReview) || !/quality_reviewer_user_id:reviewerUserId/.test(qualityReview)) {
+            throw new Error('Quality review must record tester/time and authenticated reviewer identity.');
+          }
+          if (!/state\.milkCollectionSettings\?\.clr_min/.test(qualityReview)) {
+            throw new Error('Quality review must enforce configured CLR bounds.');
+          }
+
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
           const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
