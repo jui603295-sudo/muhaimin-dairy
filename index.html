@@ -1052,12 +1052,12 @@ async function syncMilkCollectionQueue(){
  if(state.milkCollectionSettings?.offline_queue_enabled===false)return;
  try{
   const all=await milkQueueAction("getAll");
-  updateMilkQueueStatus(all.length);
   if(!navigator.onLine)return;
   const sessionResult=await sb.auth.getSession();
   const user=sessionResult.data?.session?.user;
-  if(!user)return;
+  if(!user){updateMilkQueueStatus(0);return;}
   const mine=all.filter(item=>item.user_id===user.id);
+  updateMilkQueueStatus(mine.length);
   for(const item of mine){
    const result=await sb.from("milk_collections").insert(item.payload);
    if(!result.error){
