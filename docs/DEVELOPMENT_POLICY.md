@@ -1,7 +1,7 @@
 # Muhaimin Projects — Development, Reliability & Release Policy
 
 **Document:** `docs/DEVELOPMENT_POLICY.md`  
-**Version:** 1.2  
+**Version:** 1.3  
 **Status:** Proposed project policy; authoritative after review and merge.  
 **Scope:** Every Muhaimin project and application, including Muhaimin Dairy.
 
@@ -122,6 +122,19 @@ A requirement is complete only when its acceptance criteria are met, code review
 
 A project may be customer-released only when its release gate, backup/restore evidence, monitoring/incident plan, data migration plan, security checks, and customer usability checks are complete. Record the release version, date, deployment target and verified smoke-test result. A project can then remain stable while new work continues separately.
 
-## 10. Project record
+## 10. Community-service and national-development messages
+
+Every Muhaimin project must support configurable, context-appropriate community-service and national-development slogans/messages where relevant to the app's purpose.
+
+- Authorized administrators can configure message text, language, placement, visibility and active period; support multiple approved messages when needed.
+- Keep messages separate from core business logic so authorized users can update them without rebuilding the app where technically feasible.
+- Support Bangla and other required languages, mobile-friendly layout and accessible readability.
+- Messages must be accurate, appropriate to the app and must not falsely imply official government endorsement or affiliation.
+- Document who owns and approves messages; restrict publishing rights and retain a change history/audit record.
+- A standalone app can manage its own messages. Central ecosystem messages may be supplied through an optional, replaceable connector; the app's core features must continue if that connector is unavailable.
+- Do not place messages where they interfere with legal, financial, safety-critical or sensitive user tasks.
+- Test editing, publishing, hiding, language, permissions, mobile layout and standalone behavior.
+
+## 11. Project record
 
 The repository's `docs/MASTER_CHECKLIST.md` is the source of truth for requirement IDs, status, acceptance criteria, evidence and lock/reopen decisions. Update it with each meaningful implementation or test result. This policy is versioned; changing it requires a documented reason and review.
