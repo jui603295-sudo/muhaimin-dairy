@@ -87,6 +87,7 @@ jobs:
           const queueStatusFn = html.slice(queueStatusStart, queueStatusEnd);
           if (!/updateMilkQueueStatus\(all\.filter\(item=>item\.user_id===userId\)\.length\)/.test(queueStatusFn) ||
               !/updateMilkQueueStatus\(user\?pending\.filter\(item=>item\.user_id===user\.id\)\.length:0\)/.test(queueStatusFn) ||
+              !/updateMilkQueueStatus\(mine\.length\)/.test(queueStatusFn) ||
               !/updateMilkQueueStatus\(remaining\.filter\(item=>item\.user_id===user\.id\)\.length\)/.test(queueStatusFn)) {
             throw new Error('Pending Milk Collection queue counts must be scoped to the authenticated user.');
           }
