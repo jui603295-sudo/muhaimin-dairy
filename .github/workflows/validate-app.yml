@@ -81,6 +81,16 @@ jobs:
             throw new Error('Disabling offline cache must require confirmation, preserve the pending queue, and support cancellation.');
           }
 
+          // Queue status must not reveal another account's pending-record count.
+          const queueStatusStart = html.indexOf('async function queueMilkCollection');
+          const queueStatusEnd = html.indexOf('async function exportPendingMilkQueue');
+          const queueStatusFn = html.slice(queueStatusStart, queueStatusEnd);
+          if (!/updateMilkQueueStatus\(all\.filter\(item=>item\.user_id===userId\)\.length\)/.test(queueStatusFn) ||
+              !/updateMilkQueueStatus\(user\?pending\.filter\(item=>item\.user_id===user\.id\)\.length:0\)/.test(queueStatusFn) ||
+              !/updateMilkQueueStatus\(remaining\.filter\(item=>item\.user_id===user\.id\)\.length\)/.test(queueStatusFn)) {
+            throw new Error('Pending Milk Collection queue counts must be scoped to the authenticated user.');
+          }
+
           // Pending queue backup must be explicit, local-only, and scoped to the current authenticated user.
           if (!/id="exportPendingMilkQueue"/.test(html) ||
               !/async function exportPendingMilkQueue\(\)/.test(html) ||
