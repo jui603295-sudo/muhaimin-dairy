@@ -99,6 +99,7 @@ Version: 1.5. This checklist is the single source of truth. An unchecked item is
 | BASE-01 | Consolidate previous requirements against current code | IN PROGRESS | Verified gap inventory |
 | OFF-01 | Offline cache/startup | IN PROGRESS | Privacy, quota, role and device tests |
 | OFF-02 | Milk collection queue/sync | IN PROGRESS | Replay intentionally disabled; TEST JWT/RLS, unique index and idempotent replay tests |
+| OFF-03 | Operational tables disclose offline cache limitation | CODE COMPLETE | Explicit offline messaging added; verify with browser/device test and ensure online reload succeeds |
 | MILK-UI-01 | Milk collection settings labels accurately describe implemented features | CODE COMPLETE | Static workflow and browser/device acceptance tests |
 | MILK-CI-01 | Static CI guard for TEST-only idempotency migration and replay safety | CODE COMPLETE | Validate Muhaimin Dairy run #101 passed (commit `31fe05898a86aae7d78540767f41fe347fc05ee5`); SQL/RLS not executed |
 | MILK-QUEUE-BACKUP-01 | Download local pending Milk Collection records as user-scoped JSON without server writes | CODE COMPLETE | Implementation added; validate new CI assertion and browser download, personal-data handling remains a manual acceptance test |
