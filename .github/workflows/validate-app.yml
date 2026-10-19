@@ -88,7 +88,8 @@ jobs:
           const queueExportEnd = html.indexOf('$("exportPendingMilkQueue")?.addEventListener', queueExportStart);
           const queueExportFn = html.slice(queueExportStart, queueExportEnd > queueExportStart ? queueExportEnd : undefined);
           if (!/milkQueueAction\("getAll"\)/.test(queueExportFn) ||
-              !/link\.download=/.test(queueExportFn) ||
+              !/updateMilkQueueStatus\(mine\.length\)/.test(queueExportFn) ||
+              !/link\.download="muhaimin-milk-queue-backup-"\+today\(\)\+"\.json"/.test(queueExportFn) ||
               /sb\.from\(["']milk_collections["']\)\.insert/.test(queueExportFn)) {
             throw new Error('Pending queue backup must download local records without writing them to Supabase.');
           }
