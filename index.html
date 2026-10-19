@@ -982,6 +982,7 @@ async function queueMilkCollection(payload,userId,error){
  updateMilkQueueStatus(all.length);
 }
 async function syncMilkCollectionQueue(){
+ if(state.milkCollectionSettings?.offline_queue_enabled===false)return;
  if(!navigator.onLine)return;
  try{
   const sessionResult=await sb.auth.getSession();
@@ -1085,6 +1086,7 @@ bindForm("collectionForm",async f=>{
   const msg=String(saved.error.message||"");
   if(/client_record_id.*does not exist|could not find .*client_record_id|schema cache/i.test(msg))throw new Error("নিরাপদ রিকোয়েস্ট আইডি কলাম Supabase-এ নেই। আগে TEST-এ 20261023_milk_collection_idempotency.sql মাইগ্রেশন চালিয়ে যাচাই করুন।");
   if(isMilkNetworkError(saved.error)){
+   if(state.milkCollectionSettings?.offline_queue_enabled===false)throw new Error("সংযোগ নেই এবং অফলাইন সংগ্রহ সারি সেটিংস বন্ধ; রেকর্ড সংরক্ষিত হয়নি। সংযোগ ফিরিয়ে আবার চেষ্টা করুন।");
    await queueMilkCollection(payload,collectorUserId,saved.error);
    $("collectionForm").reset();
    toast("সংযোগ নেই: দুধ সংগ্রহটি এই ডিভাইসের IndexedDB সারিতে রাখা হয়েছে; Supabase-এ পাঠানো এখনও নিশ্চিত নয়।");
