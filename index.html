@@ -456,6 +456,12 @@ async function loadOperationalRecords(){
   ["milk_reconciliations","reconTable",["recon_date","branch_id","expected_closing_liters","physical_closing_liters","variance_liters","variance_category","approved_by"]],
   ["operating_finance_entries","financeTable",["entry_date","entry_type","amount","cash_settled","counterparty","due_date"]]
  ];
+ if(!navigator.onLine){
+  for(const [,target] of specs){const el=$(target);if(el)el.innerHTML='<p class="small">অফলাইনে এই অপারেশনাল টেবিলের তথ্য দেখানো যাচ্ছে না। এগুলো বর্তমান ফোনের অফলাইন ক্যাশে রাখা হয় না। ইন্টারনেট সংযোগ ফিরে এলে আবার খুলুন।</p>';}
+  const summary=$("financeSummary");if(summary)summary.textContent="অফলাইনে আর্থিক সারাংশ উপলভ্য নয়; অনলাইনে পুনরায় লোড করুন।";
+  setOfflineModeStatus("অফলাইন: ব্যাচ, চিলার, মিল/পার্থক্য ও অপারেশনাল অর্থায়নের টেবিল ফোনে ক্যাশ করা নেই।");
+  return;
+ }
  for(const [tableName,target,cols] of specs){
   try{
    const res=await sb.from(tableName).select("*").order("created_at",{ascending:false}).limit(100);
