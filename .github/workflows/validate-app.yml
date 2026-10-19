@@ -92,6 +92,17 @@ jobs:
             throw new Error('Pending Milk Collection queue counts must be scoped to the authenticated user.');
           }
 
+          // Backup validation is read-only and rejects cross-user, malformed, oversized, or duplicate-ID files.
+          if (!html.includes('id="validateMilkQueueBackupFile"') ||
+              !html.includes('async function validateMilkQueueBackup()') ||
+              !/file\.size>5\*1024\*1024/.test(html) ||
+              !/backup\.user_id!==user\.id/.test(html) ||
+              !/item\.user_id!==user\.id/.test(html) ||
+              !/seen\.has\(item\.id\)/.test(html) ||
+              !html.includes('কোনো রেকর্ড আমদানি, লেখা বা সিঙ্ক করা হয়নি')) {
+            throw new Error('Milk queue backup validation must remain read-only and enforce user/ID checks.');
+          }
+
           // Pending queue backup must be explicit, local-only, and scoped to the current authenticated user.
           if (!/id="exportPendingMilkQueue"/.test(html) ||
               !/async function exportPendingMilkQueue\(\)/.test(html) ||
