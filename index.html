@@ -104,7 +104,34 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
 <section id="finance" class="page"><div class="card"><h3>💰 ক্রেতার বিক্রয়, খরচ ও প্রাপ্য</h3><form id="financeForm"><div class="row"><div><label>তারিখ<input name="entry_date" type="text" placeholder="DD-MM-YYYY" data-date-input required></label></div><div><label>কেন্দ্র (ঐচ্ছিক)<select name="branch_id" id="financeBranch"><option value="">সকল/কেন্দ্র নেই</option></select></label></div></div><div class="row"><div><label>লেনদেনের ধরন<select name="entry_type"><option value="Buyer Sale">ক্রেতার বিক্রয়</option><option value="Handling Fee">চুক্তিভিত্তিক হ্যান্ডলিং ফি</option><option value="Transport Cost">পরিবহন খরচ</option><option value="Electricity/Chiller">বিদ্যুৎ/চিলার খরচ</option><option value="Labor Cost">শ্রম খরচ</option><option value="Maintenance">মেরামত খরচ</option><option value="Verified Milk Loss">যাচাইকৃত দুধ ক্ষতির খরচ</option><option value="Rejected Milk Cost">বাতিল দুধের খরচ</option><option value="Other Cost">অন্যান্য খরচ</option></select></label></div><div><label>পরিমাণ (৳)<input name="amount" type="number" min="0" step=".01" required></label></div></div><div class="row"><div><label>নিশ্চিত নগদ আদায়/পরিশোধ (৳)<input name="cash_settled" type="number" min="0" step=".01" value="0" required></label></div><div><label>বিল/রেফারেন্স<input name="reference"></label></div></div><div class="row"><div><label>প্রতিপক্ষ/ক্রেতা/সরবরাহকারী<input name="counterparty"></label></div><div><label>নির্ধারিত তারিখ<input name="due_date" type="text" placeholder="DD-MM-YYYY" data-date-input></label></div></div><label>নোট<textarea name="notes"></textarea></label><p class="small">বিল বা ক্রেতার গ্রহণপত্র নগদ আদায় হিসেবে গণ্য হবে না। অনিশ্চিত হ্যান্ডলিং ফি নিশ্চিত আয় হিসেবে ধরা হবে না।</p><button class="btn primary">আর্থিক এন্ট্রি সংরক্ষণ</button></form></div><div class="card"><h3>আর্থিক রেকর্ড</h3><div class="tablewrap" id="financeTable"></div><div id="financeSummary" class="grid"></div></div></section>
 <section id="reports" class="page"><div class="card"><h3 data-i18n="reportsTitle">📊 রিপোর্ট</h3><div class="row"><div><label data-i18n="fromDate">শুরুর তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportFrom"></label></div><div><label data-i18n="toDate">শেষ তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportTo"></label></div></div><div class="row reportActions"><button class="btn" id="runReport" data-i18n="runReport">রিপোর্ট দেখুন</button><button class="btn" id="reportPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="reportWhatsapp">🟢 WhatsApp</button><button class="btn" id="reportShare">↗️ শেয়ার</button></div><div id="report"></div></div></section>
 <section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div class="row"><div><label>শুরুর তারিখ / From<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerFrom"></label></div><div><label>শেষ তারিখ / To<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerTo"></label></div></div><div id="ledgerShareContent"><div class="row reportActions"><button class="btn" id="ledgerPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="ledgerWhatsapp">🟢 WhatsApp</button><button class="btn" id="ledgerShare">↗️ শেয়ার</button></div><p class="small" id="ledgerGeneratedAt"></p><div id="ledgerSummary" class="grid"></div><div id="ledgerResult" class="tablewrap"></div></div></div></section>
-<section id="settings" class="page"><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div><div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
+<section id="settings" class="page"><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
+<div class="card">
+ <h3>🥛 Milk Collection — Future Main Options</h3>
+ <p class="small">এই সেটিংস Main Admin-এর নিয়ন্ত্রণে থাকবে। কিছু বিকল্প ভবিষ্যৎ সুবিধার কনফিগারেশন; কার্যকর করার আগে TEST-এ যাচাই করতে হবে।</p>
+ <form id="milkCollectionSettingsForm">
+  <div class="row">
+   <div><label>ডিফল্ট ক্রয়মূল্য (৳/লিটার)<input name="default_purchase_rate" id="mcsRate" type="number" min="0.01" max="100000" step="0.01" required></label></div>
+   <div><label>ন্যূনতম CLR<input name="clr_min" id="mcsClrMin" type="number" min="0" max="50" step="0.1" required></label></div>
+   <div><label>সর্বোচ্চ CLR<input name="clr_max" id="mcsClrMax" type="number" min="0" max="50" step="0.1" required></label></div>
+  </div>
+  <div class="row">
+   <div><label><input name="quality_review_required" id="mcsQualityReview" type="checkbox"> মান যাচাই ও পৃথক অনুমোদন বাধ্যতামূলক</label></div>
+   <div><label><input name="quality_reason_required" id="mcsReasonRequired" type="checkbox"> অস্বাভাবিক/Rejected ফলাফলে কারণ বাধ্যতামূলক</label></div>
+   <div><label><input name="offline_queue_enabled" id="mcsOffline" type="checkbox"> অফলাইন সংগ্রহ সারি</label></div>
+  </div>
+  <div class="row">
+   <div><label><input name="barcode_scanner_enabled" id="mcsBarcode" type="checkbox"> QR/বারকোড স্ক্যানার</label></div>
+   <div><label><input name="sample_photo_required" id="mcsPhoto" type="checkbox"> নমুনার ছবি বাধ্যতামূলক (ভবিষ্যৎ)</label></div>
+   <div><label><input name="scale_integration_enabled" id="mcsScale" type="checkbox"> হার্ডওয়্যার স্কেল সংযোগ (ভবিষ্যৎ)</label></div>
+  </div>
+  <div class="row">
+   <div><label><input name="receipt_print_enabled" id="mcsPrint" type="checkbox"> রসিদ প্রিন্ট/PDF</label></div>
+   <div><label><input name="receipt_share_enabled" id="mcsShare" type="checkbox"> রসিদ শেয়ার</label></div>
+  </div>
+  <p id="milkCollectionSettingsStatus" class="small" role="status">Milk Collection সেটিংস লোড হচ্ছে…</p>
+  <button class="btn primary" type="submit">Milk Collection সেটিংস সংরক্ষণ</button>
+ </form>
+</div><div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
 <section id="backup" class="page"><div class="card"><h3 data-i18n="backupTitle">💾 ব্যাকআপ ও রিস্টোর</h3><p class="small" data-i18n="backupInfo">JSON ব্যাকআপ ডাউনলোড করুন। রিস্টোরের আগে ডেটা যাচাই করুন; এই সংস্করণে নিরাপদ restore স্বয়ংক্রিয়ভাবে চালানো হয় না।</p><button class="btn primary" id="exportBtn"
 
 data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেটা ব্যাকআপ</button><label data-i18n="importBackup">ব্যাকআপ ফাইল নির্বাচন<input type="file" id="importFile" accept="application/json,.json"></label><button class="btn" id="validateImportBtn" data-i18n="validateBackup">ফাইল যাচাই করুন</button><p id="backupMsg" class="small"></p></div></section>
@@ -119,7 +146,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = id => document.getElementById(id);
 const state = {
-  settings: null, branches: [], farmers: [], collections: [], payments: [],
+  settings: null, milkCollectionSettings: null, branches: [], farmers: [], collections: [], payments: [],
   feedProducts: [], feedPurchases: [], feedSales: [], vetCompanies: [], vetProducts: [],
   vetPurchases: [], vetSales: [], agroProducts: [], agroPurchases: [], agroSales: []
 };
@@ -307,10 +334,41 @@ async function queryRows(tableName, orderColumn) {
   if(result.error)throw result.error;
   return result.data || [];
 }
+const DEFAULT_MILK_COLLECTION_SETTINGS = {
+ default_purchase_rate:50, clr_min:0, clr_max:50,
+ quality_review_required:true, quality_reason_required:true,
+ offline_queue_enabled:true, barcode_scanner_enabled:true,
+ sample_photo_required:false, scale_integration_enabled:false,
+ receipt_print_enabled:true, receipt_share_enabled:true
+};
+function renderMilkCollectionSettings(settings){
+ const value={...DEFAULT_MILK_COLLECTION_SETTINGS,...(settings||{})};
+ $("mcsRate").value=value.default_purchase_rate;
+ $("mcsClrMin").value=value.clr_min;
+ $("mcsClrMax").value=value.clr_max;
+ $("mcsQualityReview").checked=!!value.quality_review_required;
+ $("mcsReasonRequired").checked=!!value.quality_reason_required;
+ $("mcsOffline").checked=!!value.offline_queue_enabled;
+ $("mcsBarcode").checked=!!value.barcode_scanner_enabled;
+ $("mcsPhoto").checked=!!value.sample_photo_required;
+ $("mcsScale").checked=!!value.scale_integration_enabled;
+ $("mcsPrint").checked=!!value.receipt_print_enabled;
+ $("mcsShare").checked=!!value.receipt_share_enabled;
+}
 async function loadAll() {
   const settingsResult=await sb.from("app_settings").select("*").limit(1).maybeSingle();
   if(settingsResult.error)throw settingsResult.error;
   state.settings=settingsResult.data || {id:null,business_name:"মুহাইমিন ডেইরি",daily_target_liters:2500,default_clr:28,milk_commission:1};
+  try {
+    const mcResult=await sb.from("milk_collection_settings").select("settings").eq("setting_key","default").maybeSingle();
+    if(mcResult.error)throw mcResult.error;
+    state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS,...(mcResult.data?.settings||{})};
+    $("milkCollectionSettingsStatus").textContent="Milk Collection সেটিংস Supabase থেকে লোড হয়েছে।";
+  } catch(error) {
+    state.milkCollectionSettings={...DEFAULT_MILK_COLLECTION_SETTINGS};
+    $("milkCollectionSettingsStatus").textContent="TEST migration প্রয়োজন বা সেটিংস লোড হয়নি। ডিফল্ট মান দেখানো হচ্ছে; সংরক্ষণের আগে TEST schema/RLS যাচাই করুন।";
+    console.warn("Milk Collection settings unavailable:",error);
+  }
   const unavailable=[];
   const optionalRows=async(name,column)=>{
     try { return await queryRows(name,column); }
@@ -431,6 +489,7 @@ function render() {
   $("setTarget").value=state.settings.daily_target_liters ?? 2500;
   $("setClr").value=state.settings.default_clr ?? 28;
   $("setCommission").value=state.settings.milk_commission ?? 1;
+  renderMilkCollectionSettings(state.milkCollectionSettings);
   setToday(); renderLedger(); renderAudit();
 }
 function stockTable(products,purchases,sales,quantityField) {
@@ -853,7 +912,7 @@ bindForm("qualityReviewForm",async f=>{
  if(!row)throw new Error("সংগ্রহের রেকর্ড পাওয়া যায়নি। তালিকা রিফ্রেশ করে আবার নির্বাচন করুন।");
  const clr=n(f.clr),temp=f.milk_temperature_c===""?null:n(f.milk_temperature_c);
  const fat=f.fat_percent===""?null:n(f.fat_percent),snf=f.snf_percent===""?null:n(f.snf_percent);
- if(clr<0||clr>50)throw new Error("CLR ০–৫০-এর মধ্যে হতে হবে।");
+ if(clr<Number(state.milkCollectionSettings?.clr_min??0)||clr>Number(state.milkCollectionSettings?.clr_max??50))throw new Error("CLR নির্ধারিত সীমার বাইরে। অনুমোদিত সীমা: "+(state.milkCollectionSettings?.clr_min??0)+"–"+(state.milkCollectionSettings?.clr_max??50)+"।");
  if(temp!==null&&(temp<0||temp>100))throw new Error("তাপমাত্রা ০–১০০°C-এর মধ্যে হতে হবে।");
  if((fat!==null&&(fat<0||fat>100))||(snf!==null&&(snf<0||snf>100)))throw new Error("Fat/SNF ০–১০০%-এর মধ্যে হতে হবে।");
  const failed=f.smell_check==="Abnormal"||f.visual_check==="Abnormal"||f.adulteration_test==="Fail";
@@ -976,7 +1035,7 @@ bindForm("collectionForm",async f=>{
  const quality=f.quality_status||"Pending";
  const liters=n(f.liters), clr=n(f.clr||28), temp=f.milk_temperature_c===""?null:n(f.milk_temperature_c);
  const fat=f.fat_percent===""?null:n(f.fat_percent), snf=f.snf_percent===""?null:n(f.snf_percent);
- const rate=f.purchase_rate===""?50:Number(f.purchase_rate);
+ const rate=f.purchase_rate===""?Number(state.milkCollectionSettings?.default_purchase_rate??50):Number(f.purchase_rate);
  if(!Number.isFinite(liters)||liters<=0)throw new Error("দুধের পরিমাণ শূন্যের বেশি হতে হবে।");
  if(!Number.isFinite(rate)||rate<=0||rate>100000)throw new Error("প্রতি লিটারের ক্রয়মূল্য ০-এর বেশি এবং যুক্তিসংগত সীমার মধ্যে দিন।");
  const branch=state.branches.find(x=>String(x.id)===String(f.branch_id));
@@ -1170,6 +1229,33 @@ bindForm("settingsForm",async f=>{
     : await sb.from("app_settings").insert(values);
   if(result.error)throw result.error;
   logActivity("Update settings"); toast(lang()==="en"?"Settings saved":"সেটিংস সংরক্ষিত"); await loadAll();
+});
+bindForm("milkCollectionSettingsForm",async f=>{
+ const rate=Number(f.default_purchase_rate),clrMin=Number(f.clr_min),clrMax=Number(f.clr_max);
+ if(!Number.isFinite(rate)||rate<=0||rate>100000)throw new Error("ডিফল্ট ক্রয়মূল্য ০-এর বেশি এবং ১০০,০০০ টাকার মধ্যে হতে হবে।");
+ if(!Number.isFinite(clrMin)||!Number.isFinite(clrMax)||clrMin<0||clrMax>50||clrMin>clrMax)throw new Error("CLR সীমা ০–৫০-এর মধ্যে দিন এবং সর্বনিম্ন মান সর্বোচ্চ মানের বেশি হতে পারবে না।");
+ const session=await sb.auth.getSession();
+ const user=session.data?.session?.user;
+ if(session.error||!user)throw new Error("Milk Collection সেটিংস সংরক্ষণের আগে লগইন সেশন যাচাই করুন।");
+ const settings={
+  default_purchase_rate:rate,clr_min:clrMin,clr_max:clrMax,
+  quality_review_required:$("mcsQualityReview").checked,
+  quality_reason_required:$("mcsReasonRequired").checked,
+  offline_queue_enabled:$("mcsOffline").checked,
+  barcode_scanner_enabled:$("mcsBarcode").checked,
+  sample_photo_required:$("mcsPhoto").checked,
+  scale_integration_enabled:$("mcsScale").checked,
+  receipt_print_enabled:$("mcsPrint").checked,
+  receipt_share_enabled:$("mcsShare").checked
+ };
+ const result=await sb.from("milk_collection_settings").upsert({
+  setting_key:"default",settings,updated_by:user.id,updated_at:new Date().toISOString()
+ },{onConflict:"setting_key"});
+ if(result.error)throw result.error;
+ state.milkCollectionSettings=settings;
+ logActivity("Update Milk Collection future main settings");
+ $("milkCollectionSettingsStatus").textContent="Milk Collection সেটিংস Supabase-এ সংরক্ষিত হয়েছে।";
+ toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
 });
 $("feedNameSelect").addEventListener("change",()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য"));
 document.querySelectorAll("#nav button").forEach(button=>button.addEventListener("click",()=>{
