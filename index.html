@@ -1088,14 +1088,14 @@ async function exportPendingMilkQueue(){
   if(!user)throw new Error("অপেক্ষমাণ রেকর্ডের ব্যাকআপ নিতে আগে লগইন সেশন যাচাই করুন।");
   const all=await milkQueueAction("getAll");
   const mine=all.filter(item=>item.user_id===user.id);
-  updateMilkQueueStatus(all.length);
+  updateMilkQueueStatus(mine.length);
   if(!mine.length){toast("এই লগইন অ্যাকাউন্টের কোনো অপেক্ষমাণ রেকর্ড নেই।");return;}
   const backup={format:"muhaimin-milk-queue-backup-v1",created_at:new Date().toISOString(),user_id:user.id,records:mine};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
   link.href=url;
-  link.download="muhaimin-milk-queue-backup-"+new Date().toISOString().slice(0,10)+".json";
+  link.download="muhaimin-milk-queue-backup-"+today()+".json";
   link.style.display="none";
   document.body.appendChild(link);
   link.click();
