@@ -1033,9 +1033,14 @@ async function queueMilkCollection(payload,userId,error){
  const all=await milkQueueAction("getAll");
  updateMilkQueueStatus(all.length);
 }
-// Offline replay is enabled for the single registered phone. Unique client_record_id on Supabase is required for safe retry; failed/unsupported writes remain queued.
-const MILK_QUEUE_REPLAY_ENABLED = true;
+// Safety gate: keep queued records local until TEST verifies the unique index and real-JWT RLS.
+const MILK_QUEUE_REPLAY_ENABLED = false;
 async function syncMilkCollectionQueue(){
+ if(MILK_QUEUE_REPLAY_ENABLED!==true){
+  const pending=await milkQueueAction("getAll");
+  updateMilkQueueStatus(pending.length);
+  return;
+ }
  if(state.milkCollectionSettings?.offline_queue_enabled===false)return;
  try{
   const all=await milkQueueAction("getAll");
