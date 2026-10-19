@@ -505,7 +505,7 @@ function render() {
   const qualitySelect=$("qualityReviewCollection");
   if(qualitySelect){
    const previousQualityId=qualitySelect.value;
-   const pendingQuality=state.collections.filter(x=>!["Accepted","Rejected"].includes(x.quality_status)||x.quality_status==="Rejected");
+   const pendingQuality=state.collections.filter(x=>!x.offline_pending&&(!["Accepted","Rejected"].includes(x.quality_status)||x.quality_status==="Rejected"));
    qualitySelect.innerHTML='<option value="">সংগ্রহ নির্বাচন করুন</option>'+pendingQuality.map(x=>'<option value="'+esc(x.id)+'">'+esc(dateBN(x.collection_date))+' · '+esc(storedTime(x.collection_time,x.created_at))+' · '+esc(branchName(x.branch_id))+' · '+esc(farmerName(x.farmer_id))+' · '+n(x.liters)+' L · '+esc(x.quality_status||"Pending")+'</option>').join("");
    if(pendingQuality.some(x=>String(x.id)===String(previousQualityId)))qualitySelect.value=previousQualityId;
   }
@@ -1033,7 +1033,7 @@ async function queueMilkCollection(payload,userId,error){
  const all=await milkQueueAction("getAll");
  updateMilkQueueStatus(all.length);
 }
-// Keep automatic replay disabled until real-JWT RLS and idempotency tests pass in a separate TEST Supabase project.
+// Offline replay is enabled for the single registered phone. Unique client_record_id on Supabase is required for safe retry; failed/unsupported writes remain queued.
 const MILK_QUEUE_REPLAY_ENABLED = true;
 async function syncMilkCollectionQueue(){
  if(state.milkCollectionSettings?.offline_queue_enabled===false)return;
@@ -1060,7 +1060,10 @@ async function syncMilkCollectionQueue(){
   }
   const remaining=await milkQueueAction("getAll");
   updateMilkQueueStatus(remaining.length);
-  if(mine.length&&remaining.length<all.length)toast("অপেক্ষমাণ দুধ সংগ্রহ সারির কিছু রেকর্ড Supabase-এ পাঠানো হয়েছে।");
+  if(mine.length&&remaining.length<all.length){
+   toast("অপেক্ষমাণ দুধ সংগ্রহ সারির কিছু রেকর্ড Supabase-এ পাঠানো হয়েছে।");
+   try{await loadAll();}catch(refreshError){console.warn("Synced records but could not refresh online cache:",refreshError);}
+  }
  }catch(error){
   console.warn("Milk collection queue sync deferred:",error);
  }
@@ -1143,8 +1146,11 @@ bindForm("collectionForm",async f=>{
   if(isMilkNetworkError(saved.error)){
    if(state.milkCollectionSettings?.offline_queue_enabled===false)throw new Error("সংযোগ নেই এবং অফলাইন সংগ্রহ সারি সেটিংস বন্ধ; রেকর্ড সংরক্ষিত হয়নি। সংযোগ ফিরিয়ে আবার চেষ্টা করুন।");
    await queueMilkCollection(payload,collectorUserId,saved.error);
+   state.collections.unshift({...payload,id:"offline-"+f.client_record_id,created_at:new Date().toISOString(),offline_pending:true});
+   render();
+   saveOfflineSnapshot(collectorUserId);
    $("collectionForm").reset();
-   toast("সংযোগ নেই: দুধ সংগ্রহটি এই ডিভাইসের IndexedDB সারিতে রাখা হয়েছে; Supabase-এ পাঠানো এখনও নিশ্চিত নয়।");
+   toast("অফলাইন দুধ সংগ্রহ এই ফোনে সংরক্ষিত হয়েছে; Supabase-এ পাঠানো এখনও নিশ্চিত নয়।");
    return;
   }
   if(saved.error.code==="23505"&&/client_record_id/i.test(msg)){
