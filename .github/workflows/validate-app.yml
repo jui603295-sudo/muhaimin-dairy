@@ -75,6 +75,22 @@ jobs:
             throw new Error('Settings must expose offline cache control and retry-sync actions.');
           }
 
+          // Pending queue backup must be explicit, local-only, and scoped to the current authenticated user.
+          if (!/id="exportPendingMilkQueue"/.test(html) ||
+              !/async function exportPendingMilkQueue\(\)/.test(html) ||
+              !/all\.filter\(item=>item\.user_id===user\.id\)/.test(html) ||
+              !/format:"muhaimin-milk-queue-backup-v1"/.test(html) ||
+              !/type:"application\/json"/.test(html) ||
+              !/ব্যাকআপে ব্যক্তিগত কৃষক\/সংগ্রহ তথ্য থাকতে পারে/.test(html)) {
+            throw new Error('Pending Milk Collection queue backup must be user-scoped, JSON-exportable, and disclose personal-data sensitivity.');
+          }
+          const queueExportFn = html.slice(html.indexOf('async function exportPendingMilkQueue'));
+          if (!/milkQueueAction\("getAll"\)/.test(queueExportFn) ||
+              !/link\.download=/.test(queueExportFn) ||
+              /sb\.from\(["']milk_collections["']\)\.insert/.test(queueExportFn)) {
+            throw new Error('Pending queue backup must download local records without writing them to Supabase.');
+          }
+
           // Verify the saved Milk Collection settings affect the visible and validation paths.
           const settingsRenderer = html.slice(html.indexOf('function renderMilkCollectionSettings'));
           if (!/farmerScanInput\"\)\.disabled=!scannerEnabled/.test(settingsRenderer) || !/startFarmerCamera\"\)\.hidden=!scannerEnabled/.test(settingsRenderer)) {
