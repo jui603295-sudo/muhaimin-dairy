@@ -670,6 +670,15 @@ $("collectionForm").addEventListener("change",()=>renderMilkSmartInsights());
 $("refreshServerAudit").addEventListener("click",loadServerAudit);
 $("farmerScanInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const s=$("collectionFarmer");if(s.options.length===2&&s.value==="")s.selectedIndex=1;}});
 
+$("qualityReviewCollection").addEventListener("change",()=>{
+ const row=state.collections.find(x=>String(x.id)===String($("qualityReviewCollection").value));
+ if(!row)return;
+ const form=$("qualityReviewForm");
+ for(const key of ["clr","milk_temperature_c","fat_percent","snf_percent","smell_check","visual_check","adulteration_test","quality_status","tester_id","lab_result","sample_photo_url","quality_reason"]){
+  if(form.elements[key])form.elements[key].value=row[key]??(key==="clr"?(state.settings?.default_clr??28):key==="quality_status"?"Pending":key==="smell_check"||key==="visual_check"||key==="adulteration_test"?"Not Tested":"");
+ }
+ if(form.elements.tested_at)form.elements.tested_at.value="";
+});
 $("ledgerFarmer").addEventListener("change",renderLedger);
 $("ledgerFrom").addEventListener("change",renderLedger);
 $("ledgerTo").addEventListener("change",renderLedger);
@@ -716,8 +725,8 @@ bindForm("collectionForm",async f=>{
  if(f.collection_method==="Weighing Scale"&&!String(f.scale_ticket_no||"").trim())throw new Error("ডিজিটাল ওজন মেশিন ব্যবহার করলে স্কেল স্লিপ নম্বর দিন।");
  const failedScreen=f.smell_check==="Abnormal"||f.visual_check==="Abnormal"||f.adulteration_test==="Fail";
  if(failedScreen&&quality==="Accepted")throw new Error("গন্ধ/দৃশ্যমান/ভেজাল পরীক্ষায় সমস্যা আছে—দুধ Accepted করা যাবে না।");
- if(quality==="Accepted"&&f.accepted!=="true")throw new Error("গুণমান Accepted হলে গ্রহণ নিশ্চিতকরণে হ্যাঁ নির্বাচন করুন।");
- if(quality!=="Accepted"&&f.accepted==="true")throw new Error("গুণমান Accepted না হওয়া পর্যন্ত গ্রহণ নিশ্চিতকরণে না রাখুন。");
+ if(quality==="Accepted")throw new Error("সংগ্রহ ফর্ম থেকে সরাসরি Accepted করা যাবে না। আগে সংগ্রহ সংরক্ষণ করুন, তারপর আলাদা মান যাচাই ফর্মে পরীক্ষক অনুমোদন দেবেন।");
+ if(f.accepted==="true")throw new Error("সংগ্রহের সময় গ্রহণ নিশ্চিত করবেন না। মান যাচাই ফর্মে অনুমোদনের পর রেকর্ড গ্রহণযোগ্য হবে।");
  if((failedScreen||["Rejected","Retest Required","Quarantined"].includes(quality))&&!String(f.quality_reason||"").trim())throw new Error("অস্বাভাবিক ফল, বাতিল, পুনঃপরীক্ষা বা আলাদা রাখার কারণ লিখুন।");
  if(quality==="Accepted"&&(f.smell_check==="Not Tested"||f.visual_check==="Not Tested"||f.adulteration_test==="Not Tested"))throw new Error("দুধ Accepted করার আগে গন্ধ, দৃশ্যমান ও প্রাথমিক ভেজাল স্ক্রিনিং সম্পন্ন করুন।");
  const authResult=await sb.auth.getUser();
