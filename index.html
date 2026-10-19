@@ -1109,7 +1109,10 @@ async function exportPendingMilkQueue(){
  }
 }
 $("exportPendingMilkQueue")?.addEventListener("click",exportPendingMilkQueue);
-window.addEventListener("online",syncMilkCollectionQueue);
+window.addEventListener("online",()=>{
+ syncMilkCollectionQueue();
+ if(["operations","chiller","loss","finance"].some(id=>$(id)?.classList.contains("active")))loadOperationalRecords();
+});
 const collectionForm=$("collectionForm");
 collectionForm?.addEventListener("input",event=>{
  if(event.target?.name!=="client_record_id"){
