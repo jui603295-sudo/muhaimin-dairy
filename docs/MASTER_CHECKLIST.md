@@ -102,7 +102,7 @@ Version: 1.5. This checklist is the single source of truth. An unchecked item is
 | OFF-03 | Operational tables disclose offline cache limitation | CODE COMPLETE | Explicit offline messaging added; verify with browser/device test and ensure online reload succeeds |
 | MILK-UI-01 | Milk collection settings labels accurately describe implemented features | CODE COMPLETE | Static workflow and browser/device acceptance tests |
 | MILK-CI-01 | Static CI guard for TEST-only idempotency migration and replay safety | CODE COMPLETE | Validate Muhaimin Dairy run #101 passed (commit `31fe05898a86aae7d78540767f41fe347fc05ee5`); SQL/RLS not executed |
-| MILK-QUEUE-BACKUP-01 | Download local pending Milk Collection records as user-scoped JSON without server writes | CODE COMPLETE | Implementation added; validate new CI assertion and browser download, personal-data handling remains a manual acceptance test |
+| MILK-QUEUE-BACKUP-01 | Download local pending Milk Collection records as user-scoped JSON without server writes | CODE COMPLETE | Export count is scoped to current account; filename uses Bangladesh date; validate CI and real mobile download, personal-data handling remains a manual acceptance test |
 | MILK-OFF-01 | Prevent unverified queued writes from replaying to Supabase | CODE COMPLETE | Replay disabled on feature branch; TEST security/idempotency gate still required |
 | MILK-PHOTO-01 | Actual sample photo upload/storage | PLANNED | Choose TEST storage bucket, size/type limits, access policy and retention |
 | MILK-SCALE-01 | Physical scale integration | PLANNED | Identify device/protocol and test hardware; current toggle is configuration only |
