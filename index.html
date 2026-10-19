@@ -1066,7 +1066,7 @@ bindForm("collectionForm",async f=>{
  if(failedScreen&&quality==="Accepted")throw new Error("গন্ধ/দৃশ্যমান/ভেজাল পরীক্ষায় সমস্যা আছে—দুধ Accepted করা যাবে না।");
  if(quality==="Accepted")throw new Error("সংগ্রহ ফর্ম থেকে সরাসরি Accepted করা যাবে না। আগে সংগ্রহ সংরক্ষণ করুন, তারপর আলাদা মান যাচাই ফর্মে পরীক্ষক অনুমোদন দেবেন।");
  if(f.accepted==="true")throw new Error("সংগ্রহের সময় গ্রহণ নিশ্চিত করবেন না। মান যাচাই ফর্মে অনুমোদনের পর রেকর্ড গ্রহণযোগ্য হবে।");
- if((failedScreen||["Rejected","Retest Required","Quarantined"].includes(quality))&&!String(f.quality_reason||"").trim())throw new Error("অস্বাভাবিক ফল, বাতিল, পুনঃপরীক্ষা বা আলাদা রাখার কারণ লিখুন।");
+ if(state.milkCollectionSettings?.quality_reason_required!==false&&(failedScreen||quality!=="Accepted")&&!String(f.quality_reason||"").trim())throw new Error("অস্বাভাবিক/অগ্রহণযোগ্য ফলের কারণ লিখুন; সেটিংসে কারণ বাধ্যতামূলক চালু আছে।");
  if(quality==="Accepted"&&(f.smell_check==="Not Tested"||f.visual_check==="Not Tested"||f.adulteration_test==="Not Tested"))throw new Error("দুধ Accepted করার আগে গন্ধ, দৃশ্যমান ও প্রাথমিক ভেজাল স্ক্রিনিং সম্পন্ন করুন।");
  const authResult=await sb.auth.getSession();
  const collectorUserId=authResult.data?.session?.user?.id||null;
