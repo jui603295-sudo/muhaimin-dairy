@@ -924,7 +924,8 @@ bindForm("qualityReviewForm",async f=>{
  if((fat!==null&&(fat<0||fat>100))||(snf!==null&&(snf<0||snf>100)))throw new Error("Fat/SNF ০–১০০%-এর মধ্যে হতে হবে।");
  const failed=f.smell_check==="Abnormal"||f.visual_check==="Abnormal"||f.adulteration_test==="Fail";
  if(f.quality_status==="Accepted"&&(failed||f.smell_check==="Not Tested"||f.visual_check==="Not Tested"||f.adulteration_test==="Not Tested"))throw new Error("সব প্রাথমিক পরীক্ষা সম্পন্ন এবং স্বাভাবিক না হলে Accepted করা যাবে না।");
- if(f.quality_status!=="Accepted"&&!String(f.quality_reason||"").trim())throw new Error("Accepted নয় এমন ফলের কারণ লিখুন।");
+ if(state.milkCollectionSettings?.quality_reason_required!==false&&f.quality_status!=="Accepted"&&!String(f.quality_reason||"").trim())throw new Error("সেটিংস অনুযায়ী Accepted নয় এমন ফলের কারণ লিখুন।");
+ if(state.milkCollectionSettings?.sample_photo_required===true&&!String(f.sample_photo_url||"").trim())throw new Error("সেটিংস অনুযায়ী নমুনার ছবি/রেফারেন্স URL আবশ্যক।");
  if(!String(f.tester_id||"").trim()||!f.tested_at)throw new Error("পরীক্ষক ID ও পরীক্ষার সময় আবশ্যক।");
  const auth=await sb.auth.getUser();
  const reviewerUserId=auth.data&&auth.data.user?auth.data.user.id:null;
