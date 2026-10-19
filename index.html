@@ -354,6 +354,11 @@ function renderMilkCollectionSettings(settings){
  $("mcsScale").checked=!!value.scale_integration_enabled;
  $("mcsPrint").checked=!!value.receipt_print_enabled;
  $("mcsShare").checked=!!value.receipt_share_enabled;
+ const scannerEnabled=!!value.barcode_scanner_enabled;
+ $("farmerScanInput").disabled=!scannerEnabled;
+ $("startFarmerCamera").hidden=!scannerEnabled;
+ $("stopFarmerCamera").hidden=!scannerEnabled;
+ $("farmerScanStatus").textContent=scannerEnabled?"স্ক্যানার ইনপুট বা কৃষক কোড লিখলে কৃষক নির্বাচন হবে।":"বারকোড/QR স্ক্যান বন্ধ আছে; নিচের তালিকা থেকে কৃষক নির্বাচন করুন।";
  const collectionForm=$("collectionForm");
  if(collectionForm){
   const rateField=collectionForm.elements.namedItem("purchase_rate");
@@ -473,7 +478,7 @@ function render() {
     return values.some(v=>String(v??"").toLowerCase().includes(collectionQuery));
   }).slice(0,100);
   $("collectionTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Branch":"কেন্দ্র",tr("farmerLabel"),"L","CLR","মান / Quality","পদ্ধতি / Method",lang()==="en"?"Rate/L":"৳/L","রসিদ"],
-    visibleCollections.map(x=>[dateBN(x.collection_date),esc(storedTime(x.collection_time,x.created_at)),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),n(x.liters),x.clr ?? "",esc(x.quality_status||"Pending"),esc(x.collection_method||"Manual"),money(x.purchase_rate),'<button type="button" class="btn" data-collection-action="print" data-collection-id="'+esc(x.id)+'">🧾 প্রিন্ট/PDF</button> <button type="button" class="btn" data-collection-action="share" data-collection-id="'+esc(x.id)+'">শেয়ার</button>']));
+    visibleCollections.map(x=>[dateBN(x.collection_date),esc(storedTime(x.collection_time,x.created_at)),esc(branchName(x.branch_id)),esc(farmerName(x.farmer_id)),n(x.liters),x.clr ?? "",esc(x.quality_status||"Pending"),esc(x.collection_method||"Manual"),money(x.purchase_rate),(state.milkCollectionSettings?.receipt_print_enabled!==false?'<button type="button" class="btn" data-collection-action="print" data-collection-id="'+esc(x.id)+'">🧾 প্রিন্ট/PDF</button> ':'')+(state.milkCollectionSettings?.receipt_share_enabled!==false?'<button type="button" class="btn" data-collection-action="share" data-collection-id="'+esc(x.id)+'">শেয়ার</button>':'—')]));
   const receiptStatus=$("collectionReceiptStatus");
   if(receiptStatus)receiptStatus.textContent="দেখানো হচ্ছে "+visibleCollections.length+"টি রেকর্ড (সর্বোচ্চ ১০০টি)। CSV এক্সপোর্টে সব লোড করা সংগ্রহ অন্তর্ভুক্ত হবে।";
   $("paymentTable").innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",tr("farmerLabel"),tr("amountLabel"),tr("methodLabel")],
