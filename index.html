@@ -1487,8 +1487,9 @@ function loadModuleSettingsDraft(){
  const status=$("moduleSettingsDraftStatus");if(!status)return;
  try{
   const raw=localStorage.getItem(moduleSettingsDraftKey());
-  applyModuleSettingsDraft(raw?JSON.parse(raw):MODULE_SETTINGS_DRAFT_DEFAULTS);
-  status.textContent=raw?"এই ফোনে সংরক্ষিত লোকাল ড্রাফট লোড হয়েছে; সার্ভার সেটিংস পরিবর্তন হয়নি।":"ডিফল্ট ড্রাফট দেখানো হচ্ছে; এখনো সংরক্ষণ করা হয়নি।";
+  const parsed=raw?JSON.parse(raw):null;
+  applyModuleSettingsDraft(parsed&&parsed.settings?parsed.settings:MODULE_SETTINGS_DRAFT_DEFAULTS);
+  status.textContent=parsed&&parsed.settings?"এই ফোনে সংরক্ষিত লোকাল ড্রাফট লোড হয়েছে; সার্ভার সেটিংস পরিবর্তন হয়নি।":"ডিফল্ট ড্রাফট দেখানো হচ্ছে; এখনো সংরক্ষণ করা হয়নি।";
  }catch(error){applyModuleSettingsDraft(MODULE_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
 }
 $("moduleSettingsDraftForm").addEventListener("submit",event=>{
@@ -1511,9 +1512,8 @@ $("moduleSettingsDraftReset").addEventListener("click",()=>{
  try{localStorage.removeItem(moduleSettingsDraftKey());applyModuleSettingsDraft(MODULE_SETTINGS_DRAFT_DEFAULTS);$("moduleSettingsDraftStatus").textContent="এই ফোনের লোকাল ড্রাফট মুছে ডিফল্ট মান দেখানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";}
  catch(error){$("moduleSettingsDraftStatus").textContent=error.message||String(error);}
 });
-$("settings").addEventListener("click",event=>{
- if(event.target.closest("#moduleSettingsWorkspace"))loadModuleSettingsDraft();
-});
+const moduleSettingsNavButton=document.querySelector('nav [data-page="settings"]');
+if(moduleSettingsNavButton)moduleSettingsNavButton.addEventListener("click",loadModuleSettingsDraft);
 $("offlineCacheEnabled").checked=offlineCacheEnabled();
 $("saveOfflineSettings").addEventListener("click",()=>{
  const enabled=$("offlineCacheEnabled").checked;
