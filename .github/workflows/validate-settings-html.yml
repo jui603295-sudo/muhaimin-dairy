@@ -1,0 +1,41 @@
+name: Validate Muhaimin HTML
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - ".github/workflows/validate-settings-html.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inline-javascript-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Parse and syntax-check inline JavaScript
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, subprocess, tempfile
+          html = pathlib.Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>", html, re.IGNORECASE)
+          inline = [(attrs, body) for attrs, body in scripts if not re.search(r"\\bsrc\\s*=", attrs, re.IGNORECASE) and body.strip()]
+          if not inline:
+              raise SystemExit("No inline JavaScript blocks found.")
+          with tempfile.TemporaryDirectory() as tmp:
+              for i, (_, body) in enumerate(inline, 1):
+                  path = pathlib.Path(tmp) / f"inline-{i}.js"
+                  path.write_text(body, encoding="utf-8")
+                  result = subprocess.run(["node", "--check", str(path)], text=True, capture_output=True)
+                  if result.returncode:
+                      print(result.stdout, end="")
+                      print(result.stderr, end="")
+                      raise SystemExit(f"JavaScript syntax check failed for inline block {i}.")
+                  print(f"PASS: inline JavaScript block {i}")
+          print(f"PASS: {len(inline)} inline JavaScript blocks parsed.")
+          PY
