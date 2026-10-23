@@ -23,8 +23,8 @@ jobs:
           python3 - <<'PY'
           import pathlib, re, subprocess, tempfile
           html = pathlib.Path("index.html").read_text(encoding="utf-8")
-          scripts = re.findall(r"<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>", html, re.IGNORECASE)
-          inline = [(attrs, body) for attrs, body in scripts if not re.search(r"\\bsrc\\s*=", attrs, re.IGNORECASE) and body.strip()]
+          scripts = re.findall(r"<script\b([^>]*)>([\s\S]*?)</script\s*>", html, re.IGNORECASE)
+          inline = [(attrs, body) for attrs, body in scripts if not re.search(r"\bsrc\s*=", attrs, re.IGNORECASE) and body.strip()]
           if not inline:
               raise SystemExit("No inline JavaScript blocks found.")
           with tempfile.TemporaryDirectory() as tmp:
