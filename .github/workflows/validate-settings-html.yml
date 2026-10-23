@@ -59,6 +59,8 @@ jobs:
             ['RLS forced on workspace tables', 'FORCE ROW LEVEL SECURITY'],
             ['Main Admin policy', "public.has_app_role(''main_admin'')"],
             ['transaction stock guard', 'dairy_processing_transaction_guard'],
+            ['updated_at triggers', 'dairy_processing_touch_updated_at'],
+            ['transaction batch reassignment guard', 'A transaction cannot be reassigned to another batch'],
             ['batch output integrity guard', 'dairy_processing_batch_output_guard'],
             ['append-only audit table', 'REVOKE INSERT, UPDATE, DELETE ON public.dairy_processing_audit FROM authenticated'],
             ['server-side stock view', 'dairy_processing_stock'],
