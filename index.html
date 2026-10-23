@@ -28,6 +28,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px
 .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#e6f3f1;font-size:11px}.section-title{display:flex;align-items:center;gap:8px}.section-title .ico{font-size:20px}
 a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space:nowrap}
 @media(min-width:760px){nav{grid-template-columns:repeat(6,minmax(0,1fr));top:68px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}header{padding-left:max(14px,calc((100vw - 1150px)/2))}}
+.milk-workspace-nav{position:sticky;top:122px;z-index:8;margin:8px 0;padding:10px}.milk-workspace-nav>strong{display:block;margin-bottom:8px}.milk-workspace-nav-links{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.milk-workspace-nav-links button{flex:0 0 auto;border:1px solid #dbe5e3;border-radius:9px;background:#f8fcfb;color:#134e4a;padding:9px 11px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}.milk-workspace-nav-links button.active{background:var(--green);color:#fff;border-color:var(--green)}
 .milk-workspace-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.milk-workspace-tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:112px;padding:14px;border:1px solid #dbe5e3;border-radius:14px;background:#f8fcfb;color:#134e4a;text-align:left;cursor:pointer}.milk-workspace-tile>span{font-size:26px}.milk-workspace-tile strong{font-size:14px}.milk-workspace-tile small{font-size:11px;color:#64748b;font-weight:400}.milk-workspace-tile.active{border-color:var(--green);background:#e3f5f1;box-shadow:0 0 0 1px #0f766e20}.milk-workspace-settings{background:#f8fafc}.milk-future-options{margin-top:12px;background:#fbfdfd}@media(min-width:760px){.milk-workspace-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
  .address-fields{border:1px solid var(--border,#d1d5db);border-radius:10px;padding:12px;margin:12px 0}.address-fields legend{font-weight:700;padding:0 6px;color:var(--green,#0f766e)}.address-fields label{display:block;margin-bottom:8px}</style>
 </head>
@@ -72,6 +73,18 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 
 </nav>
 <main>
+<div id="milkWorkspaceNav" class="card milk-workspace-nav hidden" aria-label="দুধ সংগ্রহ মডিউল নেভিগেশন">
+ <strong>🥛 দুধ সংগ্রহ</strong>
+ <div class="milk-workspace-nav-links">
+  <button type="button" data-milk-page="collection">🥛 দুধ সংগ্রহ</button>
+  <button type="button" data-milk-page="payments">💳 পেমেন্ট</button>
+  <button type="button" data-milk-page="operations">🧪 দুধের মান ও ব্যাচ</button>
+  <button type="button" data-milk-page="chiller">🌡️ চিলার লগ</button>
+  <button type="button" data-milk-page="loss">⚖️ দুধের হিসাব/ক্ষতি</button>
+  <button type="button" data-milk-page="finance">💰 খরচ ও বিক্রয়</button>
+  <button type="button" data-milk-settings>⚙️ সেটিংস</button>
+ </div>
+</div>
 <div id="apiWarning" class="card hidden" role="alert" style="border-color:#d97706;background:#fffbeb;color:#92400e"></div>
 <section id="home" class="page active">
 <div class="grid"><div class="stat"><span data-i18n="todayMilk">আজকের সংগ্রহ</span><b id="todayLiters">0 L</b></div><div class="stat"><span data-i18n="todayCommission">আজকের কমিশন</span><b id="todayCommission">৳0</b></div><div class="stat"><span data-i18n="branchCountLabel">কেন্দ্র</span><b id="branchCount">0</b></div><div class="stat"><span data-i18n="farmerCountLabel">কৃষক</span><b id="farmerCount">0</b></div></div>
@@ -1796,6 +1809,7 @@ $("feedNameSelect").addEventListener("change",()=>$("customFeedWrap").classList.
 document.querySelectorAll("#nav button").forEach(button=>button.addEventListener("click",()=>{
   document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
   const page=$(button.dataset.page); if(page)page.classList.add("active");
+  const milkWorkspaceNav=$("milkWorkspaceNav");if(milkWorkspaceNav)milkWorkspaceNav.classList.toggle("hidden",!["collection","payments","operations","chiller","loss","finance"].includes(button.dataset.page));
   document.querySelectorAll("#nav button").forEach(item=>item.classList.remove("active"));
   button.classList.add("active");
   if(["operations","chiller","loss","finance"].includes(button.dataset.page))loadOperationalRecords();
@@ -1808,7 +1822,8 @@ document.querySelectorAll("[data-milk-page]").forEach(button=>button.addEventLis
  document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
  const page=$(target);if(page)page.classList.add("active");
  document.querySelectorAll("#nav button").forEach(item=>item.classList.toggle("active",item.dataset.page==="collection"));
- document.querySelectorAll("[data-milk-page]").forEach(item=>item.classList.toggle("active",item===button));
+ document.querySelectorAll("[data-milk-page]").forEach(item=>item.classList.toggle("active",item.dataset.milkPage===target));
+document.querySelectorAll("#milkWorkspaceNav [data-milk-page]").forEach(item=>item.classList.toggle("active",item.dataset.milkPage===target));
  if(["operations","chiller","loss","finance"].includes(target))loadOperationalRecords();
  if(target==="ledger")renderLedger();
 }));
