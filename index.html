@@ -1827,8 +1827,7 @@ document.querySelectorAll("#milkWorkspaceNav [data-milk-page]").forEach(item=>it
  if(["operations","chiller","loss","finance"].includes(target))loadOperationalRecords();
  if(target==="ledger")renderLedger();
 }));
-const milkSettingsShortcut=document.querySelector("[data-milk-settings]");
-if(milkSettingsShortcut)milkSettingsShortcut.addEventListener("click",()=>{const settingsButton=document.querySelector('#nav [data-page="settings"]');if(settingsButton)settingsButton.click();});
+document.querySelectorAll("[data-milk-settings]").forEach(milkSettingsShortcut=>milkSettingsShortcut.addEventListener("click",()=>{const settingsButton=document.querySelector('#nav [data-page="settings"]');if(settingsButton)settingsButton.click();}));
 $("ledgerFarmer").addEventListener("change",renderLedger);
 $("runReport").addEventListener("click",()=>$("report").innerHTML=reportHtml(state.collections));
 function printableHtml(title, targetId) {
