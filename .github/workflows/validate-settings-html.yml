@@ -26,6 +26,7 @@ jobs:
           const fs = require('node:fs');
           const html = fs.readFileSync('index.html', 'utf8');
           const module = fs.readFileSync('dairy-processing-module.js', 'utf8');
+          const migration = fs.readFileSync('supabase/migrations/202610240001_dairy_processing_workspace.sql', 'utf8');
           if (!html.includes('<script src="./dairy-processing-module.js"></script>')) {
             throw new Error('Dairy processing module script is not included in index.html.');
           }
@@ -50,7 +51,18 @@ jobs:
           for (const [name, marker] of requiredFeatures) {
             if (!module.includes(marker)) throw new Error('Missing dairy module safety/feature check: ' + name);
           }
-          console.log('PASS: dairy module syntax, wiring, identity, reports, editing, backup, audit, and transaction guards.');
+          const migrationGuards = [
+            ['RLS forced on workspace tables', 'FORCE ROW LEVEL SECURITY'],
+            ['Main Admin policy', "public.has_app_role(''main_admin'')"],
+            ['transaction stock guard', 'dairy_processing_transaction_guard'],
+            ['batch output integrity guard', 'dairy_processing_batch_output_guard'],
+            ['append-only audit table', 'REVOKE INSERT, UPDATE, DELETE ON public.dairy_processing_audit FROM authenticated'],
+            ['server-side stock view', 'dairy_processing_stock']
+          ];
+          for (const [name, marker] of migrationGuards) {
+            if (!migration.includes(marker)) throw new Error('Missing migration safety guard: ' + name);
+          }
+          console.log('PASS: dairy module syntax, wiring, reports, edits, backup, audit, transaction guards, and TEST migration safety markers.');
           NODE
       - name: Parse and syntax-check inline JavaScript
         shell: bash
