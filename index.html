@@ -1663,7 +1663,8 @@ function loadFinalChecklist(){
  const status=document.getElementById("finalChecklistStatus");if(!status)return;
  try{
   const raw=localStorage.getItem(finalChecklistStorageKey());
-  renderFinalChecklist(raw?JSON.parse(raw):{});
+  const parsed=raw?JSON.parse(raw):null;
+  renderFinalChecklist(parsed&&parsed.checks?parsed.checks:{});
   status.textContent=raw?"এই ফোনের লোকাল চেকলিস্ট লোড হয়েছে।":"নতুন চেকলিস্ট; কোনো কাজকে স্বয়ংক্রিয়ভাবে সম্পন্ন ধরা হয়নি।";
  }catch(error){status.textContent=error.message||String(error);}
 }
