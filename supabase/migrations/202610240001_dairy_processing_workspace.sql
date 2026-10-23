@@ -167,6 +167,35 @@ $rls$;
 REVOKE INSERT, UPDATE, DELETE ON public.dairy_processing_audit FROM authenticated;
 GRANT SELECT ON public.dairy_processing_audit TO authenticated;
 
+CREATE OR REPLACE FUNCTION public.touch_dairy_processing_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $function$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$function$;
+
+DO $updated_triggers$
+DECLARE t text;
+BEGIN
+  FOREACH t IN ARRAY ARRAY[
+    'dairy_processing_institutions','dairy_processing_products',
+    'dairy_processing_batches','dairy_processing_transactions','dairy_processing_costs'
+  ] LOOP
+    EXECUTE format('DROP TRIGGER IF EXISTS dairy_processing_touch_updated_at ON public.%I',t);
+    EXECUTE format(
+      'CREATE TRIGGER dairy_processing_touch_updated_at BEFORE UPDATE ON public.%I FOR EACH ROW EXECUTE FUNCTION public.touch_dairy_processing_updated_at()',
+      t
+    );
+  END LOOP;
+END;
+$updated_triggers$;
+
+REVOKE ALL ON FUNCTION public.touch_dairy_processing_updated_at() FROM PUBLIC, anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.validate_dairy_processing_transaction()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -180,6 +209,9 @@ DECLARE
   v_returned numeric(14,3);
   v_available numeric(14,3);
 BEGIN
+  IF TG_OP = 'UPDATE' AND NEW.batch_id IS DISTINCT FROM OLD.batch_id THEN
+    RAISE EXCEPTION 'A transaction cannot be reassigned to another batch' USING ERRCODE = '23514';
+  END IF;
   -- Serialize all stock mutations for a batch; concurrent sales cannot oversell it.
   SELECT * INTO b
   FROM public.dairy_processing_batches
