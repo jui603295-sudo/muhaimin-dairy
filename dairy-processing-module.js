@@ -109,6 +109,12 @@ async function importDraftFile(){
  if(!incoming||incoming.version!==1||arrays.some(k=>!Array.isArray(incoming[k]))){notice("এই ফাইলের সংস্করণ/কাঠামো সমর্থিত নয়; মূল খসড়া অপরিবর্তিত আছে।");return}
  if(incoming.products.length>500||incoming.institutions.length>5000||incoming.batches.length>20000||incoming.sales.length>50000||incoming.costs.length>50000){notice("ব্যাকআপে অনুমোদিত সীমার বেশি রেকর্ড আছে।");return}
  const ids=new Set();for(const k of arrays){for(const row of incoming[k]){if(!row||typeof row!=="object"||typeof row.id!=="string"||!row.id||ids.has(k+":"+row.id)){notice("ব্যাকআপে রেকর্ড ID অনুপস্থিত বা ডুপ্লিকেট; মূল খসড়া অপরিবর্তিত আছে।");return}ids.add(k+":"+row.id)}}
+ const num=(v,min=0)=>Number.isFinite(Number(v))&&Number(v)>=min;
+ if(incoming.products.some(x=>typeof x.name!=="string"||!x.name.trim()||typeof x.unit!=="string"||!["কেজি","লিটার","প্যাকেট","পিস"].includes(x.unit)))return notice("ব্যাকআপে পণ্যের নাম/একক অবৈধ; মূল খসড়া অপরিবর্তিত আছে।");
+ if(incoming.institutions.some(x=>typeof x.name!=="string"||!x.name.trim()||!num(x.demand,0)))return notice("ব্যাকআপে প্রতিষ্ঠানের নাম বা দুধের চাহিদা অবৈধ; মূল খসড়া অপরিবর্তিত আছে।");
+ if(incoming.batches.some(x=>!/^\\d{4}-\\d{2}-\\d{2}$/.test(x.date||"")||!/^\\d{4}-\\d{2}-\\d{2}$/.test(x.expiry||"")||!num(x.milk,.001)||!num(x.output,.001)||!["পরীক্ষা বাকি","হোল্ড","প্রত্যাখ্যাত","গ্রহণযোগ্য"].includes(x.quality)))return notice("ব্যাকআপে উৎপাদন ব্যাচের তারিখ/পরিমাণ/মান অবৈধ; মূল খসড়া অপরিবর্তিত আছে。");
+ if(incoming.sales.some(x=>!/^\\d{4}-\\d{2}-\\d{2}$/.test(x.date||"")||!["বিক্রয়","ফেরত","অপচয়"].includes(x.kind)||!num(x.qty,.001)||!num(x.price,0)))return notice("ব্যাকআপে বিক্রয়/ফেরতের তথ্য অবৈধ; মূল খসড়া অপরিবর্তিত আছে।");
+ if(incoming.costs.some(x=>!/^\\d{4}-\\d{2}-\\d{2}$/.test(x.date||"")||!num(x.amount,.01)))return notice("ব্যাকআপে খরচের তারিখ বা পরিমাণ অবৈধ; মূল খসড়া অপরিবর্তিত আছে।");
  const productIds=new Set(incoming.products.map(x=>x.id)),institutionIds=new Set(incoming.institutions.map(x=>x.id)),batchIds=new Set(incoming.batches.map(x=>x.id));
  if(incoming.batches.some(x=>!productIds.has(x.product)||!institutionIds.has(x.institution))||incoming.sales.some(x=>!batchIds.has(x.batch))||incoming.costs.some(x=>x.batch&&!batchIds.has(x.batch))){notice("ব্যাকআপে ভাঙা রেফারেন্স আছে; মূল খসড়া অপরিবর্তিত আছে।");return}
  if(!confirm("এই JSON ব্যাকআপ বর্তমান এই ডিভাইসের মডিউল খসড়া প্রতিস্থাপন করবে। এটি সার্ভার/Production ডেটা বদলাবে না। চালিয়ে যাবেন?"))return;
