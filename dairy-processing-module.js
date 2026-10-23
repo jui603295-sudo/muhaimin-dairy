@@ -112,7 +112,7 @@ function renderReport(){
 }
 function exportReportCsv(){
  renderReport();const rows=[["প্রতিবেদন","দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠান"],["রপ্তানির সময়",new Date().toISOString()],["ব্যাচ তারিখ","ব্যাচ","পণ্য","দুধ L","উৎপাদন","একক","মান","মেয়াদ"],...db.batches.filter(b=>b.date>=($("dpReportFrom").value||"0000-01-01")&&b.date<=($("dpReportTo").value||"9999-12-31")).map(b=>[b.date,b.code,pName(b.product),b.milk,b.output,b.unit,b.quality,b.expiry])];
- const csv="\\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"').join(",")).join("\\r\\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="muhaimin-dairy-processing-report-"+today()+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notice("তারিখভিত্তিক CSV রপ্তানি হয়েছে; এটি সার্ভার রিপোর্ট নয়।");
+ const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="muhaimin-dairy-processing-report-"+today()+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notice("তারিখভিত্তিক CSV রপ্তানি হয়েছে; এটি সার্ভার রিপোর্ট নয়।");
 }
 function start(){styles();inject()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
