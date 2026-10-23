@@ -131,7 +131,57 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
   <p id="milkCollectionSettingsStatus" class="small" role="status">Milk Collection সেটিংস লোড হচ্ছে…</p>
   <button class="btn primary" type="submit">Milk Collection সেটিংস সংরক্ষণ</button>
  </form>
-</div><div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
+</div><div class="card" id="moduleSettingsWorkspace">
+ <h3>🧩 মডিউলভিত্তিক সেটিংস — Workspace V1</h3>
+ <p class="small">এটি নিরাপদ খসড়া। এখানে সংরক্ষণ করলে শুধু এই ফোনের বর্তমান Main Admin অ্যাকাউন্টে লোকাল ড্রাফট রাখা হবে; Supabase/লাইভ ব্যবসার সেটিংস পরিবর্তন হবে না। TEST ডাটাবেস, RLS ও অনুমোদিত API যাচাইয়ের পর সার্ভার-সংরক্ষণ যুক্ত হবে।</p>
+ <form id="moduleSettingsDraftForm">
+  <h4>🏢 শাখা / Branches</h4>
+  <div class="row">
+   <div><label>নতুন শাখার ডিফল্ট দৈনিক লক্ষ্য (লিটার)<input id="msBranchTarget" name="branch_default_target" type="number" min="0" max="1000000" step="1" value="500"></label></div>
+   <div><label>শাখা বন্ধ/হোল্ড স্ট্যাটাস পরিচালনা<select id="msBranchStatus" name="branch_status_control"><option value="enabled">সক্রিয়</option><option value="review">অনুমোদন-পর্যালোচনা</option></select></label></div>
+  </div>
+  <h4>👨‍🌾 কৃষক / Farmers</h4>
+  <div class="row">
+   <div><label><input id="msFarmerMobile" name="farmer_mobile_required" type="checkbox" checked> মোবাইল নম্বর আবশ্যক</label></div>
+   <div><label><input id="msFarmerCall" name="farmer_direct_call" type="checkbox" checked> সরাসরি কল বাটন</label></div>
+   <div><label><input id="msFarmerLedger" name="farmer_ledger_link" type="checkbox" checked> কৃষক লেজার সংযোগ</label></div>
+  </div>
+  <h4>💳 পেমেন্ট / Payments</h4>
+  <div class="row">
+   <div><label>পেমেন্ট চক্র<select id="msPaymentCycle" name="payment_cycle"><option value="weekly">সাপ্তাহিক</option><option value="daily">দৈনিক</option><option value="custom">কাস্টম (ভবিষ্যৎ)</option></select></label></div>
+   <div><label><input id="msPaymentReceipt" name="payment_receipt" type="checkbox" checked> পেমেন্ট রসিদ/PDF</label></div>
+   <div><label><input id="msPaymentShare" name="payment_share" type="checkbox" checked> শেয়ার অপশন</label></div>
+  </div>
+  <h4>🌾 ফিড / Feed</h4>
+  <div class="row">
+   <div><label>ডিফল্ট ফিড মূল্য (৳/কেজি)<input id="msFeedPrice" name="feed_default_price" type="number" min="0" max="100000" step="0.01" value="50"></label></div>
+   <div><label><input id="msFeedStockAlert" name="feed_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+   <div><label><input id="msFeedExpiry" name="feed_expiry_alert" type="checkbox" checked> মেয়াদোত্তীর্ণ সতর্কতা</label></div>
+  </div>
+  <h4>🩺 ভেটেরিনারি / Veterinary</h4>
+  <div class="row">
+   <div><label><input id="msVetBatch" name="vet_batch_tracking" type="checkbox" checked> ব্যাচ নম্বর ট্র্যাকিং</label></div>
+   <div><label><input id="msVetExpiry" name="vet_expiry_alert" type="checkbox" checked> ওষুধের মেয়াদ সতর্কতা</label></div>
+   <div><label><input id="msVetLowStock" name="vet_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+  </div>
+  <h4>🌱 এগ্রো / Agro Care</h4>
+  <div class="row">
+   <div><label><input id="msAgroBatch" name="agro_batch_tracking" type="checkbox" checked> ব্যাচ/লট ট্র্যাকিং</label></div>
+   <div><label><input id="msAgroExpiry" name="agro_expiry_alert" type="checkbox" checked> মেয়াদ সতর্কতা</label></div>
+   <div><label><input id="msAgroStock" name="agro_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+  </div>
+  <h4>📊 রিপোর্ট ও 📒 ফার্মার লেজার</h4>
+  <div class="row">
+   <div><label>তারিখ বিন্যাস<select id="msDateFormat" name="date_format"><option value="DD-MM-YYYY">DD-MM-YYYY</option></select></label></div>
+   <div><label><input id="msBangladeshTime" name="bangladesh_time" type="checkbox" checked> বাংলাদেশ সময় (Asia/Dhaka)</label></div>
+   <div><label><input id="msReportPdf" name="report_pdf" type="checkbox" checked> PDF/প্রিন্ট</label></div>
+   <div><label><input id="msReportShare" name="report_share" type="checkbox" checked> WhatsApp/শেয়ার</label></div>
+  </div>
+  <p id="moduleSettingsDraftStatus" class="small" role="status">লোকাল ড্রাফট লোডের অপেক্ষায়।</p>
+  <div class="row"><button class="btn primary" type="submit">ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="moduleSettingsDraftReset">ডিফল্টে ফেরত</button></div>
+ </form>
+</div>
+<div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
 <section id="backup" class="page"><div class="card"><h3 data-i18n="backupTitle">💾 ব্যাকআপ ও রিস্টোর</h3><p class="small" data-i18n="backupInfo">JSON ব্যাকআপ ডাউনলোড করুন। রিস্টোরের আগে ডেটা যাচাই করুন; এই সংস্করণে নিরাপদ restore স্বয়ংক্রিয়ভাবে চালানো হয় না।</p><button class="btn primary" id="exportBtn"
 
 data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেটা ব্যাকআপ</button><label data-i18n="importBackup">ব্যাকআপ ফাইল নির্বাচন<input type="file" id="importFile" accept="application/json,.json"></label><button class="btn" id="validateImportBtn" data-i18n="validateBackup">ফাইল যাচাই করুন</button><p id="backupMsg" class="small"></p></div></section>
@@ -1402,6 +1452,67 @@ bindForm("milkCollectionSettingsForm",async f=>{
  logActivity("Update Milk Collection future main settings");
  $("milkCollectionSettingsStatus").textContent="সেটিংস সংরক্ষিত · Revision "+(result.data.revision??"updated")+" · অজানা ভবিষ্যৎ key অক্ষত রাখা হয়েছে।";
  toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
+});
+const MODULE_SETTINGS_DRAFT_DEFAULTS={
+ branch_default_target:500,branch_status_control:"enabled",
+ farmer_mobile_required:true,farmer_direct_call:true,farmer_ledger_link:true,
+ payment_cycle:"weekly",payment_receipt:true,payment_share:true,
+ feed_default_price:50,feed_stock_alert:true,feed_expiry_alert:true,
+ vet_batch_tracking:true,vet_expiry_alert:true,vet_stock_alert:true,
+ agro_batch_tracking:true,agro_expiry_alert:true,agro_stock_alert:true,
+ date_format:"DD-MM-YYYY",bangladesh_time:true,report_pdf:true,report_share:true
+};
+const MODULE_SETTINGS_DRAFT_FIELDS={
+ branch_default_target:"msBranchTarget",branch_status_control:"msBranchStatus",
+ farmer_mobile_required:"msFarmerMobile",farmer_direct_call:"msFarmerCall",farmer_ledger_link:"msFarmerLedger",
+ payment_cycle:"msPaymentCycle",payment_receipt:"msPaymentReceipt",payment_share:"msPaymentShare",
+ feed_default_price:"msFeedPrice",feed_stock_alert:"msFeedStockAlert",feed_expiry_alert:"msFeedExpiry",
+ vet_batch_tracking:"msVetBatch",vet_expiry_alert:"msVetExpiry",vet_stock_alert:"msVetLowStock",
+ agro_batch_tracking:"msAgroBatch",agro_expiry_alert:"msAgroExpiry",agro_stock_alert:"msAgroStock",
+ date_format:"msDateFormat",bangladesh_time:"msBangladeshTime",report_pdf:"msReportPdf",report_share:"msReportShare"
+};
+function applyModuleSettingsDraft(values){
+ const merged={...MODULE_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
+ for(const [key,id] of Object.entries(MODULE_SETTINGS_DRAFT_FIELDS)){
+  const el=$(id);if(!el)continue;
+  if(el.type==="checkbox")el.checked=Boolean(merged[key]);else el.value=String(merged[key]);
+ }
+}
+function moduleSettingsDraftKey(){
+ const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+ if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে অনলাইনে লগইন করুন।");
+ return "muhaimin-module-settings-draft-v1:"+userId;
+}
+function loadModuleSettingsDraft(){
+ const status=$("moduleSettingsDraftStatus");if(!status)return;
+ try{
+  const raw=localStorage.getItem(moduleSettingsDraftKey());
+  applyModuleSettingsDraft(raw?JSON.parse(raw):MODULE_SETTINGS_DRAFT_DEFAULTS);
+  status.textContent=raw?"এই ফোনে সংরক্ষিত লোকাল ড্রাফট লোড হয়েছে; সার্ভার সেটিংস পরিবর্তন হয়নি।":"ডিফল্ট ড্রাফট দেখানো হচ্ছে; এখনো সংরক্ষণ করা হয়নি।";
+ }catch(error){applyModuleSettingsDraft(MODULE_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
+}
+$("moduleSettingsDraftForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const status=$("moduleSettingsDraftStatus");
+ try{
+  const values={};
+  for(const [key,id] of Object.entries(MODULE_SETTINGS_DRAFT_FIELDS)){
+   const el=$(id);values[key]=el.type==="checkbox"?el.checked:el.type==="number"?Number(el.value):el.value;
+  }
+  if(!Number.isFinite(values.branch_default_target)||values.branch_default_target<0||values.branch_default_target>1000000)throw new Error("শাখার দৈনিক লক্ষ্য ০–১০,০০,০০০ লিটারের মধ্যে দিন।");
+  if(!Number.isFinite(values.feed_default_price)||values.feed_default_price<0||values.feed_default_price>100000)throw new Error("ফিডের মূল্য ০–১,০০,০০০ টাকার মধ্যে দিন।");
+  const key=moduleSettingsDraftKey();
+  localStorage.setItem(key,JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),settings:values}));
+  status.textContent="লোকাল ড্রাফট এই ফোনে সংরক্ষিত হয়েছে। এটি Supabase-এ পাঠানো হয়নি এবং কার্যকর ব্যবসার নিয়ম পরিবর্তন করেনি।";
+  toast("মডিউল সেটিংসের লোকাল ড্রাফট সংরক্ষিত");
+ }catch(error){status.textContent=error.message||String(error);}
+});
+$("moduleSettingsDraftReset").addEventListener("click",()=>{
+ try{localStorage.removeItem(moduleSettingsDraftKey());applyModuleSettingsDraft(MODULE_SETTINGS_DRAFT_DEFAULTS);$("moduleSettingsDraftStatus").textContent="এই ফোনের লোকাল ড্রাফট মুছে ডিফল্ট মান দেখানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";}
+ catch(error){$("moduleSettingsDraftStatus").textContent=error.message||String(error);}
+});
+$("settings").addEventListener("click",event=>{
+ if(event.target.closest("#moduleSettingsWorkspace"))loadModuleSettingsDraft();
 });
 $("offlineCacheEnabled").checked=offlineCacheEnabled();
 $("saveOfflineSettings").addEventListener("click",()=>{
