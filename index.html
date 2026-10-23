@@ -131,7 +131,38 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
   <p id="milkCollectionSettingsStatus" class="small" role="status">Milk Collection সেটিংস লোড হচ্ছে…</p>
   <button class="btn primary" type="submit">Milk Collection সেটিংস সংরক্ষণ</button>
  </form>
-</div><div class="card" id="moduleSettingsWorkspace">
+</div><div class="card" id="generalSettingsWorkspace">
+ <h3>⚙️ সাধারণ অ্যাপ সেটিংস — General Settings</h3>
+ <p class="small">এটি কনফিগারেশন ড্রাফট মাত্র। এখানে রাখা পছন্দ এখনো অ্যাপের থিম, ভাষা, নোটিফিকেশন বা সার্ভার সেটিংস স্বয়ংক্রিয়ভাবে বদলায় না। TEST যাচাইয়ের পরে প্রয়োগের ব্যবস্থা করা হবে।</p>
+ <form id="generalSettingsDraftForm">
+  <h4>🏷️ পরিচিতি ও স্লোগান</h4>
+  <div class="row">
+   <div><label>অ্যাপের প্রদর্শিত নাম<input id="gsAppName" name="app_name" type="text" maxlength="80" value="মুহাইমিন"></label></div>
+   <div><label>ব্যবসার নাম<input id="gsBusinessName" name="business_name" type="text" maxlength="120" value="মুহাইমিন ডেইরি"></label></div>
+  </div>
+  <label>স্লোগান<input id="gsSlogan" name="slogan" type="text" maxlength="180" placeholder="সামাজিক সেবা ও জাতীয় উন্নয়নে অঙ্গীকার"></label>
+  <label><input id="gsSloganEnabled" name="slogan_enabled" type="checkbox" checked> হেডারে স্লোগান দেখানোর পছন্দ</label>
+  <h4>🎨 চেহারা ও ভাষা</h4>
+  <div class="row">
+   <div><label>থিম<select id="gsTheme" name="theme"><option value="system">ডিভাইস অনুযায়ী</option><option value="light">লাইট</option><option value="dark">ডার্ক (প্রয়োগ পরে)</option></select></label></div>
+   <div><label>প্রধান রং<input id="gsPrimaryColor" name="primary_color" type="color" value="#0f766e"></label></div>
+   <div><label>ভাষা<select id="gsLanguage" name="language"><option value="bn">বাংলা</option><option value="en">English</option></select></label></div>
+  </div>
+  <h4>🔔 সতর্কতা ও সময়</h4>
+  <div class="row">
+   <div><label><input id="gsLowStock" name="low_stock_notifications" type="checkbox" checked> কম স্টক সতর্কতার পছন্দ</label></div>
+   <div><label><input id="gsExpiry" name="expiry_notifications" type="checkbox" checked> মেয়াদ সতর্কতার পছন্দ</label></div>
+   <div><label><input id="gsPayment" name="payment_reminders" type="checkbox" checked> পেমেন্ট রিমাইন্ডারের পছন্দ</label></div>
+  </div>
+  <div class="row">
+   <div><label>তারিখ বিন্যাস<select id="gsDateFormat" name="date_format"><option value="DD-MM-YYYY">DD-MM-YYYY</option></select></label></div>
+   <div><label>সময় অঞ্চল<input id="gsTimezone" name="timezone" value="Asia/Dhaka" readonly></label></div>
+  </div>
+  <p id="generalSettingsDraftStatus" class="small" role="status">সাধারণ সেটিংসের ড্রাফট লোডের অপেক্ষায়।</p>
+  <div class="row"><button class="btn primary" type="submit">সাধারণ সেটিংসের ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="generalSettingsDraftReset">ডিফল্টে ফেরত</button></div>
+ </form>
+</div>
+<div class="card" id="moduleSettingsWorkspace">
  <h3>🧩 মডিউলভিত্তিক সেটিংস — Workspace V1</h3>
  <p class="small">এটি নিরাপদ খসড়া। এখানে সংরক্ষণ করলে শুধু এই ফোনের বর্তমান Main Admin অ্যাকাউন্টে লোকাল ড্রাফট রাখা হবে; Supabase/লাইভ ব্যবসার সেটিংস পরিবর্তন হবে না। TEST ডাটাবেস, RLS ও অনুমোদিত API যাচাইয়ের পর সার্ভার-সংরক্ষণ যুক্ত হবে।</p>
  <form id="moduleSettingsDraftForm">
@@ -1453,6 +1484,61 @@ bindForm("milkCollectionSettingsForm",async f=>{
  $("milkCollectionSettingsStatus").textContent="সেটিংস সংরক্ষিত · Revision "+(result.data.revision??"updated")+" · অজানা ভবিষ্যৎ key অক্ষত রাখা হয়েছে।";
  toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
 });
+const GENERAL_SETTINGS_DRAFT_DEFAULTS={
+ app_name:"মুহাইমিন",business_name:"মুহাইমিন ডেইরি",slogan:"",slogan_enabled:true,
+ theme:"system",primary_color:"#0f766e",language:"bn",
+ low_stock_notifications:true,expiry_notifications:true,payment_reminders:true,
+ date_format:"DD-MM-YYYY",timezone:"Asia/Dhaka"
+};
+const GENERAL_SETTINGS_DRAFT_FIELDS={
+ app_name:"gsAppName",business_name:"gsBusinessName",slogan:"gsSlogan",slogan_enabled:"gsSloganEnabled",
+ theme:"gsTheme",primary_color:"gsPrimaryColor",language:"gsLanguage",
+ low_stock_notifications:"gsLowStock",expiry_notifications:"gsExpiry",payment_reminders:"gsPayment",
+ date_format:"gsDateFormat",timezone:"gsTimezone"
+};
+function generalSettingsDraftKey(){
+ const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+ if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে অনলাইনে লগইন করুন।");
+ return "muhaimin-general-settings-draft-v1:"+userId;
+}
+function applyGeneralSettingsDraft(values){
+ const merged={...GENERAL_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
+ for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
+  const el=$(id);if(!el)continue;
+  if(el.type==="checkbox")el.checked=Boolean(merged[key]);else el.value=String(merged[key]);
+ }
+}
+function loadGeneralSettingsDraft(){
+ const status=$("generalSettingsDraftStatus");if(!status)return;
+ try{
+  const raw=localStorage.getItem(generalSettingsDraftKey()),parsed=raw?JSON.parse(raw):null;
+  applyGeneralSettingsDraft(parsed&&parsed.settings?parsed.settings:GENERAL_SETTINGS_DRAFT_DEFAULTS);
+  status.textContent=parsed&&parsed.settings?"এই ফোনে সংরক্ষিত সাধারণ সেটিংসের ড্রাফট লোড হয়েছে; অ্যাপের কার্যকর সেটিংস বদলায়নি।":"ডিফল্ট সাধারণ সেটিংস দেখানো হচ্ছে; এখনো সংরক্ষণ করা হয়নি।";
+ }catch(error){applyGeneralSettingsDraft(GENERAL_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
+}
+$("generalSettingsDraftForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const status=$("generalSettingsDraftStatus");
+ try{
+  const values={};
+  for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
+   const el=$(id);values[key]=el.type==="checkbox"?el.checked:el.value.trim();
+  }
+  if(!values.app_name||!values.business_name)throw new Error("অ্যাপের নাম ও ব্যবসার নাম পূরণ করুন।");
+  if(values.slogan.length>180)throw new Error("স্লোগান ১৮০ অক্ষরের মধ্যে রাখুন।");
+  if(!/^#[0-9a-fA-F]{6}$/.test(values.primary_color))throw new Error("প্রধান রঙের HEX মান সঠিক নয়।");
+  values.timezone="Asia/Dhaka";values.date_format="DD-MM-YYYY";
+  localStorage.setItem(generalSettingsDraftKey(),JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),settings:values}));
+  status.textContent="সাধারণ সেটিংসের ড্রাফট এই ফোনে সংরক্ষিত হয়েছে; অ্যাপের কার্যকর সেটিংস বা Supabase বদলায়নি।";
+  toast("সাধারণ সেটিংসের ড্রাফট সংরক্ষিত");
+ }catch(error){status.textContent=error.message||String(error);}
+});
+$("generalSettingsDraftReset").addEventListener("click",()=>{
+ try{localStorage.removeItem(generalSettingsDraftKey());applyGeneralSettingsDraft(GENERAL_SETTINGS_DRAFT_DEFAULTS);$("generalSettingsDraftStatus").textContent="লোকাল ড্রাফট মুছে ডিফল্ট মান দেখানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";}
+ catch(error){$("generalSettingsDraftStatus").textContent=error.message||String(error);}
+});
+const generalSettingsNavButton=document.querySelector('nav [data-page="settings"]');
+if(generalSettingsNavButton)generalSettingsNavButton.addEventListener("click",loadGeneralSettingsDraft);
 const MODULE_SETTINGS_DRAFT_DEFAULTS={
  branch_default_target:500,branch_status_control:"enabled",
  farmer_mobile_required:true,farmer_direct_call:true,farmer_ledger_link:true,
