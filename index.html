@@ -106,7 +106,28 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
 <section id="finance" class="page"><div class="card"><h3>💰 ক্রেতার বিক্রয়, খরচ ও প্রাপ্য</h3><form id="financeForm"><div class="row"><div><label>তারিখ<input name="entry_date" type="text" placeholder="DD-MM-YYYY" data-date-input required></label></div><div><label>কেন্দ্র (ঐচ্ছিক)<select name="branch_id" id="financeBranch"><option value="">সকল/কেন্দ্র নেই</option></select></label></div></div><div class="row"><div><label>লেনদেনের ধরন<select name="entry_type"><option value="Buyer Sale">ক্রেতার বিক্রয়</option><option value="Handling Fee">চুক্তিভিত্তিক হ্যান্ডলিং ফি</option><option value="Transport Cost">পরিবহন খরচ</option><option value="Electricity/Chiller">বিদ্যুৎ/চিলার খরচ</option><option value="Labor Cost">শ্রম খরচ</option><option value="Maintenance">মেরামত খরচ</option><option value="Verified Milk Loss">যাচাইকৃত দুধ ক্ষতির খরচ</option><option value="Rejected Milk Cost">বাতিল দুধের খরচ</option><option value="Other Cost">অন্যান্য খরচ</option></select></label></div><div><label>পরিমাণ (৳)<input name="amount" type="number" min="0" step=".01" required></label></div></div><div class="row"><div><label>নিশ্চিত নগদ আদায়/পরিশোধ (৳)<input name="cash_settled" type="number" min="0" step=".01" value="0" required></label></div><div><label>বিল/রেফারেন্স<input name="reference"></label></div></div><div class="row"><div><label>প্রতিপক্ষ/ক্রেতা/সরবরাহকারী<input name="counterparty"></label></div><div><label>নির্ধারিত তারিখ<input name="due_date" type="text" placeholder="DD-MM-YYYY" data-date-input></label></div></div><label>নোট<textarea name="notes"></textarea></label><p class="small">বিল বা ক্রেতার গ্রহণপত্র নগদ আদায় হিসেবে গণ্য হবে না। অনিশ্চিত হ্যান্ডলিং ফি নিশ্চিত আয় হিসেবে ধরা হবে না।</p><button class="btn primary">আর্থিক এন্ট্রি সংরক্ষণ</button></form></div><div class="card"><h3>আর্থিক রেকর্ড</h3><div class="tablewrap" id="financeTable"></div><div id="financeSummary" class="grid"></div></div></section>
 <section id="reports" class="page"><div class="card"><h3 data-i18n="reportsTitle">📊 রিপোর্ট</h3><div class="row"><div><label data-i18n="fromDate">শুরুর তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportFrom"></label></div><div><label data-i18n="toDate">শেষ তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportTo"></label></div></div><div class="row reportActions"><button class="btn" id="runReport" data-i18n="runReport">রিপোর্ট দেখুন</button><button class="btn" id="reportPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="reportWhatsapp">🟢 WhatsApp</button><button class="btn" id="reportShare">↗️ শেয়ার</button></div><div id="report"></div></div></section>
 <section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div class="row"><div><label>শুরুর তারিখ / From<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerFrom"></label></div><div><label>শেষ তারিখ / To<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerTo"></label></div></div><div id="ledgerShareContent"><div class="row reportActions"><button class="btn" id="ledgerPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="ledgerWhatsapp">🟢 WhatsApp</button><button class="btn" id="ledgerShare">↗️ শেয়ার</button></div><p class="small" id="ledgerGeneratedAt"></p><div id="ledgerSummary" class="grid"></div><div id="ledgerResult" class="tablewrap"></div></div></div></section>
-<section id="settings" class="page"><div class="card"><h3>📶 অফলাইন মোড / Offline Mode</h3><label><input id="offlineCacheEnabled" type="checkbox" checked> এই ফোনে অফলাইন অ্যাপ ও আগে লোড করা তথ্য সংরক্ষণ চালু</label><p class="small">আগে অনলাইনে অ্যাপ খুলে লগইন ও তথ্য লোড করুন। অফলাইনে আগে থেকে থাকা তথ্য দেখা যাবে এবং Milk Collection রেকর্ড ফোনে অপেক্ষমাণ থাকতে পারে। নিরাপত্তা যাচাই সম্পন্ন না হওয়া পর্যন্ত এগুলো স্বয়ংক্রিয়ভাবে Supabase-এ পাঠানো হবে না। অপেক্ষমাণ রেকর্ডকে সার্ভারে সংরক্ষিত বলে ধরে নেবেন না। ফোনের স্ক্রিন লক ব্যবহার করুন।</p><div class="row"><button class="btn primary" type="button" id="saveOfflineSettings">অফলাইন সেটিংস সংরক্ষণ</button><button class="btn" type="button" id="retryOfflineSync">অপেক্ষমাণ রেকর্ডের অবস্থা দেখুন</button></div><p id="offlineModeStatus" class="small" role="status">অফলাইন অবস্থা যাচাই হচ্ছে…</p></div><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
+<section id="settings" class="page">
+<div class="card" id="finalSettingsChecklist">
+ <h3>✅ Final Update Checklist — চূড়ান্ত আপডেট যাচাই</h3>
+ <p class="small">এই তালিকার টিকচিহ্ন শুধু এই ফোনের Main Admin-ভিত্তিক লোকাল ড্রাফটে সংরক্ষিত হবে। এটি পরীক্ষা চালায় না এবং টিক দেওয়া মানে কোনো কাজ প্রযুক্তিগতভাবে পাস করেছে—এমন নয়। প্রতিটি বিষয়ের প্রমাণ যাচাই করে তবেই টিক দিন।</p>
+ <div class="stat"><span>চেকলিস্ট অগ্রগতি</span><b id="finalChecklistProgress">0 / 10</b><div id="finalChecklistProgressText" class="small" role="status">কোনো বিষয় নিশ্চিত করা হয়নি।</div></div>
+ <div id="finalChecklistItems">
+  <label><input type="checkbox" data-final-check="code_reviewed"> বর্তমান কোড ও পরিবর্তনের তালিকা পর্যালোচনা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="backup_verified"> ব্যাকআপ ফাইল ও পুনরুদ্ধারযোগ্যতা যাচাই করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="test_jwt_rls"> TEST-এ Main Admin-এর JWT/RLS অনুমতি পরীক্ষা প্রমাণসহ পাস</label>
+  <label><input type="checkbox" data-final-check="limited_user_rls"> সীমিত ব্যবহারকারীর অনুমতি ও নিষিদ্ধ কাজ পরীক্ষা প্রমাণসহ পাস</label>
+  <label><input type="checkbox" data-final-check="address_schema"> শাখা/কৃষকের ঠিকানা ফর্ম ও TEST schema মিলিয়ে দেখা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="settings_persistence"> Settings সংরক্ষণ ও পুনরায় লোড পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="business_rules"> Feed, শাখা, পেমেন্ট ও লেজারের নিয়ম পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="browser_mobile"> মোবাইল ব্রাউজারে মূল workflow পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="build_pass"> Build/static checks এবং সংশোধনের পর পুনঃপরীক্ষা পাস</label>
+  <label><input type="checkbox" data-final-check="approval_release"> সব প্রমাণ পর্যালোচনার পর মালিকের স্পষ্ট release অনুমোদন নেওয়া হয়েছে</label>
+ </div>
+ <div class="row"><button class="btn primary" type="button" id="saveFinalChecklist">চেকলিস্ট সংরক্ষণ</button><button class="btn" type="button" id="resetFinalChecklist">টিকচিহ্ন রিসেট</button></div>
+ <p id="finalChecklistStatus" class="small" role="status">লোকাল চেকলিস্ট লোড হচ্ছে…</p>
+ <p class="small">বর্তমান পরিচিত অবস্থা: TEST JWT/RLS প্রমাণ, ঠিকানা schema যাচাই, settings persistence ও browser integration পরীক্ষা এখনো নিশ্চিত নয়। Production merge/deploy অনুমোদন ছাড়া হবে না।</p>
+</div>
+<div class="card"><h3>📶 অফলাইন মোড / Offline Mode</h3><label><input id="offlineCacheEnabled" type="checkbox" checked> এই ফোনে অফলাইন অ্যাপ ও আগে লোড করা তথ্য সংরক্ষণ চালু</label><p class="small">আগে অনলাইনে অ্যাপ খুলে লগইন ও তথ্য লোড করুন। অফলাইনে আগে থেকে থাকা তথ্য দেখা যাবে এবং Milk Collection রেকর্ড ফোনে অপেক্ষমাণ থাকতে পারে। নিরাপত্তা যাচাই সম্পন্ন না হওয়া পর্যন্ত এগুলো স্বয়ংক্রিয়ভাবে Supabase-এ পাঠানো হবে না। অপেক্ষমাণ রেকর্ডকে সার্ভারে সংরক্ষিত বলে ধরে নেবেন না। ফোনের স্ক্রিন লক ব্যবহার করুন।</p><div class="row"><button class="btn primary" type="button" id="saveOfflineSettings">অফলাইন সেটিংস সংরক্ষণ</button><button class="btn" type="button" id="retryOfflineSync">অপেক্ষমাণ রেকর্ডের অবস্থা দেখুন</button></div><p id="offlineModeStatus" class="small" role="status">অফলাইন অবস্থা যাচাই হচ্ছে…</p></div><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
 <div class="card">
  <h3>🥛 Milk Collection — Future Main Options</h3>
  <p class="small">এই সেটিংস Main Admin-এর নিয়ন্ত্রণে থাকবে। কিছু বিকল্প ভবিষ্যৎ সুবিধার কনফিগারেশন; কার্যকর করার আগে TEST-এ যাচাই করতে হবে।</p>
@@ -1623,7 +1644,53 @@ function generalSettingsDraftKey(){
    $("generalSettingsDraftStatus").textContent="এই ফোনের সাধারণ সেটিংস ডিফল্টে ফেরানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";
   }catch(error){$("generalSettingsDraftStatus").textContent=error.message||String(error);}
  });
- const MODULE_SETTINGS_DRAFT_DEFAULTS={
+ 
+function finalChecklistStorageKey(){
+ const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+ if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে লগইন করুন।");
+ return "muhaimin-final-checklist-v1:"+userId;
+}
+function renderFinalChecklist(values){
+ const items=[...document.querySelectorAll("[data-final-check]")];
+ let done=0;
+ for(const item of items){item.checked=Boolean(values&&values[item.dataset.finalCheck]);if(item.checked)done++;}
+ const count=document.getElementById("finalChecklistProgress");
+ const text=document.getElementById("finalChecklistProgressText");
+ if(count)count.textContent=done+" / "+items.length;
+ if(text)text.textContent=done===items.length?"সব বাক্সে টিক দেওয়া হয়েছে; তবুও প্রতিটি ফলের প্রমাণ আলাদাভাবে যাচাই করুন।":done+"টি নিশ্চিত হিসেবে চিহ্নিত; "+(items.length-done)+"টি বাকি।";
+}
+function loadFinalChecklist(){
+ const status=document.getElementById("finalChecklistStatus");if(!status)return;
+ try{
+  const raw=localStorage.getItem(finalChecklistStorageKey());
+  const parsed=raw?JSON.parse(raw):null;
+  renderFinalChecklist(parsed&&parsed.checks?parsed.checks:{});
+  status.textContent=raw?"এই ফোনের লোকাল চেকলিস্ট লোড হয়েছে।":"নতুন চেকলিস্ট; কোনো কাজকে স্বয়ংক্রিয়ভাবে সম্পন্ন ধরা হয়নি।";
+ }catch(error){status.textContent=error.message||String(error);}
+}
+document.querySelectorAll("[data-final-check]").forEach(item=>item.addEventListener("change",()=>{
+ const values={};document.querySelectorAll("[data-final-check]").forEach(box=>values[box.dataset.finalCheck]=box.checked);
+ renderFinalChecklist(values);
+ document.getElementById("finalChecklistStatus").textContent="পরিবর্তন হয়েছে; স্থায়ী করতে ‘চেকলিস্ট সংরক্ষণ’ চাপুন।";
+}));
+document.getElementById("saveFinalChecklist").addEventListener("click",()=>{
+ try{
+  const values={};document.querySelectorAll("[data-final-check]").forEach(box=>values[box.dataset.finalCheck]=box.checked);
+  localStorage.setItem(finalChecklistStorageKey(),JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),checks:values}));
+  renderFinalChecklist(values);
+  document.getElementById("finalChecklistStatus").textContent="চেকলিস্ট এই ফোনে সংরক্ষিত হয়েছে; GitHub/Supabase বা লাইভ ডেটা পরিবর্তিত হয়নি।";
+ }catch(error){document.getElementById("finalChecklistStatus").textContent=error.message||String(error);}
+});
+document.getElementById("resetFinalChecklist").addEventListener("click",()=>{
+ try{
+  localStorage.removeItem(finalChecklistStorageKey());renderFinalChecklist({});
+  document.getElementById("finalChecklistStatus").textContent="এই ফোনের চেকলিস্টের টিকচিহ্ন রিসেট হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";
+ }catch(error){document.getElementById("finalChecklistStatus").textContent=error.message||String(error);}
+});
+const finalChecklistNavButton=document.querySelector('nav [data-page="settings"]');
+if(finalChecklistNavButton)finalChecklistNavButton.addEventListener("click",loadFinalChecklist);
+
+const MODULE_SETTINGS_DRAFT_DEFAULTS={
  branch_default_target:500,branch_status_control:"enabled",
  farmer_mobile_required:true,farmer_direct_call:true,farmer_ledger_link:true,
  payment_cycle:"weekly",payment_receipt:true,payment_share:true,
