@@ -5,6 +5,8 @@ on:
       - "index.html"
       - "dairy-processing-module.js"
       - "muhaimin-logo.png"
+      - "supabase/migrations/202610240001_dairy_processing_workspace.sql"
+      - "docs/DAIRY_PROCESSING_TEST_PLAN.md"
       - ".github/workflows/validate-settings-html.yml"
   workflow_dispatch:
 permissions:
@@ -43,6 +45,8 @@ jobs:
             ['CSV export', 'function exportReportCsv()'],
             ['local audit trail', 'function recordAudit('],
             ['validated local backup restore', 'async function importDraftFile()'],
+            ['return inspection workflow', 'data-dp-return-review'],
+            ['full report includes costs', 'নগদ হিসাব (এটি প্রকৃত লাভ নয়)'],
             ['record editing', 'function editRecord(type,id)'],
             ['sale quality gate', 'if(v.kind==="বিক্রয়"&&(b.quality!=="গ্রহণযোগ্য"||!b.qualityApprovedBy))'],
             ['return quantity cap', 'if(qty>sold-returned)'],
@@ -57,7 +61,9 @@ jobs:
             ['transaction stock guard', 'dairy_processing_transaction_guard'],
             ['batch output integrity guard', 'dairy_processing_batch_output_guard'],
             ['append-only audit table', 'REVOKE INSERT, UPDATE, DELETE ON public.dairy_processing_audit FROM authenticated'],
-            ['server-side stock view', 'dairy_processing_stock']
+            ['server-side stock view', 'dairy_processing_stock'],
+            ['legacy permissive policy cleanup', 'Remove any prior policy'],
+            ['TEST-only migration guard', 'TEST-ONLY migration']
           ];
           for (const [name, marker] of migrationGuards) {
             if (!migration.includes(marker)) throw new Error('Missing migration safety guard: ' + name);
