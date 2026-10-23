@@ -8,6 +8,8 @@
 <title>মুহাইমিন — Dairy Management</title>
 <style>
 :root{--green:#0f766e;--dark:#115e59;--bg:#f3f7f6;--line:#dbe5e3;--text:#17202a}
+html[data-theme="dark"] body{--bg:#111827;--line:#374151;--text:#e5e7eb;background:var(--bg);color:var(--text)}html[data-theme="dark"] nav,html[data-theme="dark"] .card{background:#1f2937;color:var(--text);border-color:#374151}html[data-theme="dark"] .stat{background:#273548}html[data-theme="dark"] th{background:#273548;color:var(--text)}html[data-theme="dark"] td{border-color:#374151}html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#111827;color:var(--text);border-color:#4b5563}html[data-theme="dark"] nav button:not(.active){background:#374151;color:#e5e7eb}
+@media(prefers-color-scheme:dark){html[data-theme="system"] body{--bg:#111827;--line:#374151;--text:#e5e7eb;background:var(--bg);color:var(--text)}html[data-theme="system"] nav,html[data-theme="system"] .card{background:#1f2937;color:var(--text);border-color:#374151}html[data-theme="system"] .stat{background:#273548}html[data-theme="system"] th{background:#273548;color:var(--text)}html[data-theme="system"] td{border-color:#374151}html[data-theme="system"] input,html[data-theme="system"] select,html[data-theme="system"] textarea{background:#111827;color:var(--text);border-color:#4b5563}html[data-theme="system"] nav button:not(.active){background:#374151;color:#e5e7eb}}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;background:var(--bg);color:var(--text)}
 header{position:sticky;top:0;z-index:10;background:var(--green);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px #0002}
 .brandLogo{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #fff}h1{font-size:19px;margin:0 0 3px}.sub{font-size:11px;opacity:.95}.small{font-size:12px;color:#64748b}
@@ -32,7 +34,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <header>
 <img class="brandLogo" src="muhaimin-logo.png" alt="Muhaimin Dairy Logo" onerror="this.style.display='none'">
 
-<div><h1 id="appName">মুহাইমিন</h1><div class="sub" id="headerSub">ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online</div><div class="sub">📱 Mobile Ready • Farmer Call</div></div>
+<div><h1 id="appName">মুহাইমিন</h1><div class="sub" id="headerBusinessName">মুহাইমিন ডেইরি</div><div class="sub" id="headerSlogan" hidden></div><div class="sub" id="headerSub">ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online</div><div class="sub">📱 Mobile Ready • Farmer Call</div></div>
 <div class="headerTools"><label for="language" class="hidden">Language</label><select id="language" aria-label="Language"><option value="bn">🇧🇩 বাংলা</option><option value="en">🇬🇧 English</option></select></div>
 </header>
 
@@ -133,7 +135,7 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
  </form>
 </div><div class="card" id="generalSettingsWorkspace">
  <h3>⚙️ সাধারণ অ্যাপ সেটিংস — General Settings</h3>
- <p class="small">এটি কনফিগারেশন ড্রাফট মাত্র। এখানে রাখা পছন্দ এখনো অ্যাপের থিম, ভাষা, নোটিফিকেশন বা সার্ভার সেটিংস স্বয়ংক্রিয়ভাবে বদলায় না। TEST যাচাইয়ের পরে প্রয়োগের ব্যবস্থা করা হবে।</p>
+ <p class="small">অ্যাপের নাম, ব্যবসার নাম, স্লোগান, থিম, প্রধান রং ও ভাষা সংরক্ষণ করলে এই ফোনের অ্যাপে প্রয়োগ হবে। নোটিফিকেশন পছন্দ আপাতত সংরক্ষিত থাকবে; সতর্কতা পাঠানোর ব্যবস্থা এখনো যুক্ত নয়। Supabase/লাইভ ডেটাবেসে কিছু লেখা হবে না.</p>
  <form id="generalSettingsDraftForm">
   <h4>🏷️ পরিচিতি ও স্লোগান</h4>
   <div class="row">
@@ -144,7 +146,7 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
   <label><input id="gsSloganEnabled" name="slogan_enabled" type="checkbox" checked> হেডারে স্লোগান দেখানোর পছন্দ</label>
   <h4>🎨 চেহারা ও ভাষা</h4>
   <div class="row">
-   <div><label>থিম<select id="gsTheme" name="theme"><option value="system">ডিভাইস অনুযায়ী</option><option value="light">লাইট</option><option value="dark">ডার্ক (প্রয়োগ পরে)</option></select></label></div>
+   <div><label>থিম<select id="gsTheme" name="theme"><option value="system">ডিভাইস অনুযায়ী</option><option value="light">লাইট</option><option value="dark">ডার্ক</option></select></label></div>
    <div><label>প্রধান রং<input id="gsPrimaryColor" name="primary_color" type="color" value="#0f766e"></label></div>
    <div><label>ভাষা<select id="gsLanguage" name="language"><option value="bn">বাংলা</option><option value="en">English</option></select></label></div>
   </div>
@@ -159,7 +161,7 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
    <div><label>সময় অঞ্চল<input id="gsTimezone" name="timezone" value="Asia/Dhaka" readonly></label></div>
   </div>
   <p id="generalSettingsDraftStatus" class="small" role="status">সাধারণ সেটিংসের ড্রাফট লোডের অপেক্ষায়।</p>
-  <div class="row"><button class="btn primary" type="submit">সাধারণ সেটিংসের ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="generalSettingsDraftReset">ডিফল্টে ফেরত</button></div>
+  <div class="row"><button class="btn primary" type="submit">সেটিংস সংরক্ষণ ও প্রয়োগ</button><button class="btn" type="button" id="generalSettingsDraftReset">ডিফল্টে ফেরত</button></div>
  </form>
 </div>
 <div class="card" id="moduleSettingsWorkspace">
@@ -1497,49 +1499,74 @@ const GENERAL_SETTINGS_DRAFT_FIELDS={
  date_format:"gsDateFormat",timezone:"gsTimezone"
 };
 function generalSettingsDraftKey(){
- const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
- if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে অনলাইনে লগইন করুন।");
- return "muhaimin-general-settings-draft-v1:"+userId;
-}
-function applyGeneralSettingsDraft(values){
- const merged={...GENERAL_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
- for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
-  const el=$(id);if(!el)continue;
-  if(el.type==="checkbox")el.checked=Boolean(merged[key]);else el.value=String(merged[key]);
+  const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+  if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে অনলাইনে লগইন করুন।");
+  return "muhaimin-general-settings-v2:"+userId;
  }
-}
-function loadGeneralSettingsDraft(){
- const status=$("generalSettingsDraftStatus");if(!status)return;
- try{
-  const raw=localStorage.getItem(generalSettingsDraftKey()),parsed=raw?JSON.parse(raw):null;
-  applyGeneralSettingsDraft(parsed&&parsed.settings?parsed.settings:GENERAL_SETTINGS_DRAFT_DEFAULTS);
-  status.textContent=parsed&&parsed.settings?"এই ফোনে সংরক্ষিত সাধারণ সেটিংসের ড্রাফট লোড হয়েছে; অ্যাপের কার্যকর সেটিংস বদলায়নি।":"ডিফল্ট সাধারণ সেটিংস দেখানো হচ্ছে; এখনো সংরক্ষণ করা হয়নি।";
- }catch(error){applyGeneralSettingsDraft(GENERAL_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
-}
-$("generalSettingsDraftForm").addEventListener("submit",event=>{
- event.preventDefault();
- const status=$("generalSettingsDraftStatus");
- try{
-  const values={};
+ function normalizeGeneralSettings(values){
+  const merged={...GENERAL_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
+  merged.app_name=String(merged.app_name||"").trim().slice(0,80);
+  merged.business_name=String(merged.business_name||"").trim().slice(0,120);
+  merged.slogan=String(merged.slogan||"").trim().slice(0,180);
+  merged.theme=["system","light","dark"].includes(merged.theme)?merged.theme:"system";
+  merged.language=["bn","en"].includes(merged.language)?merged.language:"bn";
+  merged.primary_color=/^#[0-9a-fA-F]{6}$/.test(String(merged.primary_color))?String(merged.primary_color):"#0f766e";
+  for(const key of ["slogan_enabled","low_stock_notifications","expiry_notifications","payment_reminders"])merged[key]=Boolean(merged[key]);
+  merged.date_format="DD-MM-YYYY";merged.timezone="Asia/Dhaka";
+  if(!merged.app_name||!merged.business_name)throw new Error("অ্যাপের নাম ও ব্যবসার নাম পূরণ করুন।");
+  return merged;
+ }
+ function applyGeneralSettings(values){
+  const settings=normalizeGeneralSettings(values),root=document.documentElement;
+  root.dataset.theme=settings.theme;
+  const rgb=settings.primary_color.slice(1).match(/.{2}/g).map(v=>parseInt(v,16));
+  const darker=rgb.map(v=>Math.round(v*.78)).map(v=>v.toString(16).padStart(2,"0")).join("");
+  root.style.setProperty("--green",settings.primary_color);root.style.setProperty("--dark","#"+darker);
+  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=settings.primary_color;
+  $("appName").textContent=settings.app_name;$("headerBusinessName").textContent=settings.business_name;
+  $("headerSlogan").textContent=settings.slogan;$("headerSlogan").hidden=!settings.slogan_enabled||!settings.slogan;
+  document.title=settings.app_name+" — Dairy Management";applyLanguage(settings.language);
+  return settings;
+ }
+ function applyGeneralSettingsDraft(values){
+  const merged={...GENERAL_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
   for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
-   const el=$(id);values[key]=el.type==="checkbox"?el.checked:el.value.trim();
+   const el=$(id);if(!el)continue;
+   if(el.type==="checkbox")el.checked=Boolean(merged[key]);else el.value=String(merged[key]);
   }
-  if(!values.app_name||!values.business_name)throw new Error("অ্যাপের নাম ও ব্যবসার নাম পূরণ করুন।");
-  if(values.slogan.length>180)throw new Error("স্লোগান ১৮০ অক্ষরের মধ্যে রাখুন।");
-  if(!/^#[0-9a-fA-F]{6}$/.test(values.primary_color))throw new Error("প্রধান রঙের HEX মান সঠিক নয়।");
-  values.timezone="Asia/Dhaka";values.date_format="DD-MM-YYYY";
-  localStorage.setItem(generalSettingsDraftKey(),JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),settings:values}));
-  status.textContent="সাধারণ সেটিংসের ড্রাফট এই ফোনে সংরক্ষিত হয়েছে; অ্যাপের কার্যকর সেটিংস বা Supabase বদলায়নি।";
-  toast("সাধারণ সেটিংসের ড্রাফট সংরক্ষিত");
- }catch(error){status.textContent=error.message||String(error);}
-});
-$("generalSettingsDraftReset").addEventListener("click",()=>{
- try{localStorage.removeItem(generalSettingsDraftKey());applyGeneralSettingsDraft(GENERAL_SETTINGS_DRAFT_DEFAULTS);$("generalSettingsDraftStatus").textContent="লোকাল ড্রাফট মুছে ডিফল্ট মান দেখানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";}
- catch(error){$("generalSettingsDraftStatus").textContent=error.message||String(error);}
-});
-const generalSettingsNavButton=document.querySelector('nav [data-page="settings"]');
-if(generalSettingsNavButton)generalSettingsNavButton.addEventListener("click",loadGeneralSettingsDraft);
-const MODULE_SETTINGS_DRAFT_DEFAULTS={
+ }
+ function loadGeneralSettingsDraft(){
+  const status=$("generalSettingsDraftStatus");if(!status)return;
+  try{
+   const raw=localStorage.getItem(generalSettingsDraftKey()),parsed=raw?JSON.parse(raw):null;
+   const settings=normalizeGeneralSettings(parsed&&parsed.settings?parsed.settings:GENERAL_SETTINGS_DRAFT_DEFAULTS);
+   applyGeneralSettingsDraft(settings);applyGeneralSettings(settings);
+   status.textContent=parsed&&parsed.settings?"এই ফোনে সংরক্ষিত সাধারণ সেটিংস লোড ও প্রয়োগ হয়েছে। নোটিফিকেশন পছন্দ সংরক্ষিত, কিন্তু সতর্কতা পাঠানো এখনো যুক্ত নয়।":"ডিফল্ট সাধারণ সেটিংস প্রয়োগ হয়েছে; সংরক্ষণ করলে এই ফোনে থাকবে।";
+  }catch(error){applyGeneralSettingsDraft(GENERAL_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
+ }
+ $("generalSettingsDraftForm").addEventListener("submit",event=>{
+  event.preventDefault();const status=$("generalSettingsDraftStatus");
+  try{
+   const values={};
+   for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
+    const el=$(id);values[key]=el.type==="checkbox"?el.checked:el.value.trim();
+   }
+   const settings=normalizeGeneralSettings(values);
+   localStorage.setItem(generalSettingsDraftKey(),JSON.stringify({schema_version:2,updated_at:new Date().toISOString(),settings}));
+   applyGeneralSettingsDraft(settings);applyGeneralSettings(settings);
+   status.textContent="সাধারণ সেটিংস এই ফোনে সংরক্ষণ ও প্রয়োগ হয়েছে। Supabase/লাইভ ডেটাবেস বদলায়নি; নোটিফিকেশন পছন্দ এখনো শুধু সংরক্ষিত।";
+   toast("সাধারণ সেটিংস সংরক্ষণ ও প্রয়োগ হয়েছে");
+  }catch(error){status.textContent=error.message||String(error);}
+ });
+ $("generalSettingsDraftReset").addEventListener("click",()=>{
+  try{
+   localStorage.removeItem(generalSettingsDraftKey());
+   const defaults=normalizeGeneralSettings(GENERAL_SETTINGS_DRAFT_DEFAULTS);
+   applyGeneralSettingsDraft(defaults);applyGeneralSettings(defaults);
+   $("generalSettingsDraftStatus").textContent="এই ফোনের সাধারণ সেটিংস ডিফল্টে ফেরানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";
+  }catch(error){$("generalSettingsDraftStatus").textContent=error.message||String(error);}
+ });
+ const MODULE_SETTINGS_DRAFT_DEFAULTS={
  branch_default_target:500,branch_status_control:"enabled",
  farmer_mobile_required:true,farmer_direct_call:true,farmer_ledger_link:true,
  payment_cycle:"weekly",payment_receipt:true,payment_share:true,
@@ -1754,6 +1781,7 @@ async function startApp() {
   }
 
   localStorage.setItem(OFFLINE_ADMIN_KEY,user.id);
+  loadGeneralSettingsDraft();
   $("login").classList.add("hidden");
   $("accessGate").classList.add("hidden");
   $("app").classList.remove("hidden");
