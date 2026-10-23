@@ -1,10 +1,14 @@
-const CACHE_NAME = "muhaimin-v2";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png"];
+const CACHE_NAME = "muhaimin-v4";
+const SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png", "./assets/milk-collection-3d.svg"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
+      .then(async cache => {
+        await cache.addAll(APP_SHELL);
+        try { await cache.add(SUPABASE_JS); } catch (_) { /* CDN may be unavailable during install; do not fail the app shell. */ }
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -25,6 +29,13 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+  if (url.href === SUPABASE_JS || (url.origin === "https://cdn.jsdelivr.net" && url.pathname.startsWith("/npm/@supabase/supabase-js@2"))) {
+    event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
+      if (response && response.ok) caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
+      return response;
+    })));
+    return;
+  }
   if (url.origin !== self.location.origin) return;
 
   const isAppDocument = request.mode === "navigate" || url.pathname.endsWith("/index.html");
