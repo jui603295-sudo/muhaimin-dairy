@@ -144,9 +144,32 @@ function renderReport(){
  $("dpAuditTable").innerHTML=table(["সময় (বাংলাদেশ)","কাজ","রেকর্ড","বিবরণ"],db.audit.slice().reverse().slice(0,100).map(a=>{let when="";try{when=new Intl.DateTimeFormat("bn-BD",{timeZone:"Asia/Dhaka",dateStyle:"short",timeStyle:"medium"}).format(new Date(a.at))}catch{}return [esc(when),esc(a.action),esc(a.type+" "+a.recordId),esc(a.detail)]}));
 }
 function exportReportCsv(){
- const from=$("dpReportFrom").value||"0000-01-01",to=$("dpReportTo").value||"9999-12-31";if(from>to){notice("রিপোর্টের শুরুর তারিখ শেষ তারিখের পরে হতে পারবে না।");return}
- renderReport();const rows=[["প্রতিবেদন","দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠান"],["রপ্তানির সময়",new Date().toISOString()],["ব্যাচ তারিখ","ব্যাচ","পণ্য","দুধ L","উৎপাদন","একক","মান","মেয়াদ"],...db.batches.filter(b=>b.date>=($("dpReportFrom").value||"0000-01-01")&&b.date<=($("dpReportTo").value||"9999-12-31")).map(b=>[b.date,b.code,pName(b.product),b.milk,b.output,b.unit,b.quality,b.expiry])];
- const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="muhaimin-dairy-processing-report-"+today()+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notice("তারিখভিত্তিক CSV রপ্তানি হয়েছে; এটি সার্ভার রিপোর্ট নয়।");
+ const from=$("dpReportFrom").value||"0000-01-01",to=$("dpReportTo").value||"9999-12-31";
+ if(from>to){notice("রিপোর্টের শুরুর তারিখ শেষ তারিখের পরে হতে পারবে না।");return}
+ renderReport();
+ const batches=db.batches.filter(b=>b.date>=from&&b.date<=to);
+ const sales=db.sales.filter(x=>x.date>=from&&x.date<=to);
+ const costs=db.costs.filter(x=>x.date>=from&&x.date<=to);
+ const rows=[
+ ["মুহাইমিন ডেইরি","দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠান"],
+ ["তারিখের সীমা",from,to],["রপ্তানির সময় (UTC)",new Date().toISOString()],[],
+ ["উৎপাদন ব্যাচ"],["তারিখ","ব্যাচ","প্রতিষ্ঠান","পণ্য","দুধ L","উৎপাদন","একক","মান","মেয়াদ"],
+ ...batches.map(b=>[b.date,b.code,iName(b.institution),pName(b.product),b.milk,b.output,b.unit,b.quality,b.expiry]),
+ [],["বিক্রয় / ফেরত / অপচয়"],["তারিখ","ব্যাচ","ধরন","ক্রেতা/চালান","পরিমাণ","একক মূল্য","নেট মূল্য","মান-অনুমোদন","মেয়াদ"],
+ ...sales.map(x=>{const b=db.batches.find(z=>z.id===x.batch);return [x.date,b?.code||"",x.kind,x.buyer||"",x.qty,x.price,(x.kind==="ফেরত"?-1:1)*Number(x.qty||0)*Number(x.price||0),b?.quality||"",b?.expiry||""]}),
+ [],["খরচ"],["তারিখ","ধরন","প্রতিষ্ঠান","ব্যাচ","পরিমাণ টাকা","নোট"],
+ ...costs.map(c=>[c.date,c.kind,iName(c.institution),db.batches.find(b=>b.id===c.batch)?.code||"",c.amount,c.note||""]),
+ [],["পণ্যভিত্তিক বর্তমান মজুত"],["পণ্য","উৎপাদন ব্যাচ","মোট উৎপাদন","বর্তমান মজুত","একক"],
+ ...db.products.map(p=>{const bs=db.batches.filter(b=>b.product===p.id);return [p.name,bs.length,bs.reduce((n,b)=>n+Number(b.output||0),0),bs.reduce((n,b)=>n+stock(b.id),0),p.unit]}),
+ [],["মান ও মেয়াদ সতর্কতা"],["ব্যাচ","পণ্য","মান","মেয়াদ"],
+ ...db.batches.filter(b=>b.quality!=="গ্রহণযোগ্য"||(b.expiry&&b.expiry<today())).map(b=>[b.code,pName(b.product),b.quality,b.expiry||""]),
+ [],["নগদ হিসাব (এটি প্রকৃত লাভ নয়)"],["বিক্রয় নেট মূল্য",sales.filter(x=>x.kind==="বিক্রয়").reduce((n,x)=>n+x.qty*x.price,0)-sales.filter(x=>x.kind==="ফেরত").reduce((n,x)=>n+x.qty*x.price,0)],
+ ["নথিভুক্ত খরচ",costs.reduce((n,x)=>n+Number(x.amount||0),0)]
+ ];
+ const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="muhaimin-dairy-processing-report-"+today()+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ notice("তারিখভিত্তিক উৎপাদন, লেনদেন, খরচ ও বর্তমান মজুতসহ CSV রপ্তানি হয়েছে; এটি সার্ভার রিপোর্ট নয়।");
 }
 function start(){styles();inject()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
