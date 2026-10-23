@@ -121,6 +121,8 @@ BEGIN
 
   -- Merge defaults, saved values, then submitted values; unrecognized future keys survive.
   v_new_settings := v_default || COALESCE(v_old_settings, '{}'::jsonb) || p_settings;
+  -- Offline queue stays disabled until JWT/RLS/idempotency/retry/conflict tests are documented.
+  v_new_settings := jsonb_set(v_new_settings, '{offline_queue_enabled}', 'false'::jsonb, true);
 
   IF jsonb_typeof(v_new_settings->'default_purchase_rate') <> 'number'
      OR (v_new_settings->>'default_purchase_rate')::numeric < 0 THEN
