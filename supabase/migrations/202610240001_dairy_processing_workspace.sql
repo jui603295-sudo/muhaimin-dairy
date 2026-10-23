@@ -155,6 +155,10 @@ BEGIN
 END;
 $rls$;
 
+-- Audit is append-only for application users; only the trigger owner writes audit rows.
+REVOKE INSERT, UPDATE, DELETE ON public.dairy_processing_audit FROM authenticated;
+GRANT SELECT ON public.dairy_processing_audit TO authenticated;
+
 CREATE OR REPLACE FUNCTION public.validate_dairy_processing_transaction()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -223,6 +227,39 @@ CREATE TRIGGER dairy_processing_transaction_guard
 BEFORE INSERT OR UPDATE ON public.dairy_processing_transactions
 FOR EACH ROW EXECUTE FUNCTION public.validate_dairy_processing_transaction();
 
+CREATE OR REPLACE FUNCTION public.validate_dairy_processing_batch_output()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $function$
+DECLARE
+  v_sold numeric(14,3);
+  v_wasted numeric(14,3);
+  v_restocked numeric(14,3);
+BEGIN
+  IF NEW.output_qty IS DISTINCT FROM OLD.output_qty THEN
+    SELECT
+      COALESCE(sum(quantity) FILTER (WHERE transaction_kind = 'sale'),0),
+      COALESCE(sum(quantity) FILTER (WHERE transaction_kind = 'waste'),0),
+      COALESCE(sum(quantity) FILTER (WHERE transaction_kind = 'return' AND restock_approved),0)
+    INTO v_sold,v_wasted,v_restocked
+    FROM public.dairy_processing_transactions
+    WHERE batch_id = OLD.id;
+    IF NEW.output_qty < v_sold + v_wasted - v_restocked THEN
+      RAISE EXCEPTION 'Output quantity cannot be less than net stock already removed' USING ERRCODE = '23514';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$function$;
+
+DROP TRIGGER IF EXISTS dairy_processing_batch_output_guard ON public.dairy_processing_batches;
+CREATE TRIGGER dairy_processing_batch_output_guard
+BEFORE UPDATE OF output_qty ON public.dairy_processing_batches
+FOR EACH ROW EXECUTE FUNCTION public.validate_dairy_processing_batch_output();
+
+REVOKE ALL ON FUNCTION public.validate_dairy_processing_batch_output() FROM PUBLIC, anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.audit_dairy_processing_change()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -243,7 +280,10 @@ BEGIN
   END IF;
   INSERT INTO public.dairy_processing_audit(entity_table,entity_id,action,before_row,after_row,changed_by)
   VALUES (TG_TABLE_NAME,v_id,lower(TG_OP),v_before,v_after,auth.uid());
-  RETURN COALESCE(NEW,OLD);
+  IF TG_OP = 'DELETE' THEN
+    RETURN OLD;
+  END IF;
+  RETURN NEW;
 END;
 $function$;
 
