@@ -37,7 +37,20 @@ jobs:
           if (!module.includes('ফেরত এন্ট্রি উপলভ্য স্টক বাড়ায় না')) {
             throw new Error('Return-stock safety notice is missing.');
           }
-          console.log('PASS: dairy module syntax, script wiring, logo, identity, and return-stock guard.');
+          const requiredFeatures = [
+            ['date-filtered reports', 'data-dp-tab="reports"'],
+            ['CSV export', 'function exportReportCsv()'],
+            ['local audit trail', 'function recordAudit('],
+            ['validated local backup restore', 'async function importDraftFile()'],
+            ['record editing', 'function editRecord(type,id)'],
+            ['sale quality gate', 'if(v.kind==="বিক্রয়"&&(b.quality!=="গ্রহণযোগ্য"||!b.qualityApprovedBy))'],
+            ['return quantity cap', 'if(qty>sold-returned)'],
+            ['server sync stays disabled', 'serverSync:false']
+          ];
+          for (const [name, marker] of requiredFeatures) {
+            if (!module.includes(marker)) throw new Error('Missing dairy module safety/feature check: ' + name);
+          }
+          console.log('PASS: dairy module syntax, wiring, identity, reports, editing, backup, audit, and transaction guards.');
           NODE
       - name: Parse and syntax-check inline JavaScript
         shell: bash
