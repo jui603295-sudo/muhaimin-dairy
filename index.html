@@ -1040,7 +1040,8 @@ $("branchTable").addEventListener("click",async event=>{
   const branch=state.branches.find(item=>String(item.id)===String(id));
   if(!branch)throw new Error("কেন্দ্রটি আর তালিকায় নেই।");
   if(!confirm((lang()==="en"?"Delete branch ":"কেন্দ্র মুছবেন: ")+branch.name+"?\\n"+(lang()==="en"?"This is allowed only when no linked records exist.":"শুধু কোনো সম্পর্কিত রেকর্ড না থাকলেই মুছতে পারবেন।")))return;
-  const references=["farmers","milk_collections","milk_batches","chiller_logs","milk_reconciliations","operating_finance_entries"];
+  // TEST schema inspection confirmed every public FK referencing branches.id.
+  const references=["farmers","hub_payments","issues","milk_collections","targets"];
   for(const tableName of references){
    const check=await sb.from(tableName).select("id",{count:"exact",head:true}).eq("branch_id",id);
    if(check.error)throw new Error("নিরাপদে ডিলিট যাচাই করা যায়নি ("+tableName+"); তাই কোনো কিছু মোছা হয়নি। "+check.error.message);
