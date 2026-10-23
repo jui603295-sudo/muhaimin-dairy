@@ -135,7 +135,9 @@ CREATE TABLE IF NOT EXISTS public.dairy_processing_audit (
 
 -- Every table is isolated behind Main Admin-only RLS. The frontend must still fail closed.
 DO $rls$
-DECLARE t text;
+DECLARE
+  t text;
+  pol record;
 BEGIN
   FOREACH t IN ARRAY ARRAY[
     'dairy_processing_institutions','dairy_processing_products',
@@ -144,7 +146,13 @@ BEGIN
   ] LOOP
     EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY',t);
     EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY',t);
-    EXECUTE format('DROP POLICY IF EXISTS dairy_processing_main_admin_only ON public.%I',t);
+    -- Remove any prior policy so a permissive legacy policy cannot widen access.
+    FOR pol IN
+      SELECT policyname FROM pg_policies
+      WHERE schemaname='public' AND tablename=t
+    LOOP
+      EXECUTE format('DROP POLICY %I ON public.%I',pol.policyname,t);
+    END LOOP;
     EXECUTE format(
       'CREATE POLICY dairy_processing_main_admin_only ON public.%I FOR ALL TO authenticated USING (public.has_app_role(''main_admin'')) WITH CHECK (public.has_app_role(''main_admin''))',
       t
