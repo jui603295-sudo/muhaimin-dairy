@@ -85,7 +85,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
   <button type="button" data-milk-page="chiller">🌡️ চিলার লগ</button>
   <button type="button" data-milk-page="loss">⚖️ দুধের হিসাব/ক্ষতি</button>
   <button type="button" data-milk-page="finance">💰 খরচ ও বিক্রয়</button>
-  <button type="button" data-milk-settings>⚙️ সেটিংস</button>
+  <button type="button" data-milk-page="milkSettings">⚙️ সেটিংস</button>
  </div>
 </div>
 <div id="apiWarning" class="card hidden" role="alert" style="border-color:#d97706;background:#fffbeb;color:#92400e"></div>
@@ -111,7 +111,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
   <button type="button" class="milk-workspace-tile" data-milk-page="chiller"><span>🌡️</span><strong>চিলার লগ</strong><small>তাপমাত্রা ও ঘটনা</small></button>
   <button type="button" class="milk-workspace-tile" data-milk-page="loss"><span>⚖️</span><strong>দুধের হিসাব/ক্ষতি</strong><small>স্টক মিল ও পার্থক্য</small></button>
   <button type="button" class="milk-workspace-tile" data-milk-page="finance"><span>💰</span><strong>খরচ ও বিক্রয়</strong><small>ব্যয়, বিক্রয় ও প্রাপ্য</small></button>
-  <button type="button" class="milk-workspace-tile milk-workspace-settings" data-milk-settings><span>⚙️</span><strong>দুধ সংগ্রহ সেটিংস</strong><small>মান, স্ক্যানার, রসিদ ও ভবিষ্যৎ সুবিধা</small></button>
+  <button type="button" class="milk-workspace-tile milk-workspace-settings" data-milk-page="milkSettings"><span>⚙️</span><strong>দুধ সংগ্রহ সেটিংস</strong><small>মান, স্ক্যানার, রসিদ ও ভবিষ্যৎ সুবিধা</small></button>
  </div>
  <div class="card milk-future-options milk-products-roadmap">
   <h4>🤝 দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠানের জন্য দুধ সরবরাহ ও সহযোগিতা</h4>
@@ -167,28 +167,11 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
 <section id="finance" class="page"><div class="card"><h3>💰 ক্রেতার বিক্রয়, খরচ ও প্রাপ্য</h3><form id="financeForm"><div class="row"><div><label>তারিখ<input name="entry_date" type="text" placeholder="DD-MM-YYYY" data-date-input required></label></div><div><label>কেন্দ্র (ঐচ্ছিক)<select name="branch_id" id="financeBranch"><option value="">সকল/কেন্দ্র নেই</option></select></label></div></div><div class="row"><div><label>লেনদেনের ধরন<select name="entry_type"><option value="Buyer Sale">ক্রেতার বিক্রয়</option><option value="Handling Fee">চুক্তিভিত্তিক হ্যান্ডলিং ফি</option><option value="Transport Cost">পরিবহন খরচ</option><option value="Electricity/Chiller">বিদ্যুৎ/চিলার খরচ</option><option value="Labor Cost">শ্রম খরচ</option><option value="Maintenance">মেরামত খরচ</option><option value="Verified Milk Loss">যাচাইকৃত দুধ ক্ষতির খরচ</option><option value="Rejected Milk Cost">বাতিল দুধের খরচ</option><option value="Other Cost">অন্যান্য খরচ</option></select></label></div><div><label>পরিমাণ (৳)<input name="amount" type="number" min="0" step=".01" required></label></div></div><div class="row"><div><label>নিশ্চিত নগদ আদায়/পরিশোধ (৳)<input name="cash_settled" type="number" min="0" step=".01" value="0" required></label></div><div><label>বিল/রেফারেন্স<input name="reference"></label></div></div><div class="row"><div><label>প্রতিপক্ষ/ক্রেতা/সরবরাহকারী<input name="counterparty"></label></div><div><label>নির্ধারিত তারিখ<input name="due_date" type="text" placeholder="DD-MM-YYYY" data-date-input></label></div></div><label>নোট<textarea name="notes"></textarea></label><p class="small">বিল বা ক্রেতার গ্রহণপত্র নগদ আদায় হিসেবে গণ্য হবে না। অনিশ্চিত হ্যান্ডলিং ফি নিশ্চিত আয় হিসেবে ধরা হবে না।</p><button class="btn primary">আর্থিক এন্ট্রি সংরক্ষণ</button></form></div><div class="card"><h3>আর্থিক রেকর্ড</h3><div class="tablewrap" id="financeTable"></div><div id="financeSummary" class="grid"></div></div></section>
 <section id="reports" class="page"><div class="card"><h3 data-i18n="reportsTitle">📊 রিপোর্ট</h3><div class="row"><div><label data-i18n="fromDate">শুরুর তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportFrom"></label></div><div><label data-i18n="toDate">শেষ তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportTo"></label></div></div><div class="row reportActions"><button class="btn" id="runReport" data-i18n="runReport">রিপোর্ট দেখুন</button><button class="btn" id="reportPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="reportWhatsapp">🟢 WhatsApp</button><button class="btn" id="reportShare">↗️ শেয়ার</button></div><div id="report"></div></div></section>
 <section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div class="row"><div><label>শুরুর তারিখ / From<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerFrom"></label></div><div><label>শেষ তারিখ / To<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerTo"></label></div></div><div id="ledgerShareContent"><div class="row reportActions"><button class="btn" id="ledgerPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="ledgerWhatsapp">🟢 WhatsApp</button><button class="btn" id="ledgerShare">↗️ শেয়ার</button></div><p class="small" id="ledgerGeneratedAt"></p><div id="ledgerSummary" class="grid"></div><div id="ledgerResult" class="tablewrap"></div></div></div></section>
-<section id="settings" class="page">
-<div class="card" id="finalSettingsChecklist">
- <h3>✅ Final Update Checklist — চূড়ান্ত আপডেট যাচাই</h3>
- <p class="small">এই তালিকার টিকচিহ্ন শুধু এই ফোনের Main Admin-ভিত্তিক লোকাল ড্রাফটে সংরক্ষিত হবে। এটি পরীক্ষা চালায় না এবং টিক দেওয়া মানে কোনো কাজ প্রযুক্তিগতভাবে পাস করেছে—এমন নয়। প্রতিটি বিষয়ের প্রমাণ যাচাই করে তবেই টিক দিন।</p>
- <div class="stat"><span>চেকলিস্ট অগ্রগতি</span><b id="finalChecklistProgress">0 / 10</b><div id="finalChecklistProgressText" class="small" role="status">কোনো বিষয় নিশ্চিত করা হয়নি।</div></div>
- <div id="finalChecklistItems">
-  <label><input type="checkbox" data-final-check="code_reviewed"> বর্তমান কোড ও পরিবর্তনের তালিকা পর্যালোচনা করা হয়েছে</label>
-  <label><input type="checkbox" data-final-check="backup_verified"> ব্যাকআপ ফাইল ও পুনরুদ্ধারযোগ্যতা যাচাই করা হয়েছে</label>
-  <label><input type="checkbox" data-final-check="test_jwt_rls"> TEST-এ Main Admin-এর JWT/RLS অনুমতি পরীক্ষা প্রমাণসহ পাস</label>
-  <label><input type="checkbox" data-final-check="limited_user_rls"> সীমিত ব্যবহারকারীর অনুমতি ও নিষিদ্ধ কাজ পরীক্ষা প্রমাণসহ পাস</label>
-  <label><input type="checkbox" data-final-check="address_schema"> শাখা/কৃষকের ঠিকানা ফর্ম ও TEST schema মিলিয়ে দেখা হয়েছে</label>
-  <label><input type="checkbox" data-final-check="settings_persistence"> Settings সংরক্ষণ ও পুনরায় লোড পরীক্ষা করা হয়েছে</label>
-  <label><input type="checkbox" data-final-check="business_rules"> Feed, শাখা, পেমেন্ট ও লেজারের নিয়ম পরীক্ষা করা হয়েছে</label>
-  <label><input type="checkbox" data-final-check="browser_mobile"> মোবাইল ব্রাউজারে মূল workflow পরীক্ষা করা হয়েছে</label>
-  <label><input type="checkbox" data-final-check="build_pass"> Build/static checks এবং সংশোধনের পর পুনঃপরীক্ষা পাস</label>
-  <label><input type="checkbox" data-final-check="approval_release"> সব প্রমাণ পর্যালোচনার পর মালিকের স্পষ্ট release অনুমোদন নেওয়া হয়েছে</label>
- </div>
- <div class="row"><button class="btn primary" type="button" id="saveFinalChecklist">চেকলিস্ট সংরক্ষণ</button><button class="btn" type="button" id="resetFinalChecklist">টিকচিহ্ন রিসেট</button></div>
- <p id="finalChecklistStatus" class="small" role="status">লোকাল চেকলিস্ট লোড হচ্ছে…</p>
- <p class="small">বর্তমান পরিচিত অবস্থা: TEST JWT/RLS প্রমাণ, ঠিকানা schema যাচাই, settings persistence ও browser integration পরীক্ষা এখনো নিশ্চিত নয়। Production merge/deploy অনুমোদন ছাড়া হবে না।</p>
+<section id="milkSettings" class="page">
+<div class="card">
+<h3>⚙️ দুধ সংগ্রহ কেন্দ্রের সেটিংস</h3>
+<p class="small">এই পৃষ্ঠাটি শুধু দুধ সংগ্রহ কেন্দ্রের জন্য। ভবিষ্যৎ সুবিধা চালুর আগে TEST-এ যাচাই করা আবশ্যক।</p>
 </div>
-<div class="card"><h3>📶 অফলাইন মোড / Offline Mode</h3><label><input id="offlineCacheEnabled" type="checkbox" checked> এই ফোনে অফলাইন অ্যাপ ও আগে লোড করা তথ্য সংরক্ষণ চালু</label><p class="small">আগে অনলাইনে অ্যাপ খুলে লগইন ও তথ্য লোড করুন। অফলাইনে আগে থেকে থাকা তথ্য দেখা যাবে এবং Milk Collection রেকর্ড ফোনে অপেক্ষমাণ থাকতে পারে। নিরাপত্তা যাচাই সম্পন্ন না হওয়া পর্যন্ত এগুলো স্বয়ংক্রিয়ভাবে Supabase-এ পাঠানো হবে না। অপেক্ষমাণ রেকর্ডকে সার্ভারে সংরক্ষিত বলে ধরে নেবেন না। ফোনের স্ক্রিন লক ব্যবহার করুন।</p><div class="row"><button class="btn primary" type="button" id="saveOfflineSettings">অফলাইন সেটিংস সংরক্ষণ</button><button class="btn" type="button" id="retryOfflineSync">অপেক্ষমাণ রেকর্ডের অবস্থা দেখুন</button></div><p id="offlineModeStatus" class="small" role="status">অফলাইন অবস্থা যাচাই হচ্ছে…</p></div><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
 <div class="card">
  <h3>🥛 Milk Collection — Future Main Options</h3>
  <p class="small">এই সেটিংস Main Admin-এর নিয়ন্ত্রণে থাকবে। কিছু বিকল্প ভবিষ্যৎ সুবিধার কনফিগারেশন; কার্যকর করার আগে TEST-এ যাচাই করতে হবে।</p>
@@ -215,7 +198,31 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
   <p id="milkCollectionSettingsStatus" class="small" role="status">Milk Collection সেটিংস লোড হচ্ছে…</p>
   <button class="btn primary" type="submit">Milk Collection সেটিংস সংরক্ষণ</button>
  </form>
-</div><div class="card" id="generalSettingsWorkspace">
+</div>
+</section>
+<section id="settings" class="page">
+<div class="card" id="finalSettingsChecklist">
+ <h3>✅ Final Update Checklist — চূড়ান্ত আপডেট যাচাই</h3>
+ <p class="small">এই তালিকার টিকচিহ্ন শুধু এই ফোনের Main Admin-ভিত্তিক লোকাল ড্রাফটে সংরক্ষিত হবে। এটি পরীক্ষা চালায় না এবং টিক দেওয়া মানে কোনো কাজ প্রযুক্তিগতভাবে পাস করেছে—এমন নয়। প্রতিটি বিষয়ের প্রমাণ যাচাই করে তবেই টিক দিন।</p>
+ <div class="stat"><span>চেকলিস্ট অগ্রগতি</span><b id="finalChecklistProgress">0 / 10</b><div id="finalChecklistProgressText" class="small" role="status">কোনো বিষয় নিশ্চিত করা হয়নি।</div></div>
+ <div id="finalChecklistItems">
+  <label><input type="checkbox" data-final-check="code_reviewed"> বর্তমান কোড ও পরিবর্তনের তালিকা পর্যালোচনা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="backup_verified"> ব্যাকআপ ফাইল ও পুনরুদ্ধারযোগ্যতা যাচাই করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="test_jwt_rls"> TEST-এ Main Admin-এর JWT/RLS অনুমতি পরীক্ষা প্রমাণসহ পাস</label>
+  <label><input type="checkbox" data-final-check="limited_user_rls"> সীমিত ব্যবহারকারীর অনুমতি ও নিষিদ্ধ কাজ পরীক্ষা প্রমাণসহ পাস</label>
+  <label><input type="checkbox" data-final-check="address_schema"> শাখা/কৃষকের ঠিকানা ফর্ম ও TEST schema মিলিয়ে দেখা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="settings_persistence"> Settings সংরক্ষণ ও পুনরায় লোড পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="business_rules"> Feed, শাখা, পেমেন্ট ও লেজারের নিয়ম পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="browser_mobile"> মোবাইল ব্রাউজারে মূল workflow পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="build_pass"> Build/static checks এবং সংশোধনের পর পুনঃপরীক্ষা পাস</label>
+  <label><input type="checkbox" data-final-check="approval_release"> সব প্রমাণ পর্যালোচনার পর মালিকের স্পষ্ট release অনুমোদন নেওয়া হয়েছে</label>
+ </div>
+ <div class="row"><button class="btn primary" type="button" id="saveFinalChecklist">চেকলিস্ট সংরক্ষণ</button><button class="btn" type="button" id="resetFinalChecklist">টিকচিহ্ন রিসেট</button></div>
+ <p id="finalChecklistStatus" class="small" role="status">লোকাল চেকলিস্ট লোড হচ্ছে…</p>
+ <p class="small">বর্তমান পরিচিত অবস্থা: TEST JWT/RLS প্রমাণ, ঠিকানা schema যাচাই, settings persistence ও browser integration পরীক্ষা এখনো নিশ্চিত নয়। Production merge/deploy অনুমোদন ছাড়া হবে না।</p>
+</div>
+<div class="card"><h3>📶 অফলাইন মোড / Offline Mode</h3><label><input id="offlineCacheEnabled" type="checkbox" checked> এই ফোনে অফলাইন অ্যাপ ও আগে লোড করা তথ্য সংরক্ষণ চালু</label><p class="small">আগে অনলাইনে অ্যাপ খুলে লগইন ও তথ্য লোড করুন। অফলাইনে আগে থেকে থাকা তথ্য দেখা যাবে এবং Milk Collection রেকর্ড ফোনে অপেক্ষমাণ থাকতে পারে। নিরাপত্তা যাচাই সম্পন্ন না হওয়া পর্যন্ত এগুলো স্বয়ংক্রিয়ভাবে Supabase-এ পাঠানো হবে না। অপেক্ষমাণ রেকর্ডকে সার্ভারে সংরক্ষিত বলে ধরে নেবেন না। ফোনের স্ক্রিন লক ব্যবহার করুন।</p><div class="row"><button class="btn primary" type="button" id="saveOfflineSettings">অফলাইন সেটিংস সংরক্ষণ</button><button class="btn" type="button" id="retryOfflineSync">অপেক্ষমাণ রেকর্ডের অবস্থা দেখুন</button></div><p id="offlineModeStatus" class="small" role="status">অফলাইন অবস্থা যাচাই হচ্ছে…</p></div><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
+<div class="card" id="generalSettingsWorkspace">
  <h3>⚙️ সাধারণ অ্যাপ সেটিংস — General Settings</h3>
  <p class="small">অ্যাপের নাম, ব্যবসার নাম, স্লোগান, থিম, প্রধান রং ও ভাষা সংরক্ষণ করলে এই ফোনের অ্যাপে প্রয়োগ হবে। নোটিফিকেশন পছন্দ আপাতত সংরক্ষিত থাকবে; সতর্কতা পাঠানোর ব্যবস্থা এখনো যুক্ত নয়। Supabase/লাইভ ডেটাবেসে কিছু লেখা হবে না.</p>
  <form id="generalSettingsDraftForm">
@@ -1857,7 +1864,7 @@ document.querySelectorAll("[data-milk-page]").forEach(button=>button.addEventLis
  const page=$(target);if(page)page.classList.add("active");
  document.querySelectorAll("#nav button").forEach(item=>item.classList.toggle("active",item.dataset.page==="collection"));
  document.querySelectorAll("[data-milk-page]").forEach(item=>item.classList.toggle("active",item.dataset.milkPage===target));
- if($("milkWorkspaceNav"))$("milkWorkspaceNav").classList.toggle("hidden",!["collection","payments","operations","chiller","loss","finance"].includes(target));
+ if($("milkWorkspaceNav"))$("milkWorkspaceNav").classList.toggle("hidden",!["collection","payments","operations","chiller","loss","finance","milkSettings"].includes(target));
  if(["operations","chiller","loss","finance"].includes(target))loadOperationalRecords();
 }));
 document.querySelectorAll("[data-milk-settings]").forEach(milkSettingsShortcut=>milkSettingsShortcut.addEventListener("click",()=>{const settingsButton=document.querySelector('#nav [data-page="settings"]');if(settingsButton)settingsButton.click();}));
