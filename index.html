@@ -76,6 +76,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <main>
 <div id="milkWorkspaceNav" class="card milk-workspace-nav hidden" aria-label="দুধ সংগ্রহ মডিউল নেভিগেশন">
  <strong>🥛 দুধ সংগ্রহ</strong>
+ <button type="button" data-milk-page="milkHome">🏠 কেন্দ্রের হোমপেজ</button>
  <button type="button" class="btn" id="milkWorkspaceExitNav">← মূল অ্যাপে ফিরুন</button>
  <div class="milk-workspace-nav-links">
   <button type="button" data-milk-page="collection">🥛 দুধ সংগ্রহ</button>
@@ -1843,7 +1844,7 @@ document.querySelectorAll("#nav button").forEach(button=>button.addEventListener
   document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
   const page=$(target);if(page)page.classList.add("active");
   const milkWorkspaceNav=$("milkWorkspaceNav");
-  if(milkWorkspaceNav)milkWorkspaceNav.classList.toggle("hidden",requested!=="collection"&& !["payments","operations","chiller","loss","finance"].includes(requested));
+  if(milkWorkspaceNav)milkWorkspaceNav.classList.toggle("hidden",!["payments","operations","chiller","loss","finance"].includes(requested));
   document.querySelectorAll("#nav button").forEach(item=>item.classList.toggle("active",item===button));
   if(["operations","chiller","loss","finance"].includes(requested))loadOperationalRecords();
   if(requested==="ledger")renderLedger();
