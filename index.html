@@ -46,6 +46,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 @media(min-width:760px){.milk-future-setting-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav .milk-workspace-nav-links{display:none!important}body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav{position:relative;top:auto;z-index:2;padding:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav>strong{margin:0 auto 0 0}body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav button{min-height:42px;padding:10px 12px;border-radius:10px;font-weight:700}body.milk-center-mode.milk-workspace-detail .page.active{min-width:0}body.milk-center-mode.milk-workspace-detail .page.active .card{max-width:100%}body.milk-center-mode.milk-workspace-detail button:focus-visible{outline:3px solid #0f766e;outline-offset:2px}
+body.module-detail-mode #nav{display:none!important}body.module-detail-mode .module-home-return{display:block;min-height:44px;margin:0 0 12px;padding:10px 14px;border-radius:10px;font-weight:700}body.module-detail-mode .page.active{max-width:100%}body.module-detail-mode .page.active .card{max-width:100%}body.module-detail-mode button:focus-visible{outline:3px solid #0f766e;outline-offset:2px}
 </style>
 </head>
 <body>
@@ -2040,10 +2041,18 @@ $("retryOfflineSync").addEventListener("click",()=>syncMilkCollectionQueue());
 window.addEventListener("online",()=>{setOfflineModeStatus("ইন্টারনেট ফিরে এসেছে; অপেক্ষমাণ Milk Collection রেকর্ডের অবস্থা যাচাই হচ্ছে। নিরাপত্তা যাচাই না হওয়া পর্যন্ত স্বয়ংক্রিয় পাঠানো বন্ধ আছে।");syncMilkCollectionQueue();});
 window.addEventListener("offline",()=>setOfflineModeStatus("অফলাইন: আগে সংরক্ষিত তথ্য ও দুধ সংগ্রহের ফর্ম ব্যবহার করুন।"));
 $("feedNameSelect").addEventListener("change",()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য"));
+document.querySelectorAll(".page[id]:not(#home):not(#milkHome)").forEach(page=>{
+ if(page.querySelector(":scope > .module-home-return"))return;
+ const back=document.createElement("button");
+ back.type="button";back.className="btn module-home-return";back.textContent="← মুহাইমিন হোমে ফিরুন";
+ back.addEventListener("click",()=>{const homeButton=document.querySelector('#nav [data-page="home"]');if(homeButton)homeButton.click();});
+ page.insertBefore(back,page.firstChild);
+});
 document.querySelectorAll("#nav button").forEach(button=>button.addEventListener("click",()=>{
   const requested=button.dataset.page;
   const target=requested==="collection"?"milkHome":requested;
   document.body.classList.toggle("milk-center-mode",requested==="collection");
+  document.body.classList.toggle("module-detail-mode",requested!=="home"&&requested!=="collection");
   document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
   const page=$(target);if(page)page.classList.add("active");
   const milkWorkspaceNav=$("milkWorkspaceNav");
