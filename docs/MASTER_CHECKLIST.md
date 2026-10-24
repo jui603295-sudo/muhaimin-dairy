@@ -1,6 +1,6 @@
 # Muhaimin Projects — Master Checklist
 
-Version: 1.5. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
+Version: 1.6. This checklist is the single source of truth. An unchecked item is not complete. Record evidence, commit/PR, dependencies and last-tested version before marking LOCKED.
 
 ## A. Governance and non-disruptive development
 - [ ] GOV-01 Inventory earlier requirements and current implementation.
@@ -73,7 +73,18 @@ Version: 1.5. This checklist is the single source of truth. An unchecked item is
 - [ ] DAIRY-16 Core operations work without optional AI.
 - [ ] DAIRY-17 Assets and mobile UI verified.
 
-## F. Customer release gate
+## F. Permanent module Workspace architecture — Muhaimin Dairy
+- [ ] MOD-01 Main home shows the 12 approved primary module entry points.
+- [ ] MOD-02 Each primary module has its own Workspace, landing view and relevant submenus/forms/lists/reports.
+- [ ] MOD-03 Detailed module data and forms are not duplicated on the main home page.
+- [ ] MOD-04 Every Workspace has clear return navigation to the main app.
+- [ ] MOD-05 Existing data, identifiers and cross-module relationships are preserved.
+- [ ] MOD-06 Module-level settings, revision/version history, authorization and audit are provided where applicable.
+- [ ] MOD-07 Module-specific tests and affected cross-module regression tests pass on TEST.
+- [ ] MOD-08 Workspace acceptance evidence and exact branch/commit are recorded; no module is called complete based on visuals alone.
+- [ ] MOD-09 Changes remain isolated from LIVE until TEST gates pass and the user explicitly approves merge/deploy.
+
+## G. Customer release gate
 - [ ] RELEASE-01 Applicable acceptance tests pass and evidence is recorded.
 - [ ] RELEASE-02 No blocking defect remains, or exception is explicitly approved.
 - [ ] RELEASE-03 Backup, restore and rollback plan verified.
@@ -84,7 +95,7 @@ Version: 1.5. This checklist is the single source of truth. An unchecked item is
 - [ ] RELEASE-08 Actual deployment and live smoke test are verified and release version recorded.
 - [ ] RELEASE-09 New development can continue on isolated branches without changing the released version.
 
-## G. Configurable community-service and national-development messages — every app
+## H. Configurable community-service and national-development messages — every app
 - [ ] SLOGAN-01 Authorized administrators can configure message text and language.
 - [ ] SLOGAN-02 Placement, visibility and active period can be configured.
 - [ ] SLOGAN-03 Messages are appropriate, readable on mobile and do not disrupt critical tasks.
@@ -108,5 +119,6 @@ Version: 1.5. This checklist is the single source of truth. An unchecked item is
 | MILK-SCALE-01 | Physical scale integration | PLANNED | Identify device/protocol and test hardware; current toggle is configuration only |
 | SEC-01 | Main Admin/restricted-role security | IN PROGRESS | PR #13 remains unmerged; test real JWT/RLS |
 | ECO-01 | Ecosystem portability | IN PROGRESS | Apply checklist and test extraction per app |
+| MOD-01 | Permanent 12-module independent Workspace architecture | PLANNED | Policy added in `docs/DEVELOPMENT_POLICY.md` §12; verify each module against MOD-01–MOD-09 on TEST |
 | RELIAB-01 | Backup, restore and server resilience | PLANNED | Define per-app targets, providers and tested recovery |
 | RELEASE-01 | Independent customer release | PLANNED | Complete release gate and explicit approval |
