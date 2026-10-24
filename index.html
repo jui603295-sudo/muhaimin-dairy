@@ -29,6 +29,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px
 a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space:nowrap}
 @media(min-width:760px){nav{grid-template-columns:repeat(6,minmax(0,1fr));top:68px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}header{padding-left:max(14px,calc((100vw - 1150px)/2))}}
 .milk-workspace-nav{position:sticky;top:122px;z-index:8;margin:8px 0;padding:10px}.milk-workspace-nav>strong{display:block;margin-bottom:8px}.milk-workspace-nav-links{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.milk-workspace-nav-links button{flex:0 0 auto;border:1px solid #dbe5e3;border-radius:9px;background:#f8fcfb;color:#134e4a;padding:9px 11px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}.milk-workspace-nav-links button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.milk-products-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 16px}.milk-product-item{display:flex;flex-direction:column;gap:5px;padding:12px;border:1px solid #dbe5e3;border-radius:12px;background:#fff}.milk-product-item>span{font-size:24px}.milk-product-item strong{font-size:13px;color:var(--dark)}.milk-product-item small{font-size:11px;color:#64748b}.milk-service-list{margin:8px 0 14px;padding-left:20px}.milk-service-list li{margin:7px 0;font-size:13px;line-height:1.5}@media(min-width:760px){.milk-products-grid{grid-template-columns:repeat(3,minmax(0,1fr)}}
 .milk-center-brand{display:flex;align-items:center;gap:12px;padding:8px 0 14px;border-bottom:1px solid var(--line);margin-bottom:12px}.milk-center-brand-logo{width:64px;height:64px;flex:0 0 64px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid #dbe5e3;padding:3px}.milk-center-brand-title{font-size:clamp(16px,4vw,21px);line-height:1.35;margin:0;color:var(--dark)}.milk-center-brand-subtitle{margin:5px 0 0}.milk-workspace-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.milk-workspace-tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:112px;padding:14px;border:1px solid #dbe5e3;border-radius:14px;background:#f8fcfb;color:#134e4a;text-align:left;cursor:pointer}.milk-workspace-tile>span{font-size:26px}.milk-workspace-tile strong{font-size:14px}.milk-workspace-tile small{font-size:11px;color:#64748b;font-weight:400}.milk-workspace-tile.active{border-color:var(--green);background:#e3f5f1;box-shadow:0 0 0 1px #0f766e20}.milk-workspace-settings{background:#f8fafc}.milk-future-options{margin-top:12px;background:#fbfdfd}@media(min-width:760px){.milk-workspace-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
  .address-fields{border:1px solid var(--border,#d1d5db);border-radius:10px;padding:12px;margin:12px 0}.address-fields legend{font-weight:700;padding:0 6px;color:var(--green,#0f766e)}.address-fields label{display:block;margin-bottom:8px}</style>
 </head>
@@ -108,6 +109,28 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
   <button type="button" class="milk-workspace-tile" data-milk-page="loss"><span>⚖️</span><strong>দুধের হিসাব/ক্ষতি</strong><small>স্টক মিল ও পার্থক্য</small></button>
   <button type="button" class="milk-workspace-tile" data-milk-page="finance"><span>💰</span><strong>খরচ ও বিক্রয়</strong><small>ব্যয়, বিক্রয় ও প্রাপ্য</small></button>
   <button type="button" class="milk-workspace-tile milk-workspace-settings" data-milk-settings><span>⚙️</span><strong>দুধ সংগ্রহ সেটিংস</strong><small>মান, স্ক্যানার, রসিদ ও ভবিষ্যৎ সুবিধা</small></button>
+ </div>
+ <div class="card milk-future-options milk-products-roadmap">
+  <h4>🧀 দুগ্ধজাত পণ্য ও সেবা — ভবিষ্যৎ পরিকল্পনা</h4>
+  <p class="small">এই তালিকাটি ভবিষ্যৎ পরিকল্পনা; পণ্য উৎপাদন, অর্ডার বা ডেলিভারি ফিচার এখনো চালু হয়েছে বলে বোঝায় না। সক্ষমতা, মাননিয়ন্ত্রণ ও অনুমোদন নিশ্চিত করে ধাপে ধাপে চালু করা যাবে।</p>
+  <div class="milk-products-grid" role="list" aria-label="ভবিষ্যৎ দুগ্ধজাত পণ্য">
+   <div class="milk-product-item" role="listitem"><span>🥛</span><strong>পাস্তুরিত দুধ</strong><small>প্যাকেট ও বোতল</small></div>
+   <div class="milk-product-item" role="listitem"><span>🥣</span><strong>দই</strong><small>মিষ্টি ও টক দই</small></div>
+   <div class="milk-product-item" role="listitem"><span>🧈</span><strong>ঘি ও মাখন</strong><small>প্রক্রিয়াজাত দুগ্ধজাত পণ্য</small></div>
+   <div class="milk-product-item" role="listitem"><span>🧀</span><strong>পনির ও ছানা</strong><small>খাদ্য প্রস্তুত ও বিক্রয়</small></div>
+   <div class="milk-product-item" role="listitem"><span>🥤</span><strong>লাচ্ছি ও মিল্কশেক</strong><small>ঠান্ডা পানীয়</small></div>
+   <div class="milk-product-item" role="listitem"><span>🍮</span><strong>দুধের মিষ্টান্ন</strong><small>পায়েস ও অন্যান্য পণ্য</small></div>
+  </div>
+  <h4>🚚 ভবিষ্যৎ গ্রাহকসেবা ও ব্যবসায়িক সুবিধা</h4>
+  <ul class="milk-service-list">
+   <li>দোকান, হোটেল, মিষ্টির দোকান ও প্রতিষ্ঠানে পাইকারি সরবরাহ</li>
+   <li>খুচরা বিক্রয়, নিয়মিত অর্ডার ও সাবস্ক্রিপশন</li>
+   <li>অর্ডার, চালান, পেমেন্ট ও ডেলিভারি ট্র্যাকিং</li>
+   <li>প্যাকেট/ব্যাচ নম্বর, উৎপাদনের তারিখ, মেয়াদ ও স্টক ব্যবস্থাপনা</li>
+   <li>মান পরীক্ষা, নিরাপদ সংরক্ষণ ও কোল্ড-চেইন লগ</li>
+   <li>গ্রাহক অভিযোগ, ফেরত/বদল ও বিক্রয়-পরবর্তী সহায়তা</li>
+  </ul>
+  <p class="small">প্রতিটি পণ্য/সেবার নিজস্ব সেটিংস, চালু/বন্ধ নিয়ন্ত্রণ, মূল্য ও মজুতের রেকর্ড রাখার ব্যবস্থা ভবিষ্যৎ পর্যায়ে যোগ করা যাবে। খাদ্য-নিরাপত্তা ও প্রযোজ্য অনুমোদন নিশ্চিত না করে উৎপাদন বা বিক্রয় চালু করা হবে না।</p>
  </div>
  <div class="card milk-future-options">
   <h4>ভবিষ্যৎ সুবিধা — সেটিংসসহ পরিকল্পনা</h4>
