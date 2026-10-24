@@ -8,6 +8,8 @@
 <title>মুহাইমিন — Dairy Management</title>
 <style>
 :root{--green:#0f766e;--dark:#115e59;--bg:#f3f7f6;--line:#dbe5e3;--text:#17202a}
+html[data-theme="dark"] body{--bg:#111827;--line:#374151;--text:#e5e7eb;background:var(--bg);color:var(--text)}html[data-theme="dark"] nav,html[data-theme="dark"] .card{background:#1f2937;color:var(--text);border-color:#374151}html[data-theme="dark"] .stat{background:#273548}html[data-theme="dark"] th{background:#273548;color:var(--text)}html[data-theme="dark"] td{border-color:#374151}html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#111827;color:var(--text);border-color:#4b5563}html[data-theme="dark"] nav button:not(.active){background:#374151;color:#e5e7eb}
+@media(prefers-color-scheme:dark){html[data-theme="system"] body{--bg:#111827;--line:#374151;--text:#e5e7eb;background:var(--bg);color:var(--text)}html[data-theme="system"] nav,html[data-theme="system"] .card{background:#1f2937;color:var(--text);border-color:#374151}html[data-theme="system"] .stat{background:#273548}html[data-theme="system"] th{background:#273548;color:var(--text)}html[data-theme="system"] td{border-color:#374151}html[data-theme="system"] input,html[data-theme="system"] select,html[data-theme="system"] textarea{background:#111827;color:var(--text);border-color:#4b5563}html[data-theme="system"] nav button:not(.active){background:#374151;color:#e5e7eb}}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;background:var(--bg);color:var(--text)}
 header{position:sticky;top:0;z-index:10;background:var(--green);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px #0002}
 .brandLogo{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #fff}h1{font-size:19px;margin:0 0 3px}.sub{font-size:11px;opacity:.95}.small{font-size:12px;color:#64748b}
@@ -32,7 +34,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <header>
 <img class="brandLogo" src="muhaimin-logo.png" alt="Muhaimin Dairy Logo" onerror="this.style.display='none'">
 
-<div><h1 id="appName">মুহাইমিন</h1><div class="sub" id="headerSub">ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online</div><div class="sub">📱 Mobile Ready • Farmer Call</div></div>
+<div><h1 id="appName">মুহাইমিন</h1><div class="sub" id="headerBusinessName">মুহাইমিন ডেইরি</div><div class="sub" id="headerSlogan" hidden></div><div class="sub" id="headerSub">ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online</div><div class="sub">📱 Mobile Ready • Farmer Call</div></div>
 <div class="headerTools"><label for="language" class="hidden">Language</label><select id="language" aria-label="Language"><option value="bn">🇧🇩 বাংলা</option><option value="en">🇬🇧 English</option></select></div>
 </header>
 
@@ -76,7 +78,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <div class="card"><h3 data-i18n="businessTarget">🎯 ব্যবসার লক্ষ্য</h3><p><span data-i18n="dailyTarget">দৈনিক লক্ষ্য</span>: <b id="targetView">2,500 L</b></p><p>CLR: <b id="clrView">28</b></p><p><span data-i18n="commissionPerL">কমিশন/L</span>: <b id="commissionView">৳1</b></p></div>
 <div class="card"><h3 data-i18n="branchStatus">📍 কেন্দ্রভিত্তিক অবস্থা</h3><div id="homeBranches"></div></div>
 </section>
-<section id="branches" class="page"><div class="card"><h3 data-i18n="branchList">🏢 সংগ্রহ কেন্দ্র</h3><div class="tablewrap" id="branchTable"></div></div><div class="card"><h3 data-i18n="newBranch">➕ নতুন কেন্দ্র</h3><form id="branchForm"><div class="row"><div><label>Code<input name="code" placeholder="B006" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="branch_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="branch_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="branch_district" list="branch_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="branch_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="branch_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="branch_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="branch_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="dailyTargetLiters">দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label data-i18n="statusLabel">অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><div class="row"><button class="btn" type="button" id="saveCollectionDraft">📝 ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="restoreCollectionDraft">↩️ ড্রাফট ফিরিয়ে আনুন</button><button class="btn" type="button" id="clearCollectionDraft">🗑️ ড্রাফট মুছুন</button></div><p class="small">ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।</p><button class="btn primary" data-i18n="save">সংরক্ষণ</button></form></div></section>
+<section id="branches" class="page"><div class="card"><h3 data-i18n="branchList">🏢 সংগ্রহ কেন্দ্র</h3><p class="small">কেন্দ্রের তথ্য প্রয়োজনে সম্পাদনা করুন। মুছে ফেলার আগে সংশ্লিষ্ট কৃষক/দুধ/অপারেশন রেকর্ড আছে কি না পরীক্ষা হবে; পুরোনো রেকর্ড যুক্ত থাকলে ডিলিট বন্ধ থাকবে।</p><div class="tablewrap" id="branchTable"></div></div><div class="card"><h3 id="branchFormTitle" data-i18n="newBranch">➕ নতুন কেন্দ্র</h3><form id="branchForm"><input type="hidden" name="editing_branch_id" value=""><div class="row"><div><label>Code<input name="code" placeholder="B006" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="branch_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="branch_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="branch_district" list="branch_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="branch_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="branch_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="branch_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="branch_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="dailyTargetLiters">দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label data-i18n="statusLabel">অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><div class="row"><button class="btn" type="button" id="saveCollectionDraft">📝 ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="restoreCollectionDraft">↩️ ড্রাফট ফিরিয়ে আনুন</button><button class="btn" type="button" id="clearCollectionDraft">🗑️ ড্রাফট মুছুন</button></div><p class="small">ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।</p><div class="row"><button class="btn primary" id="branchSubmitBtn" data-i18n="save">সংরক্ষণ</button><button class="btn" type="button" id="cancelBranchEdit" hidden>সম্পাদনা বাতিল</button></div></form></div></section>
 <section id="farmers" class="page"><div class="card"><h3 data-i18n="addFarmer">👨‍🌾 কৃষক যোগ করুন</h3><form id="farmerForm"><div class="row"><div><label>Farmer Code<input name="farmer_code" placeholder="F00001" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><div class="row"><div><label data-i18n="mobileLabel">মোবাইল<input name="mobile" required type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></label></div><div><label>পুরোনো ঠিকানা / অতিরিক্ত ঠিকানা<input name="village" placeholder="ঐচ্ছিক"></label></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="farmer_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="farmer_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="farmer_district" list="farmer_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="farmer_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="farmer_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="farmer_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="farmer_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="farmerBranch" required></select></label></div><div><label data-i18n="expectedMilk">আনুমানিক L/day<input name="expected_liters" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveFarmer">কৃষক সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="farmerList">📋 কৃষক তালিকা</h3><div class="tablewrap" id="farmerTable"></div></div></section>
 <section id="collection" class="page"><div class="card"><h3 class="section-title milk-collection-heading"><img src="assets/milk-collection-3d.svg" alt="" width="34" height="34" class="milk-collection-title-icon"><span data-i18n="milkCollection">দৈনিক দুধ সংগ্রহ</span></h3><div id="milkSmartInsights" class="statgrid" aria-live="polite"><p class="small">সংগ্রহের স্মার্ট বিশ্লেষণ প্রস্তুত হচ্ছে…</p></div><p id="milkQueueStatus" class="small" aria-live="polite">অফলাইন সংগ্রহ সারি: যাচাই হচ্ছে…</p><div class="row"><button type="button" class="btn" id="exportPendingMilkQueue">অপেক্ষমাণ রেকর্ডের ব্যাকআপ ডাউনলোড</button></div><div class="row"><label>ব্যাকআপ ফাইল যাচাই করুন (এখনই পুনরুদ্ধার/ইমপোর্ট হবে না)<input id="validateMilkQueueBackupFile" type="file" accept=".json,application/json"></label><button type="button" class="btn" id="validateMilkQueueBackup">ব্যাকআপ যাচাই</button></div><p id="milkQueueBackupValidationStatus" class="small" aria-live="polite">ব্যাকআপ যাচাই করলে শুধু ফাইল পরীক্ষা হবে; কোনো রেকর্ড লেখা বা সিঙ্ক হবে না।</p><p class="small">এই ব্যাকআপে ব্যক্তিগত কৃষক/সংগ্রহ তথ্য থাকতে পারে। নিরাপদ স্থানে রাখুন; এটি সার্ভারে আপলোড করবে না এবং রেকর্ড সিঙ্কও করবে না।</p><form id="collectionForm"><input type="hidden" name="client_record_id" value=""><label data-i18n="dateLabel">তারিখ<input name="collection_date" id="cdate" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" required></label><label>সময় / Time<input name="collection_time" id="ctime" type="time" step="1" required></label><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="collectionBranch" required></select></label></div><div><label>কৃষক QR / বারকোড / মোবাইল স্ক্যান বা লিখুন<input id="farmerScanInput" type="text" inputmode="text" autocomplete="off" placeholder="Farmer Code / 01XXXXXXXXX"><small id="farmerScanStatus" class="small">স্ক্যানার ইনপুট বা কৃষক কোড লিখলে কৃষক নির্বাচন হবে।</small><div class="row"><button type="button" class="btn" id="startFarmerCamera">📷 ক্যামেরা দিয়ে QR স্ক্যান</button><button type="button" class="btn" id="stopFarmerCamera" disabled>স্ক্যান বন্ধ</button></div><video id="farmerCameraVideo" class="hidden" playsinline muted style="width:100%;max-height:240px;object-fit:cover;border-radius:10px;margin-top:8px"></video><small id="farmerCameraStatus" class="small">ক্যামেরা স্ক্যানের জন্য ব্রাউজার সাপোর্ট ও ক্যামেরা অনুমতি দরকার; USB/Bluetooth স্ক্যানারও ব্যবহার করা যাবে।</small></label><label data-i18n="farmerLabel">কৃষক<select name="farmer_id" id="collectionFarmer" required></select></label></div></div><div class="row"><div><label data-i18n="litersLabel">লিটার<input name="liters" type="number" step=".01" min="0" required></label></div><div><label>CLR<input name="clr" type="number" step=".1" value="28"></label></div></div><div class="row"><div><label data-i18n="purchaseRate">ক্রয় মূল্য/L<input name="purchase_rate" type="number" step=".01" value="50"></label></div><div><label>গ্রহণ নিশ্চিতকরণ / Accept Confirmation<select name="accepted" required><option value="true">হ্যাঁ / Yes</option><option value="false" selected>না / No</option></select></label></div></div>
 <div class="row"><div><label>ব্যাচ ID / Batch ID<input name="batch_id"></label></div><div><label>দুধের তাপমাত্রা °C<input name="milk_temperature_c" type="number" step=".1" min="0"></label></div></div>
@@ -104,7 +106,28 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
 <section id="finance" class="page"><div class="card"><h3>💰 ক্রেতার বিক্রয়, খরচ ও প্রাপ্য</h3><form id="financeForm"><div class="row"><div><label>তারিখ<input name="entry_date" type="text" placeholder="DD-MM-YYYY" data-date-input required></label></div><div><label>কেন্দ্র (ঐচ্ছিক)<select name="branch_id" id="financeBranch"><option value="">সকল/কেন্দ্র নেই</option></select></label></div></div><div class="row"><div><label>লেনদেনের ধরন<select name="entry_type"><option value="Buyer Sale">ক্রেতার বিক্রয়</option><option value="Handling Fee">চুক্তিভিত্তিক হ্যান্ডলিং ফি</option><option value="Transport Cost">পরিবহন খরচ</option><option value="Electricity/Chiller">বিদ্যুৎ/চিলার খরচ</option><option value="Labor Cost">শ্রম খরচ</option><option value="Maintenance">মেরামত খরচ</option><option value="Verified Milk Loss">যাচাইকৃত দুধ ক্ষতির খরচ</option><option value="Rejected Milk Cost">বাতিল দুধের খরচ</option><option value="Other Cost">অন্যান্য খরচ</option></select></label></div><div><label>পরিমাণ (৳)<input name="amount" type="number" min="0" step=".01" required></label></div></div><div class="row"><div><label>নিশ্চিত নগদ আদায়/পরিশোধ (৳)<input name="cash_settled" type="number" min="0" step=".01" value="0" required></label></div><div><label>বিল/রেফারেন্স<input name="reference"></label></div></div><div class="row"><div><label>প্রতিপক্ষ/ক্রেতা/সরবরাহকারী<input name="counterparty"></label></div><div><label>নির্ধারিত তারিখ<input name="due_date" type="text" placeholder="DD-MM-YYYY" data-date-input></label></div></div><label>নোট<textarea name="notes"></textarea></label><p class="small">বিল বা ক্রেতার গ্রহণপত্র নগদ আদায় হিসেবে গণ্য হবে না। অনিশ্চিত হ্যান্ডলিং ফি নিশ্চিত আয় হিসেবে ধরা হবে না।</p><button class="btn primary">আর্থিক এন্ট্রি সংরক্ষণ</button></form></div><div class="card"><h3>আর্থিক রেকর্ড</h3><div class="tablewrap" id="financeTable"></div><div id="financeSummary" class="grid"></div></div></section>
 <section id="reports" class="page"><div class="card"><h3 data-i18n="reportsTitle">📊 রিপোর্ট</h3><div class="row"><div><label data-i18n="fromDate">শুরুর তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportFrom"></label></div><div><label data-i18n="toDate">শেষ তারিখ<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="reportTo"></label></div></div><div class="row reportActions"><button class="btn" id="runReport" data-i18n="runReport">রিপোর্ট দেখুন</button><button class="btn" id="reportPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="reportWhatsapp">🟢 WhatsApp</button><button class="btn" id="reportShare">↗️ শেয়ার</button></div><div id="report"></div></div></section>
 <section id="ledger" class="page"><div class="card"><h3 data-i18n="navLedger">📒 ফার্মার লেজার</h3><label data-i18n="farmerLabel">কৃষক<select id="ledgerFarmer"></select></label><div class="row"><div><label>শুরুর তারিখ / From<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerFrom"></label></div><div><label>শেষ তারিখ / To<input type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" id="ledgerTo"></label></div></div><div id="ledgerShareContent"><div class="row reportActions"><button class="btn" id="ledgerPdf">📄 PDF / প্রিন্ট</button><button class="btn" id="ledgerWhatsapp">🟢 WhatsApp</button><button class="btn" id="ledgerShare">↗️ শেয়ার</button></div><p class="small" id="ledgerGeneratedAt"></p><div id="ledgerSummary" class="grid"></div><div id="ledgerResult" class="tablewrap"></div></div></div></section>
-<section id="settings" class="page"><div class="card"><h3>📶 অফলাইন মোড / Offline Mode</h3><label><input id="offlineCacheEnabled" type="checkbox" checked> এই ফোনে অফলাইন অ্যাপ ও আগে লোড করা তথ্য সংরক্ষণ চালু</label><p class="small">আগে অনলাইনে অ্যাপ খুলে লগইন ও তথ্য লোড করুন। অফলাইনে আগে থেকে থাকা তথ্য দেখা যাবে এবং Milk Collection রেকর্ড ফোনে অপেক্ষমাণ থাকতে পারে। নিরাপত্তা যাচাই সম্পন্ন না হওয়া পর্যন্ত এগুলো স্বয়ংক্রিয়ভাবে Supabase-এ পাঠানো হবে না। অপেক্ষমাণ রেকর্ডকে সার্ভারে সংরক্ষিত বলে ধরে নেবেন না। ফোনের স্ক্রিন লক ব্যবহার করুন।</p><div class="row"><button class="btn primary" type="button" id="saveOfflineSettings">অফলাইন সেটিংস সংরক্ষণ</button><button class="btn" type="button" id="retryOfflineSync">অপেক্ষমাণ রেকর্ডের অবস্থা দেখুন</button></div><p id="offlineModeStatus" class="small" role="status">অফলাইন অবস্থা যাচাই হচ্ছে…</p></div><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
+<section id="settings" class="page">
+<div class="card" id="finalSettingsChecklist">
+ <h3>✅ Final Update Checklist — চূড়ান্ত আপডেট যাচাই</h3>
+ <p class="small">এই তালিকার টিকচিহ্ন শুধু এই ফোনের Main Admin-ভিত্তিক লোকাল ড্রাফটে সংরক্ষিত হবে। এটি পরীক্ষা চালায় না এবং টিক দেওয়া মানে কোনো কাজ প্রযুক্তিগতভাবে পাস করেছে—এমন নয়। প্রতিটি বিষয়ের প্রমাণ যাচাই করে তবেই টিক দিন।</p>
+ <div class="stat"><span>চেকলিস্ট অগ্রগতি</span><b id="finalChecklistProgress">0 / 10</b><div id="finalChecklistProgressText" class="small" role="status">কোনো বিষয় নিশ্চিত করা হয়নি।</div></div>
+ <div id="finalChecklistItems">
+  <label><input type="checkbox" data-final-check="code_reviewed"> বর্তমান কোড ও পরিবর্তনের তালিকা পর্যালোচনা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="backup_verified"> ব্যাকআপ ফাইল ও পুনরুদ্ধারযোগ্যতা যাচাই করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="test_jwt_rls"> TEST-এ Main Admin-এর JWT/RLS অনুমতি পরীক্ষা প্রমাণসহ পাস</label>
+  <label><input type="checkbox" data-final-check="limited_user_rls"> সীমিত ব্যবহারকারীর অনুমতি ও নিষিদ্ধ কাজ পরীক্ষা প্রমাণসহ পাস</label>
+  <label><input type="checkbox" data-final-check="address_schema"> শাখা/কৃষকের ঠিকানা ফর্ম ও TEST schema মিলিয়ে দেখা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="settings_persistence"> Settings সংরক্ষণ ও পুনরায় লোড পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="business_rules"> Feed, শাখা, পেমেন্ট ও লেজারের নিয়ম পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="browser_mobile"> মোবাইল ব্রাউজারে মূল workflow পরীক্ষা করা হয়েছে</label>
+  <label><input type="checkbox" data-final-check="build_pass"> Build/static checks এবং সংশোধনের পর পুনঃপরীক্ষা পাস</label>
+  <label><input type="checkbox" data-final-check="approval_release"> সব প্রমাণ পর্যালোচনার পর মালিকের স্পষ্ট release অনুমোদন নেওয়া হয়েছে</label>
+ </div>
+ <div class="row"><button class="btn primary" type="button" id="saveFinalChecklist">চেকলিস্ট সংরক্ষণ</button><button class="btn" type="button" id="resetFinalChecklist">টিকচিহ্ন রিসেট</button></div>
+ <p id="finalChecklistStatus" class="small" role="status">লোকাল চেকলিস্ট লোড হচ্ছে…</p>
+ <p class="small">বর্তমান পরিচিত অবস্থা: TEST JWT/RLS প্রমাণ, ঠিকানা schema যাচাই, settings persistence ও browser integration পরীক্ষা এখনো নিশ্চিত নয়। Production merge/deploy অনুমোদন ছাড়া হবে না।</p>
+</div>
+<div class="card"><h3>📶 অফলাইন মোড / Offline Mode</h3><label><input id="offlineCacheEnabled" type="checkbox" checked> এই ফোনে অফলাইন অ্যাপ ও আগে লোড করা তথ্য সংরক্ষণ চালু</label><p class="small">আগে অনলাইনে অ্যাপ খুলে লগইন ও তথ্য লোড করুন। অফলাইনে আগে থেকে থাকা তথ্য দেখা যাবে এবং Milk Collection রেকর্ড ফোনে অপেক্ষমাণ থাকতে পারে। নিরাপত্তা যাচাই সম্পন্ন না হওয়া পর্যন্ত এগুলো স্বয়ংক্রিয়ভাবে Supabase-এ পাঠানো হবে না। অপেক্ষমাণ রেকর্ডকে সার্ভারে সংরক্ষিত বলে ধরে নেবেন না। ফোনের স্ক্রিন লক ব্যবহার করুন।</p><div class="row"><button class="btn primary" type="button" id="saveOfflineSettings">অফলাইন সেটিংস সংরক্ষণ</button><button class="btn" type="button" id="retryOfflineSync">অপেক্ষমাণ রেকর্ডের অবস্থা দেখুন</button></div><p id="offlineModeStatus" class="small" role="status">অফলাইন অবস্থা যাচাই হচ্ছে…</p></div><div class="card"><h3 data-i18n="businessSettings">⚙️ ব্যবসার নাম ও নিয়ম</h3><form id="settingsForm"><label data-i18n="businessName">Business/App Name<input name="business_name" id="setName"></label><div class="row"><div><label data-i18n="dailyTargetLiters">Daily Target (L)<input name="daily_target_liters" id="setTarget" type="number"></label></div><div><label>Default CLR<input name="default_clr" id="setClr" type="number" step=".1"></label></div><div><label>Commission/L<input name="milk_commission" id="setCommission" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveSettings">সেটিংস সংরক্ষণ</button></form></div>
 <div class="card">
  <h3>🥛 Milk Collection — Future Main Options</h3>
  <p class="small">এই সেটিংস Main Admin-এর নিয়ন্ত্রণে থাকবে। কিছু বিকল্প ভবিষ্যৎ সুবিধার কনফিগারেশন; কার্যকর করার আগে TEST-এ যাচাই করতে হবে।</p>
@@ -131,7 +154,88 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
   <p id="milkCollectionSettingsStatus" class="small" role="status">Milk Collection সেটিংস লোড হচ্ছে…</p>
   <button class="btn primary" type="submit">Milk Collection সেটিংস সংরক্ষণ</button>
  </form>
-</div><div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
+</div><div class="card" id="generalSettingsWorkspace">
+ <h3>⚙️ সাধারণ অ্যাপ সেটিংস — General Settings</h3>
+ <p class="small">অ্যাপের নাম, ব্যবসার নাম, স্লোগান, থিম, প্রধান রং ও ভাষা সংরক্ষণ করলে এই ফোনের অ্যাপে প্রয়োগ হবে। নোটিফিকেশন পছন্দ আপাতত সংরক্ষিত থাকবে; সতর্কতা পাঠানোর ব্যবস্থা এখনো যুক্ত নয়। Supabase/লাইভ ডেটাবেসে কিছু লেখা হবে না.</p>
+ <form id="generalSettingsDraftForm">
+  <h4>🏷️ পরিচিতি ও স্লোগান</h4>
+  <div class="row">
+   <div><label>অ্যাপের প্রদর্শিত নাম<input id="gsAppName" name="app_name" type="text" maxlength="80" value="মুহাইমিন"></label></div>
+   <div><label>ব্যবসার নাম<input id="gsBusinessName" name="business_name" type="text" maxlength="120" value="মুহাইমিন ডেইরি"></label></div>
+  </div>
+  <label>স্লোগান<input id="gsSlogan" name="slogan" type="text" maxlength="180" placeholder="সামাজিক সেবা ও জাতীয় উন্নয়নে অঙ্গীকার"></label>
+  <label><input id="gsSloganEnabled" name="slogan_enabled" type="checkbox" checked> হেডারে স্লোগান দেখানোর পছন্দ</label>
+  <h4>🎨 চেহারা ও ভাষা</h4>
+  <div class="row">
+   <div><label>থিম<select id="gsTheme" name="theme"><option value="system">ডিভাইস অনুযায়ী</option><option value="light">লাইট</option><option value="dark">ডার্ক</option></select></label></div>
+   <div><label>প্রধান রং<input id="gsPrimaryColor" name="primary_color" type="color" value="#0f766e"></label></div>
+   <div><label>ভাষা<select id="gsLanguage" name="language"><option value="bn">বাংলা</option><option value="en">English</option></select></label></div>
+  </div>
+  <h4>🔔 সতর্কতা ও সময়</h4>
+  <div class="row">
+   <div><label><input id="gsLowStock" name="low_stock_notifications" type="checkbox" checked> কম স্টক সতর্কতার পছন্দ</label></div>
+   <div><label><input id="gsExpiry" name="expiry_notifications" type="checkbox" checked> মেয়াদ সতর্কতার পছন্দ</label></div>
+   <div><label><input id="gsPayment" name="payment_reminders" type="checkbox" checked> পেমেন্ট রিমাইন্ডারের পছন্দ</label></div>
+  </div>
+  <div class="row">
+   <div><label>তারিখ বিন্যাস<select id="gsDateFormat" name="date_format"><option value="DD-MM-YYYY">DD-MM-YYYY</option></select></label></div>
+   <div><label>সময় অঞ্চল<input id="gsTimezone" name="timezone" value="Asia/Dhaka" readonly></label></div>
+  </div>
+  <p id="generalSettingsDraftStatus" class="small" role="status">সাধারণ সেটিংসের ড্রাফট লোডের অপেক্ষায়।</p>
+  <div class="row"><button class="btn primary" type="submit">সেটিংস সংরক্ষণ ও প্রয়োগ</button><button class="btn" type="button" id="generalSettingsDraftReset">ডিফল্টে ফেরত</button></div>
+ </form>
+</div>
+<div class="card" id="moduleSettingsWorkspace">
+ <h3>🧩 মডিউলভিত্তিক সেটিংস — Workspace V1</h3>
+ <p class="small">এটি নিরাপদ খসড়া। এখানে সংরক্ষণ করলে শুধু এই ফোনের বর্তমান Main Admin অ্যাকাউন্টে লোকাল ড্রাফট রাখা হবে; Supabase/লাইভ ব্যবসার সেটিংস পরিবর্তন হবে না। TEST ডাটাবেস, RLS ও অনুমোদিত API যাচাইয়ের পর সার্ভার-সংরক্ষণ যুক্ত হবে।</p>
+ <form id="moduleSettingsDraftForm">
+  <h4>🏢 শাখা / Branches</h4>
+  <div class="row">
+   <div><label>নতুন শাখার ডিফল্ট দৈনিক লক্ষ্য (লিটার)<input id="msBranchTarget" name="branch_default_target" type="number" min="0" max="1000000" step="1" value="500"></label></div>
+   <div><label>শাখা বন্ধ/হোল্ড স্ট্যাটাস পরিচালনা<select id="msBranchStatus" name="branch_status_control"><option value="enabled">সক্রিয়</option><option value="review">অনুমোদন-পর্যালোচনা</option></select></label></div>
+  </div>
+  <h4>👨‍🌾 কৃষক / Farmers</h4>
+  <div class="row">
+   <div><label><input id="msFarmerMobile" name="farmer_mobile_required" type="checkbox" checked> মোবাইল নম্বর আবশ্যক</label></div>
+   <div><label><input id="msFarmerCall" name="farmer_direct_call" type="checkbox" checked> সরাসরি কল বাটন</label></div>
+   <div><label><input id="msFarmerLedger" name="farmer_ledger_link" type="checkbox" checked> কৃষক লেজার সংযোগ</label></div>
+  </div>
+  <h4>💳 পেমেন্ট / Payments</h4>
+  <div class="row">
+   <div><label>পেমেন্ট চক্র<select id="msPaymentCycle" name="payment_cycle"><option value="weekly">সাপ্তাহিক</option><option value="daily">দৈনিক</option><option value="custom">কাস্টম (ভবিষ্যৎ)</option></select></label></div>
+   <div><label><input id="msPaymentReceipt" name="payment_receipt" type="checkbox" checked> পেমেন্ট রসিদ/PDF</label></div>
+   <div><label><input id="msPaymentShare" name="payment_share" type="checkbox" checked> শেয়ার অপশন</label></div>
+  </div>
+  <h4>🌾 ফিড / Feed</h4>
+  <div class="row">
+   <div><label>ডিফল্ট ফিড মূল্য (৳/কেজি)<input id="msFeedPrice" name="feed_default_price" type="number" min="0" max="100000" step="0.01" value="50"></label></div>
+   <div><label><input id="msFeedStockAlert" name="feed_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+   <div><label><input id="msFeedExpiry" name="feed_expiry_alert" type="checkbox" checked> মেয়াদোত্তীর্ণ সতর্কতা</label></div>
+  </div>
+  <h4>🩺 ভেটেরিনারি / Veterinary</h4>
+  <div class="row">
+   <div><label><input id="msVetBatch" name="vet_batch_tracking" type="checkbox" checked> ব্যাচ নম্বর ট্র্যাকিং</label></div>
+   <div><label><input id="msVetExpiry" name="vet_expiry_alert" type="checkbox" checked> ওষুধের মেয়াদ সতর্কতা</label></div>
+   <div><label><input id="msVetLowStock" name="vet_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+  </div>
+  <h4>🌱 এগ্রো / Agro Care</h4>
+  <div class="row">
+   <div><label><input id="msAgroBatch" name="agro_batch_tracking" type="checkbox" checked> ব্যাচ/লট ট্র্যাকিং</label></div>
+   <div><label><input id="msAgroExpiry" name="agro_expiry_alert" type="checkbox" checked> মেয়াদ সতর্কতা</label></div>
+   <div><label><input id="msAgroStock" name="agro_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+  </div>
+  <h4>📊 রিপোর্ট ও 📒 ফার্মার লেজার</h4>
+  <div class="row">
+   <div><label>তারিখ বিন্যাস<select id="msDateFormat" name="date_format"><option value="DD-MM-YYYY">DD-MM-YYYY</option></select></label></div>
+   <div><label><input id="msBangladeshTime" name="bangladesh_time" type="checkbox" checked> বাংলাদেশ সময় (Asia/Dhaka)</label></div>
+   <div><label><input id="msReportPdf" name="report_pdf" type="checkbox" checked> PDF/প্রিন্ট</label></div>
+   <div><label><input id="msReportShare" name="report_share" type="checkbox" checked> WhatsApp/শেয়ার</label></div>
+  </div>
+  <p id="moduleSettingsDraftStatus" class="small" role="status">লোকাল ড্রাফট লোডের অপেক্ষায়।</p>
+  <div class="row"><button class="btn primary" type="submit">ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="moduleSettingsDraftReset">ডিফল্টে ফেরত</button></div>
+ </form>
+</div>
+<div class="card"><button class="btn danger" id="logoutBtn" data-i18n="logout">🚪 লগআউট</button></div></section>
 <section id="backup" class="page"><div class="card"><h3 data-i18n="backupTitle">💾 ব্যাকআপ ও রিস্টোর</h3><p class="small" data-i18n="backupInfo">JSON ব্যাকআপ ডাউনলোড করুন। রিস্টোরের আগে ডেটা যাচাই করুন; এই সংস্করণে নিরাপদ restore স্বয়ংক্রিয়ভাবে চালানো হয় না।</p><button class="btn primary" id="exportBtn"
 
 data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেটা ব্যাকআপ</button><label data-i18n="importBackup">ব্যাকআপ ফাইল নির্বাচন<input type="file" id="importFile" accept="application/json,.json"></label><button class="btn" id="validateImportBtn" data-i18n="validateBackup">ফাইল যাচাই করুন</button><p id="backupMsg" class="small"></p></div></section>
@@ -501,7 +605,7 @@ function render() {
     return '<p><b>'+esc(branch.name)+'</b> — '+total+' L / '+n(branch.target_liters)+' L <span class="small">('+esc(branch.status||"") +')</span></p>';
   }).join("") || '<p class="small">'+(lang()==="en"?"No branches yet":"কোনো কেন্দ্র নেই")+'</p>';
   $("branchTable").innerHTML=table(["Code",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Target":"লক্ষ্য",lang()==="en"?"Status":"অবস্থা"],
-    state.branches.map(b=>[esc(b.code),esc(b.name),n(b.target_liters)+" L",esc(b.status||"")]));
+    state.branches.map(b=>[esc(b.code),esc(b.name),n(b.target_liters)+" L",esc(b.status||""),'<button type="button" class="btn" data-branch-action="edit" data-branch-id="'+esc(b.id)+'">✏️ '+(lang()==="en"?"Edit":"এডিট")+'</button> <button type="button" class="btn danger" data-branch-action="delete" data-branch-id="'+esc(b.id)+'">🗑️ '+(lang()==="en"?"Delete":"ডিলিট")+'</button>']));
   fill("farmerBranch",state.branches,"name"); fill("collectionBranch",state.branches,"name");
   fill("paymentFarmer",state.farmers,"name"); fill("ledgerFarmer",state.farmers,"name");
   updateFarmerSelect();
@@ -925,7 +1029,60 @@ $("verifyOtpBtn").onclick=async()=>{
   } catch(error) { $("loginMsg").textContent=error.message || String(error); }
 };
 $("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}catch(error){toast(error.message || String(error));}};
-bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes,country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null},$("branchForm")));
+function resetBranchEditMode(){
+ const form=$("branchForm");form.reset();form.elements.editing_branch_id.value="";
+ $("branchFormTitle").textContent=lang()==="en"?"➕ New branch":"➕ নতুন কেন্দ্র";
+ $("branchSubmitBtn").textContent=lang()==="en"?"Save":"সংরক্ষণ";
+ $("cancelBranchEdit").hidden=true;
+}
+function startBranchEdit(id){
+ const branch=state.branches.find(item=>String(item.id)===String(id));
+ if(!branch)throw new Error("কেন্দ্রটি তালিকায় পাওয়া যায়নি; তালিকা রিফ্রেশ করুন।");
+ const form=$("branchForm");
+ form.elements.editing_branch_id.value=branch.id;
+ for(const [field,value] of Object.entries({
+  code:branch.code,name:branch.name,target_liters:branch.target_liters,status:branch.status,
+  notes:branch.notes,branch_country:branch.country||"বাংলাদেশ",branch_division:branch.division||"",
+  branch_district:branch.district||"",branch_upazila:branch.upazila||"",
+  branch_union_name:branch.union_name||"",branch_village_name:branch.village_name||""
+ })){if(form.elements[field])form.elements[field].value=value??"";}
+ $("branchFormTitle").textContent=lang()==="en"?"✏️ Edit branch":"✏️ কেন্দ্র সম্পাদনা";
+ $("branchSubmitBtn").textContent=lang()==="en"?"Update branch":"কেন্দ্র আপডেট";
+ $("cancelBranchEdit").hidden=false;
+ form.scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("cancelBranchEdit").addEventListener("click",resetBranchEditMode);
+$("branchTable").addEventListener("click",async event=>{
+ const button=event.target.closest("[data-branch-action]");if(!button)return;
+ const id=button.dataset.branchId,action=button.dataset.branchAction;
+ try{
+  if(action==="edit"){startBranchEdit(id);return;}
+  if(action!=="delete")return;
+  const branch=state.branches.find(item=>String(item.id)===String(id));
+  if(!branch)throw new Error("কেন্দ্রটি আর তালিকায় নেই।");
+  if(!confirm((lang()==="en"?"Delete branch ":"কেন্দ্র মুছবেন: ")+branch.name+"?\\n"+(lang()==="en"?"This is allowed only when no linked records exist.":"শুধু কোনো সম্পর্কিত রেকর্ড না থাকলেই মুছতে পারবেন।")))return;
+  // TEST schema inspection confirmed every public FK referencing branches.id.
+  const references=["farmers","hub_payments","issues","milk_collections","targets"];
+  for(const tableName of references){
+   const check=await sb.from(tableName).select("id",{count:"exact",head:true}).eq("branch_id",id);
+   if(check.error)throw new Error("নিরাপদে ডিলিট যাচাই করা যায়নি ("+tableName+"); তাই কোনো কিছু মোছা হয়নি। "+check.error.message);
+   if((check.count||0)>0)throw new Error("এই কেন্দ্রের সঙ্গে "+tableName+"-এ রেকর্ড যুক্ত আছে। ইতিহাস রক্ষার জন্য ডিলিট বন্ধ; প্রয়োজনে কেন্দ্রের অবস্থা Closed করুন।");
+  }
+  const result=await sb.from("branches").delete().eq("id",id);
+  if(result.error)throw result.error;
+  logActivity("Delete branch "+branch.code);
+  toast("কেন্দ্র মুছে ফেলা হয়েছে");await loadAll();
+ }catch(error){toast(error.message||String(error));}
+});
+bindForm("branchForm",async f=>{
+ const id=String(f.editing_branch_id||"").trim();
+ const values={code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes||null,country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null};
+ if(id){
+  const result=await sb.from("branches").update(values).eq("id",id);
+  if(result.error)throw result.error;
+  logActivity("Update branch "+values.code);toast("কেন্দ্রের তথ্য আপডেট হয়েছে");resetBranchEditMode();await loadAll();
+ }else await insertRow("branches",values,$("branchForm"));
+});
 bindForm("farmerForm",async f=>insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters)},$("farmerForm")));
 $("saveCollectionDraft").addEventListener("click",async()=>{try{await saveCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("restoreCollectionDraft").addEventListener("click",async()=>{try{await restoreCollectionDraft();}catch(error){toast(error.message||String(error));}});
@@ -1257,18 +1414,22 @@ bindForm("feedProductForm",async f=>{
     purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes:f.notes},$("feedProductForm"));
 });
 bindForm("feedPurchaseForm",async f=>{
-  const quantity=n(f.quantity_kg), price=n(f.purchase_price_per_kg||50), paid=n(f.paid_amount);
-  if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
-  if(paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
-  await insertRow("feed_purchases",{purchase_date:f.purchase_date||today(),purchase_time:f.purchase_time||currentTime(),product_id:f.product_id||null,
+  const quantity=n(f.quantity_kg), price=f.purchase_price_per_kg===""?50:n(f.purchase_price_per_kg), paid=n(f.paid_amount);
+  if(!f.product_id)throw new Error(lang()==="en"?"Select a feed product first.":"আগে ফিড পণ্য নির্বাচন করুন।");
+  if(!Number.isFinite(quantity)||quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(!Number.isFinite(price)||price<0)throw new Error(lang()==="en"?"Purchase price must be zero or greater.":"ক্রয়মূল্য শূন্য বা তার বেশি হতে হবে।");
+  if(!Number.isFinite(paid)||paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  await insertRow("feed_purchases",{purchase_date:f.purchase_date||today(),purchase_time:f.purchase_time||currentTime(),product_id:f.product_id,
     supplier_name:f.supplier_name,quantity_kg:quantity,purchase_price_per_kg:price,
     paid_amount:paid},$("feedPurchaseForm"));
 });
 bindForm("feedSaleForm",async f=>{
-  const quantity=n(f.quantity_kg), price=n(f.sale_price_per_kg||50), paid=n(f.paid_amount);
-  if(quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
-  if(paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
-  await insertRow("feed_sales",{sale_date:f.sale_date||today(),sale_time:f.sale_time||currentTime(),product_id:f.product_id||null,
+  const quantity=n(f.quantity_kg), price=f.sale_price_per_kg===""?50:n(f.sale_price_per_kg), paid=n(f.paid_amount);
+  if(!f.product_id)throw new Error(lang()==="en"?"Select a feed product first.":"আগে ফিড পণ্য নির্বাচন করুন।");
+  if(!Number.isFinite(quantity)||quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
+  if(!Number.isFinite(price)||price<0)throw new Error(lang()==="en"?"Sale price must be zero or greater.":"বিক্রয়মূল্য শূন্য বা তার বেশি হতে হবে।");
+  if(!Number.isFinite(paid)||paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  await insertRow("feed_sales",{sale_date:f.sale_date||today(),sale_time:f.sale_time||currentTime(),product_id:f.product_id,
     customer_name:f.customer_name,quantity_kg:quantity,sale_price_per_kg:price,
     paid_amount:paid},$("feedSaleForm"));
 });
@@ -1403,6 +1564,193 @@ bindForm("milkCollectionSettingsForm",async f=>{
  $("milkCollectionSettingsStatus").textContent="সেটিংস সংরক্ষিত · Revision "+(result.data.revision??"updated")+" · অজানা ভবিষ্যৎ key অক্ষত রাখা হয়েছে।";
  toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
 });
+const GENERAL_SETTINGS_DRAFT_DEFAULTS={
+ app_name:"মুহাইমিন",business_name:"মুহাইমিন ডেইরি",slogan:"",slogan_enabled:true,
+ theme:"system",primary_color:"#0f766e",language:"bn",
+ low_stock_notifications:true,expiry_notifications:true,payment_reminders:true,
+ date_format:"DD-MM-YYYY",timezone:"Asia/Dhaka"
+};
+const GENERAL_SETTINGS_DRAFT_FIELDS={
+ app_name:"gsAppName",business_name:"gsBusinessName",slogan:"gsSlogan",slogan_enabled:"gsSloganEnabled",
+ theme:"gsTheme",primary_color:"gsPrimaryColor",language:"gsLanguage",
+ low_stock_notifications:"gsLowStock",expiry_notifications:"gsExpiry",payment_reminders:"gsPayment",
+ date_format:"gsDateFormat",timezone:"gsTimezone"
+};
+function generalSettingsDraftKey(){
+  const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+  if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে অনলাইনে লগইন করুন।");
+  return "muhaimin-general-settings-v2:"+userId;
+ }
+ function normalizeGeneralSettings(values){
+  const merged={...GENERAL_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
+  merged.app_name=String(merged.app_name||"").trim().slice(0,80);
+  merged.business_name=String(merged.business_name||"").trim().slice(0,120);
+  merged.slogan=String(merged.slogan||"").trim().slice(0,180);
+  merged.theme=["system","light","dark"].includes(merged.theme)?merged.theme:"system";
+  merged.language=["bn","en"].includes(merged.language)?merged.language:"bn";
+  merged.primary_color=/^#[0-9a-fA-F]{6}$/.test(String(merged.primary_color))?String(merged.primary_color):"#0f766e";
+  for(const key of ["slogan_enabled","low_stock_notifications","expiry_notifications","payment_reminders"])merged[key]=Boolean(merged[key]);
+  merged.date_format="DD-MM-YYYY";merged.timezone="Asia/Dhaka";
+  if(!merged.app_name||!merged.business_name)throw new Error("অ্যাপের নাম ও ব্যবসার নাম পূরণ করুন।");
+  return merged;
+ }
+ function applyGeneralSettings(values){
+  const settings=normalizeGeneralSettings(values),root=document.documentElement;
+  root.dataset.theme=settings.theme;
+  const rgb=settings.primary_color.slice(1).match(/.{2}/g).map(v=>parseInt(v,16));
+  const darker=rgb.map(v=>Math.round(v*.78)).map(v=>v.toString(16).padStart(2,"0")).join("");
+  root.style.setProperty("--green",settings.primary_color);root.style.setProperty("--dark","#"+darker);
+  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=settings.primary_color;
+  $("appName").textContent=settings.app_name;$("headerBusinessName").textContent=settings.business_name;
+  $("headerSlogan").textContent=settings.slogan;$("headerSlogan").hidden=!settings.slogan_enabled||!settings.slogan;
+  document.title=settings.app_name+" — Dairy Management";applyLanguage(settings.language);
+  return settings;
+ }
+ function applyGeneralSettingsDraft(values){
+  const merged={...GENERAL_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
+  for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
+   const el=$(id);if(!el)continue;
+   if(el.type==="checkbox")el.checked=Boolean(merged[key]);else el.value=String(merged[key]);
+  }
+ }
+ function loadGeneralSettingsDraft(){
+  const status=$("generalSettingsDraftStatus");if(!status)return;
+  try{
+   const raw=localStorage.getItem(generalSettingsDraftKey()),parsed=raw?JSON.parse(raw):null;
+   const settings=normalizeGeneralSettings(parsed&&parsed.settings?parsed.settings:GENERAL_SETTINGS_DRAFT_DEFAULTS);
+   applyGeneralSettingsDraft(settings);applyGeneralSettings(settings);
+   status.textContent=parsed&&parsed.settings?"এই ফোনে সংরক্ষিত সাধারণ সেটিংস লোড ও প্রয়োগ হয়েছে। নোটিফিকেশন পছন্দ সংরক্ষিত, কিন্তু সতর্কতা পাঠানো এখনো যুক্ত নয়।":"ডিফল্ট সাধারণ সেটিংস প্রয়োগ হয়েছে; সংরক্ষণ করলে এই ফোনে থাকবে।";
+  }catch(error){applyGeneralSettingsDraft(GENERAL_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
+ }
+ $("generalSettingsDraftForm").addEventListener("submit",event=>{
+  event.preventDefault();const status=$("generalSettingsDraftStatus");
+  try{
+   const values={};
+   for(const [key,id] of Object.entries(GENERAL_SETTINGS_DRAFT_FIELDS)){
+    const el=$(id);values[key]=el.type==="checkbox"?el.checked:el.value.trim();
+   }
+   const settings=normalizeGeneralSettings(values);
+   localStorage.setItem(generalSettingsDraftKey(),JSON.stringify({schema_version:2,updated_at:new Date().toISOString(),settings}));
+   applyGeneralSettingsDraft(settings);applyGeneralSettings(settings);
+   status.textContent="সাধারণ সেটিংস এই ফোনে সংরক্ষণ ও প্রয়োগ হয়েছে। Supabase/লাইভ ডেটাবেস বদলায়নি; নোটিফিকেশন পছন্দ এখনো শুধু সংরক্ষিত।";
+   toast("সাধারণ সেটিংস সংরক্ষণ ও প্রয়োগ হয়েছে");
+  }catch(error){status.textContent=error.message||String(error);}
+ });
+ $("generalSettingsDraftReset").addEventListener("click",()=>{
+  try{
+   localStorage.removeItem(generalSettingsDraftKey());
+   const defaults=normalizeGeneralSettings(GENERAL_SETTINGS_DRAFT_DEFAULTS);
+   applyGeneralSettingsDraft(defaults);applyGeneralSettings(defaults);
+   $("generalSettingsDraftStatus").textContent="এই ফোনের সাধারণ সেটিংস ডিফল্টে ফেরানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";
+  }catch(error){$("generalSettingsDraftStatus").textContent=error.message||String(error);}
+ });
+ 
+function finalChecklistStorageKey(){
+ const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+ if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে লগইন করুন।");
+ return "muhaimin-final-checklist-v1:"+userId;
+}
+function renderFinalChecklist(values){
+ const items=[...document.querySelectorAll("[data-final-check]")];
+ let done=0;
+ for(const item of items){item.checked=Boolean(values&&values[item.dataset.finalCheck]);if(item.checked)done++;}
+ const count=document.getElementById("finalChecklistProgress");
+ const text=document.getElementById("finalChecklistProgressText");
+ if(count)count.textContent=done+" / "+items.length;
+ if(text)text.textContent=done===items.length?"সব বাক্সে টিক দেওয়া হয়েছে; তবুও প্রতিটি ফলের প্রমাণ আলাদাভাবে যাচাই করুন।":done+"টি নিশ্চিত হিসেবে চিহ্নিত; "+(items.length-done)+"টি বাকি।";
+}
+function loadFinalChecklist(){
+ const status=document.getElementById("finalChecklistStatus");if(!status)return;
+ try{
+  const raw=localStorage.getItem(finalChecklistStorageKey());
+  const parsed=raw?JSON.parse(raw):null;
+  renderFinalChecklist(parsed&&parsed.checks?parsed.checks:{});
+  status.textContent=raw?"এই ফোনের লোকাল চেকলিস্ট লোড হয়েছে।":"নতুন চেকলিস্ট; কোনো কাজকে স্বয়ংক্রিয়ভাবে সম্পন্ন ধরা হয়নি।";
+ }catch(error){status.textContent=error.message||String(error);}
+}
+document.querySelectorAll("[data-final-check]").forEach(item=>item.addEventListener("change",()=>{
+ const values={};document.querySelectorAll("[data-final-check]").forEach(box=>values[box.dataset.finalCheck]=box.checked);
+ renderFinalChecklist(values);
+ document.getElementById("finalChecklistStatus").textContent="পরিবর্তন হয়েছে; স্থায়ী করতে ‘চেকলিস্ট সংরক্ষণ’ চাপুন।";
+}));
+document.getElementById("saveFinalChecklist").addEventListener("click",()=>{
+ try{
+  const values={};document.querySelectorAll("[data-final-check]").forEach(box=>values[box.dataset.finalCheck]=box.checked);
+  localStorage.setItem(finalChecklistStorageKey(),JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),checks:values}));
+  renderFinalChecklist(values);
+  document.getElementById("finalChecklistStatus").textContent="চেকলিস্ট এই ফোনে সংরক্ষিত হয়েছে; GitHub/Supabase বা লাইভ ডেটা পরিবর্তিত হয়নি।";
+ }catch(error){document.getElementById("finalChecklistStatus").textContent=error.message||String(error);}
+});
+document.getElementById("resetFinalChecklist").addEventListener("click",()=>{
+ try{
+  localStorage.removeItem(finalChecklistStorageKey());renderFinalChecklist({});
+  document.getElementById("finalChecklistStatus").textContent="এই ফোনের চেকলিস্টের টিকচিহ্ন রিসেট হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";
+ }catch(error){document.getElementById("finalChecklistStatus").textContent=error.message||String(error);}
+});
+const finalChecklistNavButton=document.querySelector('nav [data-page="settings"]');
+if(finalChecklistNavButton)finalChecklistNavButton.addEventListener("click",loadFinalChecklist);
+
+const MODULE_SETTINGS_DRAFT_DEFAULTS={
+ branch_default_target:500,branch_status_control:"enabled",
+ farmer_mobile_required:true,farmer_direct_call:true,farmer_ledger_link:true,
+ payment_cycle:"weekly",payment_receipt:true,payment_share:true,
+ feed_default_price:50,feed_stock_alert:true,feed_expiry_alert:true,
+ vet_batch_tracking:true,vet_expiry_alert:true,vet_stock_alert:true,
+ agro_batch_tracking:true,agro_expiry_alert:true,agro_stock_alert:true,
+ date_format:"DD-MM-YYYY",bangladesh_time:true,report_pdf:true,report_share:true
+};
+const MODULE_SETTINGS_DRAFT_FIELDS={
+ branch_default_target:"msBranchTarget",branch_status_control:"msBranchStatus",
+ farmer_mobile_required:"msFarmerMobile",farmer_direct_call:"msFarmerCall",farmer_ledger_link:"msFarmerLedger",
+ payment_cycle:"msPaymentCycle",payment_receipt:"msPaymentReceipt",payment_share:"msPaymentShare",
+ feed_default_price:"msFeedPrice",feed_stock_alert:"msFeedStockAlert",feed_expiry_alert:"msFeedExpiry",
+ vet_batch_tracking:"msVetBatch",vet_expiry_alert:"msVetExpiry",vet_stock_alert:"msVetLowStock",
+ agro_batch_tracking:"msAgroBatch",agro_expiry_alert:"msAgroExpiry",agro_stock_alert:"msAgroStock",
+ date_format:"msDateFormat",bangladesh_time:"msBangladeshTime",report_pdf:"msReportPdf",report_share:"msReportShare"
+};
+function applyModuleSettingsDraft(values){
+ const merged={...MODULE_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
+ for(const [key,id] of Object.entries(MODULE_SETTINGS_DRAFT_FIELDS)){
+  const el=$(id);if(!el)continue;
+  if(el.type==="checkbox")el.checked=Boolean(merged[key]);else el.value=String(merged[key]);
+ }
+}
+function moduleSettingsDraftKey(){
+ const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+ if(!userId)throw new Error("Main Admin সেশন যাচাই করা যায়নি; আগে অনলাইনে লগইন করুন।");
+ return "muhaimin-module-settings-draft-v1:"+userId;
+}
+function loadModuleSettingsDraft(){
+ const status=$("moduleSettingsDraftStatus");if(!status)return;
+ try{
+  const raw=localStorage.getItem(moduleSettingsDraftKey());
+  const parsed=raw?JSON.parse(raw):null;
+  applyModuleSettingsDraft(parsed&&parsed.settings?parsed.settings:MODULE_SETTINGS_DRAFT_DEFAULTS);
+  status.textContent=parsed&&parsed.settings?"এই ফোনে সংরক্ষিত লোকাল ড্রাফট লোড হয়েছে; সার্ভার সেটিংস পরিবর্তন হয়নি।":"ডিফল্ট ড্রাফট দেখানো হচ্ছে; এখনো সংরক্ষণ করা হয়নি।";
+ }catch(error){applyModuleSettingsDraft(MODULE_SETTINGS_DRAFT_DEFAULTS);status.textContent=error.message||String(error);}
+}
+$("moduleSettingsDraftForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const status=$("moduleSettingsDraftStatus");
+ try{
+  const values={};
+  for(const [key,id] of Object.entries(MODULE_SETTINGS_DRAFT_FIELDS)){
+   const el=$(id);values[key]=el.type==="checkbox"?el.checked:el.type==="number"?Number(el.value):el.value;
+  }
+  if(!Number.isFinite(values.branch_default_target)||values.branch_default_target<0||values.branch_default_target>1000000)throw new Error("শাখার দৈনিক লক্ষ্য ০–১০,০০,০০০ লিটারের মধ্যে দিন।");
+  if(!Number.isFinite(values.feed_default_price)||values.feed_default_price<0||values.feed_default_price>100000)throw new Error("ফিডের মূল্য ০–১,০০,০০০ টাকার মধ্যে দিন।");
+  const key=moduleSettingsDraftKey();
+  localStorage.setItem(key,JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),settings:values}));
+  status.textContent="লোকাল ড্রাফট এই ফোনে সংরক্ষিত হয়েছে। এটি Supabase-এ পাঠানো হয়নি এবং কার্যকর ব্যবসার নিয়ম পরিবর্তন করেনি।";
+  toast("মডিউল সেটিংসের লোকাল ড্রাফট সংরক্ষিত");
+ }catch(error){status.textContent=error.message||String(error);}
+});
+$("moduleSettingsDraftReset").addEventListener("click",()=>{
+ try{localStorage.removeItem(moduleSettingsDraftKey());applyModuleSettingsDraft(MODULE_SETTINGS_DRAFT_DEFAULTS);$("moduleSettingsDraftStatus").textContent="এই ফোনের লোকাল ড্রাফট মুছে ডিফল্ট মান দেখানো হয়েছে; সার্ভারের ডেটা অপরিবর্তিত।";}
+ catch(error){$("moduleSettingsDraftStatus").textContent=error.message||String(error);}
+});
+const moduleSettingsNavButton=document.querySelector('nav [data-page="settings"]');
+if(moduleSettingsNavButton)moduleSettingsNavButton.addEventListener("click",loadModuleSettingsDraft);
 $("offlineCacheEnabled").checked=offlineCacheEnabled();
 $("saveOfflineSettings").addEventListener("click",()=>{
  const enabled=$("offlineCacheEnabled").checked;
@@ -1557,6 +1905,7 @@ async function startApp() {
   }
 
   localStorage.setItem(OFFLINE_ADMIN_KEY,user.id);
+  loadGeneralSettingsDraft();
   $("login").classList.add("hidden");
   $("accessGate").classList.add("hidden");
   $("app").classList.remove("hidden");
