@@ -19,6 +19,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Syntax-check dairy processing module
+        run: node --check dairy-processing-module.js
+      - name: Verify dairy module and original logo are wired in
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          if (!html.includes('<script src="./dairy-processing-module.js"></script>')) {
+            throw new Error('Dairy processing module script is not included in index.html.');
+          }
+          if (!fs.existsSync('muhaimin-logo.png')) {
+            throw new Error('Original Muhaimin Dairy logo asset is missing.');
+          }
+          const module = fs.readFileSync('dairy-processing-module.js', 'utf8');
+          if (!module.includes('src="muhaimin-logo.png"') ||
+              !module.includes('দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠান')) {
+            throw new Error('Dairy processing workspace must retain the original logo and module identity.');
+          }
+          NODE
       - name: Validate HTML scripts, DOM IDs, forms, and PWA shell
         run: |
           node <<'NODE'
