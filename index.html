@@ -38,6 +38,13 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 .supplier-future-flags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .supplier-future-flags span{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 10px;font-size:12px}
 @media(min-width:760px){.supplier-type-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.milk-future-setting-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 18px}
+.milk-future-setting-grid label{display:flex;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px;min-height:48px;background:var(--bg);font-size:13px}
+.milk-future-setting-grid input{flex:0 0 auto;margin-top:3px}
+#milkFutureFeatureSettings .stat{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+@media(min-width:760px){.milk-future-setting-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -252,6 +259,72 @@ step=".01"></label></div></div><button class="btn primary">Sale Save</button></f
   <button class="btn primary" type="submit">Milk Collection সেটিংস সংরক্ষণ</button>
  </form>
 </div>
+
+<div class="card" id="milkFutureFeatureSettings">
+ <h3>🧭 Milk Collection Future — পূর্ণ ফিচার কনফিগারেশন</h3>
+ <p class="small">এটি Main Admin-এর পরিকল্পনা-ড্রাফট। এখানে টগল সংরক্ষণ করলে কোনো অসমাপ্ত ফিচার স্বয়ংক্রিয়ভাবে চালু হবে না। TEST Supabase সচল, ডেটাবেস/RLS যাচাই এবং বাস্তব পরীক্ষা শেষ না হওয়া পর্যন্ত ডেটা সার্ভারে লেখা হবে না। ড্রাফট এই ব্রাউজার/ডিভাইসে থাকবে।</p>
+ <div class="stat"><span>কনফিগারেশন সংস্করণ</span><b id="mffVersion">MC-FUTURE-V1</b><span>রিভিশন</span><b id="mffRevision">0</b></div>
+ <form id="milkFutureFeatureForm">
+  <h4>🧪 দুধের মান ও ট্রেসেবিলিটি</h4>
+  <div class="milk-future-setting-grid">
+   <label><input type="checkbox" name="batch_traceability"> 🧫 ব্যাচ/লট ট্রেসেবিলিটি</label>
+   <label><input type="checkbox" name="lab_results"> 🧪 ল্যাব ফলাফল ও নমুনা লগ</label>
+   <label><input type="checkbox" name="quality_approval"> ✅ মান যাচাই/অনুমোদন ধাপ</label>
+   <label><input type="checkbox" name="quality_rejection_reasons"> ⚠️ বাতিল/অস্বাভাবিক ফলাফলের কারণ</label>
+   <label><input type="checkbox" name="farmer_qr"> 🪪 কৃষক QR/বারকোড পরিচিতি</label>
+   <label><input type="checkbox" name="collection_qr_labels"> 🏷️ সংগ্রহ ব্যাচ QR লেবেল</label>
+  </div>
+  <h4>🌡️ শীতলীকরণ ও পরিবহন</h4>
+  <div class="milk-future-setting-grid">
+   <label><input type="checkbox" name="chiller_logs"> 🌡️ চিলার তাপমাত্রা লগ</label>
+   <label><input type="checkbox" name="chiller_alerts"> 🚨 চিলার সীমা অতিক্রম সতর্কতা</label>
+   <label><input type="checkbox" name="pickup_scheduling"> 🚚 পিকআপ/পরিবহন সময়সূচি</label>
+   <label><input type="checkbox" name="delivery_acceptance"> 📦 সরবরাহ গ্রহণ ও পরিমাণ মিল</label>
+   <label><input type="checkbox" name="delivery_variance"> ⚖️ সরবরাহের ঘাটতি/পার্থক্য রেকর্ড</label>
+   <label><input type="checkbox" name="scale_integration"> ⚖️ ডিজিটাল স্কেল সংযোগ</label>
+   <label><input type="checkbox" name="flow_meter_integration"> 🔌 ফ্লো-মিটার সংযোগ</label>
+  </div>
+  <h4>🤝 ক্রেতা ও সরবরাহ সহযোগিতা</h4>
+  <div class="milk-future-setting-grid">
+   <label><input type="checkbox" name="partner_directory"> 🏭 প্রক্রিয়াজাতকারী/ক্রেতা তালিকা</label>
+   <label><input type="checkbox" name="partner_contracts"> 📝 যোগাযোগ ও চুক্তির রেকর্ড</label>
+   <label><input type="checkbox" name="demand_planning"> 📅 দৈনিক/সাপ্তাহিক চাহিদা পরিকল্পনা</label>
+   <label><input type="checkbox" name="quality_terms"> 📋 CLR/মান/ডেলিভারি শর্ত</label>
+   <label><input type="checkbox" name="partner_invoices"> 🧾 চালান ও মূল্য হিসাব</label>
+   <label><input type="checkbox" name="partner_receivables"> 💳 পাওনা/পরিশোধ/বকেয়া</label>
+   <label><input type="checkbox" name="complaints_adjustments"> 🛡️ অভিযোগ/ফেরত/সমন্বয় লগ</label>
+  </div>
+  <h4>📊 রিপোর্ট, রসিদ ও বিশ্লেষণ</h4>
+  <div class="milk-future-setting-grid">
+   <label><input type="checkbox" name="receipt_pdf"> 📄 রসিদ প্রিন্ট/PDF</label>
+   <label><input type="checkbox" name="receipt_social_share"> 📤 রসিদ শেয়ার</label>
+   <label><input type="checkbox" name="milk_loss_reports"> 📉 দুধের ক্ষতি/পার্থক্য রিপোর্ট</label>
+   <label><input type="checkbox" name="cost_profit_analysis"> 📈 খরচ-লাভ বিশ্লেষণ</label>
+   <label><input type="checkbox" name="demand_forecasting"> 🔎 চাহিদা/সংগ্রহ পূর্বাভাস</label>
+   <label><input type="checkbox" name="scheduled_reports"> 🗓️ নির্ধারিত রিপোর্ট</label>
+  </div>
+  <h4>🔐 নিরাপত্তা, অফলাইন ও পরিচালনা</h4>
+  <div class="milk-future-setting-grid">
+   <label><input type="checkbox" name="role_permissions"> 🔐 ভূমিকা-ভিত্তিক অনুমতি</label>
+   <label><input type="checkbox" name="audit_trail"> 🧾 অডিট ট্রেইল</label>
+   <label><input type="checkbox" name="versioned_settings"> 🧩 সংস্করণ/রিভিশন ইতিহাস</label>
+   <label><input type="checkbox" name="backup_restore"> 💾 ব্যাকআপ/রিস্টোর</label>
+   <label><input type="checkbox" name="offline_queue"> ⏸️ অফলাইন সংগ্রহ সারি</label>
+   <label><input type="checkbox" name="safe_sync"> 🔄 নিরাপদ পুনঃসিঙ্ক</label>
+   <label><input type="checkbox" name="duplicate_prevention"> 🛑 ডুপ্লিকেট রোধ</label>
+   <label><input type="checkbox" name="notifications"> 🔔 সতর্কতা/নোটিফিকেশন</label>
+   <label><input type="checkbox" name="multi_device"> 📱 একাধিক ডিভাইস সমন্বয়</label>
+  </div>
+  <p class="small">নিরাপত্তা-নীতি: অফলাইন সারি, নিরাপদ সিঙ্ক, হার্ডওয়্যার সংযোগ এবং বহু-ডিভাইস সমন্বয়—সবই পরীক্ষিত না হওয়া পর্যন্ত কার্যকর হবে না। এখানে টিক দেওয়া মানে শুধু ভবিষ্যৎ পরিকল্পনা নির্বাচন।</p>
+  <div class="row">
+   <button class="btn primary" type="submit">💾 ভবিষ্যৎ কনফিগারেশন ড্রাফট সংরক্ষণ</button>
+   <button class="btn" type="button" id="milkFutureExport">📤 JSON ড্রাফট এক্সপোর্ট</button>
+   <button class="btn" type="button" id="milkFutureReset">↩️ ড্রাফট রিসেট</button>
+  </div>
+  <p id="milkFutureFeatureStatus" class="small" role="status">ড্রাফট এখনো লোড হয়নি।</p>
+ </form>
+</div>
+
 </section>
 <section id="settings" class="page">
 <div class="card" id="finalSettingsChecklist">
@@ -627,6 +700,7 @@ function renderMilkCollectionSettings(settings){
   if(rateField)rateField.value=value.default_purchase_rate;
   if(clrField)clrField.value=state.settings?.default_clr??28;
  }
+ renderMilkFutureDraft();
 }
 async function loadAll() {
   const settingsResult=await sb.from("app_settings").select("*").limit(1).maybeSingle();
@@ -1685,6 +1759,74 @@ bindForm("milkCollectionSettingsForm",async f=>{
  $("milkCollectionSettingsStatus").textContent="সেটিংস সংরক্ষিত · Revision "+(result.data.revision??"updated")+" · অজানা ভবিষ্যৎ key অক্ষত রাখা হয়েছে।";
  toast("Milk Collection Main Admin সেটিংস সংরক্ষণ হয়েছে");
 });
+
+const MILK_FUTURE_FEATURE_VERSION="MC-FUTURE-V1";
+const MILK_FUTURE_FEATURE_KEYS=[
+ "batch_traceability","lab_results","quality_approval","quality_rejection_reasons","farmer_qr","collection_qr_labels",
+ "chiller_logs","chiller_alerts","pickup_scheduling","delivery_acceptance","delivery_variance","scale_integration","flow_meter_integration",
+ "partner_directory","partner_contracts","demand_planning","quality_terms","partner_invoices","partner_receivables","complaints_adjustments",
+ "receipt_pdf","receipt_social_share","milk_loss_reports","cost_profit_analysis","demand_forecasting","scheduled_reports",
+ "role_permissions","audit_trail","versioned_settings","backup_restore","offline_queue","safe_sync","duplicate_prevention","notifications","multi_device"
+];
+function milkFutureDraftStorageKey(userId){return "muhaimin-milk-future-draft-v1:"+String(userId||"");}
+function defaultMilkFutureDraft(){const features={};MILK_FUTURE_FEATURE_KEYS.forEach(key=>features[key]=false);return {version:MILK_FUTURE_FEATURE_VERSION,revision:0,updated_at:null,features};}
+function readMilkFutureDraft(userId){
+ const fallback=defaultMilkFutureDraft();if(!userId)return fallback;
+ try{const parsed=JSON.parse(localStorage.getItem(milkFutureDraftStorageKey(userId))||"null");
+  if(!parsed||typeof parsed!=="object"||!parsed.features||typeof parsed.features!=="object")return fallback;
+  const features={...fallback.features};MILK_FUTURE_FEATURE_KEYS.forEach(key=>features[key]=parsed.features[key]===true);
+  return {version:MILK_FUTURE_FEATURE_VERSION,revision:Number.isInteger(parsed.revision)&&parsed.revision>=0?parsed.revision:0,updated_at:typeof parsed.updated_at==="string"?parsed.updated_at:null,features};
+ }catch(_){return fallback;}
+}
+function renderMilkFutureDraft(){
+ const userId=localStorage.getItem(OFFLINE_ADMIN_KEY)||"";
+ const draft=readMilkFutureDraft(userId),form=$("milkFutureFeatureForm");
+ if(!form)return;
+ MILK_FUTURE_FEATURE_KEYS.forEach(key=>{const input=form.elements.namedItem(key);if(input)input.checked=draft.features[key]===true;});
+ $("mffVersion").textContent=draft.version;$("mffRevision").textContent=String(draft.revision);
+ const status=$("milkFutureFeatureStatus");
+ if(status)status.textContent=draft.updated_at?"এই ডিভাইসে সংরক্ষিত ড্রাফট · সর্বশেষ পরিবর্তন: "+draft.updated_at+" · এটি সার্ভার/Production-এ সিঙ্ক হয়নি।":"নিরাপদ ডিফল্ট লোড হয়েছে · সব অসমাপ্ত ফিচার বন্ধ।";
+}
+function collectMilkFutureDraft(){
+ const form=$("milkFutureFeatureForm"),features={};
+ MILK_FUTURE_FEATURE_KEYS.forEach(key=>{const input=form.elements.namedItem(key);features[key]=!!input&&input.checked;});
+ return {version:MILK_FUTURE_FEATURE_VERSION,features};
+}
+$("milkFutureFeatureForm")?.addEventListener("submit",async event=>{
+ event.preventDefault();
+ try{
+  const sessionResult=await sb.auth.getSession(),user=sessionResult.data?.session?.user;
+  if(sessionResult.error||!user)throw new Error("ড্রাফট সংরক্ষণের আগে Main Admin লগইন সেশন যাচাই করুন।");
+  const previous=readMilkFutureDraft(user.id),collected=collectMilkFutureDraft();
+  const draft={...collected,revision:previous.revision+1,updated_at:new Date().toLocaleString("en-CA",{timeZone:"Asia/Dhaka",hour12:false})};
+  localStorage.setItem(milkFutureDraftStorageKey(user.id),JSON.stringify(draft));
+  $("mffVersion").textContent=draft.version;$("mffRevision").textContent=String(draft.revision);
+  $("milkFutureFeatureStatus").textContent="ড্রাফট এই ডিভাইসে সংরক্ষিত হয়েছে। কোনো অসমাপ্ত ফিচার চালু করা হয়নি; TEST Supabase/RLS যাচাইয়ের পরই সার্ভার-সংরক্ষণ বিবেচনা হবে।";
+  logActivity("Save Milk Collection future settings draft");
+ }catch(error){$("milkFutureFeatureStatus").textContent=error?.message||"ড্রাফট সংরক্ষণ ব্যর্থ হয়েছে।";}
+});
+$("milkFutureExport")?.addEventListener("click",async()=>{
+ try{
+  const sessionResult=await sb.auth.getSession(),user=sessionResult.data?.session?.user;
+  if(sessionResult.error||!user)throw new Error("এক্সপোর্টের আগে লগইন সেশন যাচাই করুন।");
+  const draft=readMilkFutureDraft(user.id),blob=new Blob([JSON.stringify(draft,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),link=document.createElement("a");
+  link.href=url;link.download="muhaimin-milk-future-settings-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+  $("milkFutureFeatureStatus").textContent="ড্রাফট JSON ফাইল তৈরি হয়েছে; এটি ব্যাকআপ/পরিকল্পনা ফাইল, কোনো সেটিংস ইমপোর্ট বা সিঙ্ক করেনি।";
+ }catch(error){$("milkFutureFeatureStatus").textContent=error?.message||"JSON এক্সপোর্ট ব্যর্থ হয়েছে।";}
+});
+$("milkFutureReset")?.addEventListener("click",async()=>{
+ try{
+  const sessionResult=await sb.auth.getSession(),user=sessionResult.data?.session?.user;
+  if(sessionResult.error||!user)throw new Error("রিসেটের আগে লগইন সেশন যাচাই করুন।");
+  const ok=window.confirm("শুধু এই ডিভাইসের Milk Collection Future ড্রাফট রিসেট হবে। সার্ভার/Production ডেটা পরিবর্তন হবে না। চালিয়ে যাবেন?");
+  if(!ok)return;
+  localStorage.removeItem(milkFutureDraftStorageKey(user.id));renderMilkFutureDraft();
+  $("milkFutureFeatureStatus").textContent="এই ডিভাইসের ড্রাফট রিসেট হয়েছে; সব অসমাপ্ত ফিচার বন্ধ।";
+ }catch(error){$("milkFutureFeatureStatus").textContent=error?.message||"ড্রাফট রিসেট ব্যর্থ হয়েছে।";}
+});
+
 const GENERAL_SETTINGS_DRAFT_DEFAULTS={
  app_name:"মুহাইমিন",business_name:"মুহাইমিন ডেইরি",slogan:"",slogan_enabled:true,
  theme:"system",primary_color:"#0f766e",language:"bn",
