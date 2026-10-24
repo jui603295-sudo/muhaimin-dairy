@@ -1,7 +1,7 @@
 # Muhaimin Projects — Development, Reliability & Release Policy
 
 **Document:** `docs/DEVELOPMENT_POLICY.md`  
-**Version:** 1.3  
+**Version:** 1.4  
 **Status:** Proposed project policy; authoritative after review and merge.  
 **Scope:** Every Muhaimin project and application, including Muhaimin Dairy.
 
@@ -138,3 +138,40 @@ Every Muhaimin project must support configurable, context-appropriate community-
 ## 11. Project record
 
 The repository's `docs/MASTER_CHECKLIST.md` is the source of truth for requirement IDs, status, acceptance criteria, evidence and lock/reopen decisions. Update it with each meaningful implementation or test result. This policy is versioned; changing it requires a documented reason and review.
+
+## 12. Permanent module and independent Workspace policy (mandatory for Muhaimin Dairy)
+
+Every primary module in Muhaimin Dairy must be treated as a distinct functional system with its own Workspace. This is a permanent architecture requirement for all future development, not a one-time visual adjustment.
+
+### Required primary modules
+
+The main home page must provide clear entry points to these 12 primary modules:
+
+1. **🏢 কেন্দ্র ব্যবস্থাপনা** — center/branch records, status, targets and operational details.
+2. **👨‍🌾 কৃষক ব্যবস্থাপনা** — farmer profiles, contact details and farmer-specific records.
+3. **🥛 দুধ সংগ্রহ কেন্দ্র** — milk collection workflows and their related quality/batch, chiller, loss, cost and sales sub-functions where applicable.
+4. **💳 পেমেন্ট ও হিসাব** — farmer payments, balances and financial transactions.
+5. **🌾 ফিড ব্যবস্থাপনা** — feed products, suppliers, stock, transactions and expiry controls.
+6. **🐄 ভেটেরিনারি** — veterinary products/services, stock and expiry controls.
+7. **🌱 কৃষি / Agro** — agricultural products, stock and related transactions.
+8. **📊 রিপোর্ট** — authorized operational and financial reports.
+9. **📒 ফার্মার লেজার** — farmer-wise ledger and transaction history.
+10. **⚙️ সেটিংস** — global settings and links to authorized module-specific settings.
+11. **💾 ব্যাকআপ ও রিস্টোর** — protected backup, restoration and verification workflows.
+12. **🧾 অডিট লগ** — authorized, traceable records of relevant changes and actions.
+
+### Workspace requirements for every module
+
+- The main home page is the module launcher and concise overview. Detailed tables, data-entry forms, workflows and module-specific reports belong inside their respective module Workspace, not duplicated across the main home page.
+- Each Workspace must have clear navigation, its own landing/overview, relevant submenus, forms, lists, filters, reports and help/error states appropriate to that module. Include a clear route back to the main app.
+- Module navigation must preserve existing cross-module links and data relationships. A module boundary is not permission to duplicate, delete, reset or migrate existing customer/business data.
+- Use explicit interfaces for cross-module operations. Keep module business logic, validation and permissions organized so a module can be developed, tested and, when required, extracted into a separate app/server without forcing unrelated modules to stop.
+- Provide module-specific settings, version/revision history, validation and audit information where appropriate. Apply role-based authorization and least privilege on the server/database as well as in the UI; hiding a button is not a security boundary.
+- A module may contain its own sub-functions. For example, the Milk Collection Workspace may contain collection, payment-related entry points, milk quality/batch, chiller logs, milk loss/accounting, costs/sales and collection settings. These must not all be promoted into separate main-home tiles unless the user explicitly approves a change to this policy.
+- New modules or changes to this list require a documented requirement and policy/checklist update; do not silently remove, rename or combine a module.
+- Every Workspace change must preserve existing behavior/data and pass module-level tests plus affected cross-module regression tests on TEST. Record screenshots or reproducible evidence, exact branch/commit and remaining gaps. A visually complete screen alone is not proof of functional completion.
+- Do not make a module live or merge its changes solely because the Workspace renders. Follow the required TEST Supabase, real JWT/RLS, build, functional, mobile and regression gates in this policy, then obtain explicit user approval before production merge/deploy.
+
+### Current implementation status must remain evidence-based
+
+This section establishes the required design standard; it does not claim that all 12 modules have already been refactored or tested. Track each module's implementation and acceptance status separately in `docs/MASTER_CHECKLIST.md`. Preserve the existing application and data while bringing modules into compliance incrementally.
