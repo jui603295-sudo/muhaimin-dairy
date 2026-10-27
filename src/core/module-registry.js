@@ -15,6 +15,8 @@
     { id: "core.branches", name: "শাখা ব্যবস্থাপনা", workspace: "business", status: "current", dependsOn: ["core.dashboard"] },
     { id: "core.farmers", name: "কৃষক", workspace: "business", status: "current", dependsOn: ["core.dashboard"] },
     { id: "milk-center", name: "দুধ কেন্দ্র", workspace: "milk-center", status: "current", dependsOn: ["core.dashboard", "core.farmers"] },
+    { id: "milk-center.home", name: "দুধ কেন্দ্রের হোমপেজ", workspace: "milk-center", status: "current", dependsOn: ["milk-center"] },
+    { id: "milk-center.settings", name: "দুধ কেন্দ্রের সেটিংস", workspace: "milk-center", status: "current", dependsOn: ["milk-center"] },
     { id: "milk-center.collection", name: "দুধ সংগ্রহ", workspace: "milk-center", status: "current", dependsOn: ["milk-center"] },
     { id: "milk-center.payments", name: "পেমেন্ট", workspace: "milk-center", status: "current", dependsOn: ["milk-center", "core.farmers"] },
     { id: "milk-center.quality-batch", name: "দুধের মান ও ব্যাচ", workspace: "milk-center", status: "current", dependsOn: ["milk-center", "milk-center.collection"] },
