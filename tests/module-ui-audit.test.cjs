@@ -14,6 +14,10 @@ assert.ok(html.includes('<script src="./src/core/module-ui-audit.js"></script>')
 assert.ok(html.includes("MuhaiminModuleUIAudit.run(window.MuhaiminModuleRegistry)"));
 assert.ok(html.includes('document.querySelectorAll("#nav button").forEach(button=>button.addEventListener("click"'));
 assert.ok(html.includes('document.querySelectorAll("[data-milk-page]").forEach(button=>button.addEventListener("click"'));
+assert.ok(html.includes('<button type="button" data-milk-page="cheeseHome">🧀 চিজ হোম</button>'), "Cheese Home must be present in Milk Center workspace navigation");
+assert.ok(html.includes('<button type="button" class="milk-workspace-tile" data-milk-page="cheeseHome">'), "Cheese Home must be available as a Milk Center home tile");
+assert.ok(html.includes('<section id="cheeseHome" class="page">'), "Cheese Home workspace page must exist");
+assert.ok(html.includes('document.querySelectorAll("[data-milk-settings]")'), "Milk Center settings shortcut must remain wired");
 assert.ok(html.includes('const target=requested==="collection"?"milkHome":requested;'));
 assert.ok(html.includes('document.body.classList.toggle("milk-center-mode",requested==="collection");'));
 assert.ok(html.includes('document.body.classList.toggle("milk-workspace-detail",target!=="milkHome");'));
