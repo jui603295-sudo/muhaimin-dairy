@@ -269,16 +269,16 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
    <div class="row">
     <div><label data-i18n="feedCode">Code<input name="product_code" autocomplete="off"></label></div>
     <div><label data-i18n="feedName">Feed Company / Name<select name="product_name_select" id="feedNameSelect" required>
-     <option value="Nourish Poultry">01. Nourish Poultry — 10.50%</option>
-     <option value="ACI Godrej Agrovet">02. ACI Godrej Agrovet — 7.81%</option>
-     <option value="RRP Agro">03. RRP Agro — 7.51%</option>
-     <option value="Paragon">04. Paragon — 7.22%</option>
-     <option value="Kazi Farms">05. Kazi Farms — 6.34%</option>
-     <option value="CP Bangladesh">06. CP Bangladesh — 6.00%</option>
-     <option value="Quality Feeds">07. Quality Feeds — 5.09%</option>
-     <option value="Nahar Agro">08. Nahar Agro — 4.76%</option>
-     <option value="City Poultry">09. City Poultry — 4.06%</option>
-     <option value="New Hope">10. New Hope — 3.90%</option>
+     <option value="Nourish Poultry" data-en-label="01. Nourish Poultry — 10.50%" data-bn-label="১. Nourish Poultry — ১০.৫০% বাজার-অংশ">01. Nourish Poultry — 10.50%</option>
+     <option value="ACI Godrej Agrovet" data-en-label="02. ACI Godrej Agrovet — 7.81%" data-bn-label="২. ACI Godrej Agrovet — ৭.৮১% বাজার-অংশ">02. ACI Godrej Agrovet — 7.81%</option>
+     <option value="RRP Agro" data-en-label="03. RRP Agro — 7.51%" data-bn-label="৩. RRP Agro — ৭.৫১% বাজার-অংশ">03. RRP Agro — 7.51%</option>
+     <option value="Paragon" data-en-label="04. Paragon — 7.22%" data-bn-label="৪. Paragon — ৭.২২% বাজার-অংশ">04. Paragon — 7.22%</option>
+     <option value="Kazi Farms" data-en-label="05. Kazi Farms — 6.34%" data-bn-label="৫. Kazi Farms — ৬.৩৪% বাজার-অংশ">05. Kazi Farms — 6.34%</option>
+     <option value="CP Bangladesh" data-en-label="06. CP Bangladesh — 6.00%" data-bn-label="৬. CP Bangladesh — ৬.০০% বাজার-অংশ">06. CP Bangladesh — 6.00%</option>
+     <option value="Quality Feeds" data-en-label="07. Quality Feeds — 5.09%" data-bn-label="৭. Quality Feeds — ৫.০৯% বাজার-অংশ">07. Quality Feeds — 5.09%</option>
+     <option value="Nahar Agro" data-en-label="08. Nahar Agro — 4.76%" data-bn-label="৮. Nahar Agro — ৪.৭৬% বাজার-অংশ">08. Nahar Agro — 4.76%</option>
+     <option value="City Poultry" data-en-label="09. City Poultry — 4.06%" data-bn-label="৯. City Poultry — ৪.০৬% বাজার-অংশ">09. City Poultry — 4.06%</option>
+     <option value="New Hope" data-en-label="10. New Hope — 3.90%" data-bn-label="১০. New Hope — ৩.৯০% বাজার-অংশ">10. New Hope — 3.90%</option>
      <option value="__custom__">11. Other (enter manually)</option>
     </select></label></div>
    </div>
@@ -2248,7 +2248,7 @@ $("saveOfflineSettings").addEventListener("click",()=>{
 $("retryOfflineSync").addEventListener("click",()=>syncMilkCollectionQueue());
 window.addEventListener("online",()=>{setOfflineModeStatus("ইন্টারনেট ফিরে এসেছে; অপেক্ষমাণ Milk Collection রেকর্ডের অবস্থা যাচাই হচ্ছে। নিরাপত্তা যাচাই না হওয়া পর্যন্ত স্বয়ংক্রিয় পাঠানো বন্ধ আছে।");syncMilkCollectionQueue();});
 window.addEventListener("offline",()=>setOfflineModeStatus("অফলাইন: আগে সংরক্ষিত তথ্য ও দুধ সংগ্রহের ফর্ম ব্যবহার করুন।"));
-function updateFeedCustomOption(){const option=[...$("feedNameSelect").options].find(item=>item.value==="__custom__");if(option)option.textContent=lang()==="en"?"11. Other (enter manually)":"১১. অন্যান্য (নিজে লিখুন)";$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");}
+function updateFeedCustomOption(){const english=lang()==="en";$("feedNameSelect").querySelectorAll("option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});const option=[...$("feedNameSelect").options].find(item=>item.value==="__custom__");if(option)option.textContent=english?"11. Other (enter manually)":"১১. অন্যান্য (নিজে লিখুন)";$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");}
  $("feedNameSelect").addEventListener("change",updateFeedCustomOption);
 document.querySelectorAll(".page[id]:not(#home):not(#milkHome)").forEach(page=>{
  if(page.querySelector(":scope > .module-home-return"))return;
