@@ -12,6 +12,12 @@ const sw = fs.readFileSync(swPath, "utf8");
 assert.ok(html.includes('<script src="./src/core/module-registry.js"></script>'));
 assert.ok(html.includes('<script src="./src/core/module-ui-audit.js"></script>'));
 assert.ok(html.includes("MuhaiminModuleUIAudit.run(window.MuhaiminModuleRegistry)"));
+assert.ok(html.includes('document.querySelectorAll("#nav button").forEach(button=>button.addEventListener("click"'));
+assert.ok(html.includes('document.querySelectorAll("[data-milk-page]").forEach(button=>button.addEventListener("click"'));
+assert.ok(html.includes('const target=requested==="collection"?"milkHome":requested;'));
+assert.ok(html.includes('document.body.classList.toggle("milk-center-mode",requested==="collection");'));
+assert.ok(html.includes('document.body.classList.toggle("milk-workspace-detail",target!=="milkHome");'));
+assert.ok(html.includes('function exitMilkWorkspace(){document.body.classList.remove("milk-center-mode");'));
 assert.ok(sw.includes('"./src/core/module-registry.js"'));
 assert.ok(sw.includes('"./src/core/module-ui-audit.js"'));
 
