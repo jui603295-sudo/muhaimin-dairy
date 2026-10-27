@@ -263,26 +263,52 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
  <div class="card">
   <h3 data-i18n="feedProductTitle">🌾 Feed Product</h3>
   <p class="small" data-i18n="feedDefault">Default price: BDT 50/kg — editable later.</p>
-  <p class="small" data-i18n="feedRankingNote">Company order follows market-share percentages shown in an industry report published in March 2025; it is not a verified current ranking or product-quality rating. Verify local availability and label specifications before buying.</p>
-  <p class="small"><a href="https://idlc.com/mbr/download/2025/MBRMarch2025.pdf" target="_blank" rel="noopener noreferrer" data-i18n="feedRankingSource">View ranking source (IDLC Monthly Business Review, March 2025)</a></p>
+  <p class="small" data-i18n="feedLivestockNote">Livestock feed items are listed separately from fish and poultry feed. Product names and brands are not quality rankings.</p>
   <form id="feedProductForm">
    <div class="row">
     <div><label data-i18n="feedCode">Code<input name="product_code" autocomplete="off"></label></div>
-    <div><label data-i18n="feedName">Feed Company / Name<select name="product_name_select" id="feedNameSelect" required>
-     <option value="Nourish Poultry" data-en-label="01. Nourish Poultry — 10.50%" data-bn-label="১. Nourish Poultry — ১০.৫০% বাজার-অংশ">01. Nourish Poultry — 10.50%</option>
-     <option value="ACI Godrej Agrovet" data-en-label="02. ACI Godrej Agrovet — 7.81%" data-bn-label="২. ACI Godrej Agrovet — ৭.৮১% বাজার-অংশ">02. ACI Godrej Agrovet — 7.81%</option>
-     <option value="RRP Agro" data-en-label="03. RRP Agro — 7.51%" data-bn-label="৩. RRP Agro — ৭.৫১% বাজার-অংশ">03. RRP Agro — 7.51%</option>
-     <option value="Paragon" data-en-label="04. Paragon — 7.22%" data-bn-label="৪. Paragon — ৭.২২% বাজার-অংশ">04. Paragon — 7.22%</option>
-     <option value="Kazi Farms" data-en-label="05. Kazi Farms — 6.34%" data-bn-label="৫. Kazi Farms — ৬.৩৪% বাজার-অংশ">05. Kazi Farms — 6.34%</option>
-     <option value="CP Bangladesh" data-en-label="06. CP Bangladesh — 6.00%" data-bn-label="৬. CP Bangladesh — ৬.০০% বাজার-অংশ">06. CP Bangladesh — 6.00%</option>
-     <option value="Quality Feeds" data-en-label="07. Quality Feeds — 5.09%" data-bn-label="৭. Quality Feeds — ৫.০৯% বাজার-অংশ">07. Quality Feeds — 5.09%</option>
-     <option value="Nahar Agro" data-en-label="08. Nahar Agro — 4.76%" data-bn-label="৮. Nahar Agro — ৪.৭৬% বাজার-অংশ">08. Nahar Agro — 4.76%</option>
-     <option value="City Poultry" data-en-label="09. City Poultry — 4.06%" data-bn-label="৯. City Poultry — ৪.০৬% বাজার-অংশ">09. City Poultry — 4.06%</option>
-     <option value="New Hope" data-en-label="10. New Hope — 3.90%" data-bn-label="১০. New Hope — ৩.৯০% বাজার-অংশ">10. New Hope — 3.90%</option>
-     <option value="__custom__">11. Other (enter manually)</option>
+    <div><label data-i18n="feedAnimal">Livestock type<select name="animal_type" id="feedAnimalType" required>
+     <option value="গরু / Cattle">গরু / Cattle</option><option value="মহিষ / Buffalo">মহিষ / Buffalo</option><option value="ছাগল / Goat">ছাগল / Goat</option><option value="ভেড়া / Sheep">ভেড়া / Sheep</option>
+    </select></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedItemLabel">Feed / food item<select name="feed_item" id="feedItemSelect" required>
+     <option value="Ready-made cattle feed / প্রস্তুত গবাদিপশুর ফিড">Ready-made livestock feed / প্রস্তুত গবাদিপশুর ফিড</option>
+     <option value="Dairy cattle feed / দুধাল গরুর ফিড">Dairy cattle feed / দুধাল গরুর ফিড</option>
+     <option value="Fattening feed / মোটাতাজাকরণ ফিড">Fattening feed / মোটাতাজাকরণ ফিড</option>
+     <option value="Calf starter / বাছুরের স্টার্টার">Calf starter / বাছুরের স্টার্টার</option>
+     <option value="Wheat bran / গমের ভুসি">Wheat bran / গমের ভুসি</option>
+     <option value="Rice bran or rice polish / চালের কুঁড়া বা রাইস পলিশ">Rice bran or rice polish / চালের কুঁড়া বা রাইস পলিশ</option>
+     <option value="DORB / ডিওআরবি">DORB / ডিওআরবি</option>
+     <option value="Maize or corn meal / ভুট্টা বা ভুট্টার গুঁড়া">Maize or corn meal / ভুট্টা বা ভুট্টার গুঁড়া</option>
+     <option value="Soybean meal / সয়াবিন মিল">Soybean meal / সয়াবিন মিল</option>
+     <option value="Mustard oil cake / সরিষার খৈল">Mustard oil cake / সরিষার খৈল</option>
+     <option value="Rapeseed cake / রেপসিড খৈল">Rapeseed cake / রেপসিড খৈল</option>
+     <option value="Coconut cake / নারিকেলের খৈল">Coconut cake / নারিকেলের খৈল</option>
+     <option value="Lentil bran / মসুরের ভুসি">Lentil bran / মসুরের ভুসি</option>
+     <option value="Khesari bran / খেসারির ভুসি">Khesari bran / খেসারির ভুসি</option>
+     <option value="Mung bean bran / মুগের ভুসি">Mung bean bran / মুগের ভুসি</option>
+     <option value="Chita molasses / চিটাগুড় বা লালিগুড়">Chita molasses / চিটাগুড় বা লালিগুড়</option>
+     <option value="Rice straw / ধানের খড়">Rice straw / ধানের খড়</option>
+     <option value="Wheat straw / গমের খড়">Wheat straw / গমের খড়</option>
+     <option value="Green grass or fodder / কাঁচা ঘাস বা সবুজ পশুখাদ্য">Green grass or fodder / কাঁচা ঘাস বা সবুজ পশুখাদ্য</option>
+     <option value="Napier grass / নেপিয়ার ঘাস">Napier grass / নেপিয়ার ঘাস</option>
+     <option value="Hay / শুকনা ঘাস">Hay / শুকনা ঘাস</option>
+     <option value="Silage / সাইলেজ">Silage / সাইলেজ</option>
+     <option value="Mineral mixture / মিনারেল মিক্সচার">Mineral mixture / মিনারেল মিক্সচার</option>
+     <option value="Vitamin supplement / ভিটামিন সাপ্লিমেন্ট">Vitamin supplement / ভিটামিন সাপ্লিমেন্ট</option>
+     <option value="Salt lick or feed salt / লবণ বা সল্ট লিক">Salt lick or feed salt / লবণ বা সল্ট লিক</option>
+     <option value="Calcium supplement / ক্যালসিয়াম সাপ্লিমেন্ট">Calcium supplement / ক্যালসিয়াম সাপ্লিমেন্ট</option>
+     <option value="Probiotic or yeast supplement / প্রোবায়োটিক বা ইস্ট সাপ্লিমেন্ট">Probiotic or yeast supplement / প্রোবায়োটিক বা ইস্ট সাপ্লিমেন্ট</option>
+     <option value="Toxin binder / টক্সিন বাইন্ডার">Toxin binder / টক্সিন বাইন্ডার</option>
+     <option value="Other item / অন্যান্য খাবার">Other item / অন্যান্য খাবার</option>
+    </select></label></div>
+    <div><label data-i18n="feedName">Feed Company / Brand<select name="product_name_select" id="feedNameSelect" required>
+     <option value="Akij Feed">Akij Feed</option><option value="ACI Godrej Agrovet">ACI Godrej Agrovet</option><option value="Nourish">Nourish</option><option value="Provita">Provita</option><option value="Quality Feeds">Quality Feeds</option><option value="Paragon">Paragon</option><option value="Kazi Farms">Kazi Farms</option><option value="CP Bangladesh">CP Bangladesh</option><option value="Agrotech Feeds">Agrotech Feeds</option><option value="Safollo Feed">Safollo Feed</option><option value="Local / loose feed seller">Local / loose feed seller</option><option value="__custom__">Other company (enter manually)</option>
     </select></label></div>
    </div>
    <label id="customFeedWrap" class="hidden" data-i18n="customFeed">Enter custom feed/company name<input name="custom_product_name" autocomplete="off"></label>
+   <label id="customCompanyWrap" class="hidden" data-i18n="customCompany">Enter company / seller name<input name="custom_company_name" autocomplete="off"></label>
    <div class="row">
     <div><label data-i18n="feedPurchasePrice">Purchase Price/kg<input name="purchase_price" type="number" step=".01" value="50"></label></div>
     <div><label data-i18n="feedSalePrice">Sale Price/kg<input name="sale_price" type="number" step=".01" value="50"></label></div>
@@ -689,7 +715,7 @@ const translations = {
     litersLabel:"লিটার", purchaseRate:"ক্রয় মূল্য/L", acceptedLabel:"গ্রহণ করা হয়েছে?", saveCollection:"সংগ্রহ সংরক্ষণ",
     recentCollections:"সাম্প্রতিক সংগ্রহ", farmerPayment:"💳 কৃষক পেমেন্ট", amountLabel:"পরিমাণ", methodLabel:"মাধ্যম",
     savePayment:"পেমেন্ট সংরক্ষণ", paymentList:"পেমেন্ট তালিকা", feedDefault:"ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।",
-    customFeed:"নিজে ফিড/কোম্পানির নাম লিখুন", feedStock:"ফিডের মজুত", feedProductTitle:"🌾 ফিড পণ্য", feedRankingNote:"কোম্পানির ক্রম মার্চ ২০২৫-এ প্রকাশিত একটি শিল্প প্রতিবেদনের বাজার-অংশের শতাংশ অনুযায়ী সাজানো; এটি বর্তমান যাচাইকৃত র‍্যাংকিং বা পণ্যের মানের রেটিং নয়। কেনার আগে স্থানীয় সরবরাহ ও প্যাকেটের তথ্য যাচাই করুন।", feedRankingSource:"র‍্যাংকিংয়ের উৎস দেখুন (IDLC Monthly Business Review, মার্চ ২০২৫)", feedCode:"কোড", feedName:"ফিড কোম্পানি / নাম", feedPurchasePrice:"ক্রয় মূল্য/kg", feedSalePrice:"বিক্রয় মূল্য/kg", feedSaveProduct:"💾 ফিড পণ্য সংরক্ষণ", feedPurchaseTitle:"📥 ফিড ক্রয়", feedSaleTitle:"📤 ফিড বিক্রয়", dateLabel:"তারিখ", timeLabel:"সময়", feedProductLabel:"পণ্য", feedQuantity:"পরিমাণ (kg)", feedSupplier:"সরবরাহকারী", feedPaid:"পরিশোধিত টাকা", feedCustomer:"গ্রাহক", feedSavePurchase:"ক্রয় সংরক্ষণ", feedSaveSale:"বিক্রয় সংরক্ষণ", feedStock:"ফিডের মজুত", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
+    customFeed:"নিজে ফিড/খাবারের নাম লিখুন", customCompany:"কোম্পানি / বিক্রেতার নাম লিখুন", feedAnimal:"গবাদিপশুর ধরন", feedItemLabel:"ফিড / খাবারের ধরন", feedLivestockNote:"গবাদিপশুর খাবার আলাদা তালিকাভুক্ত; মাছ ও পোলট্রির ফিড এর সঙ্গে মেশানো নয়। পণ্যের নাম বা ব্র্যান্ড কোনো মান-র‍্যাংকিং নয়।", feedStock:"ফিডের মজুত", feedProductTitle:"🌾 ফিড পণ্য", feedRankingNote:"কোম্পানির ক্রম মার্চ ২০২৫-এ প্রকাশিত একটি শিল্প প্রতিবেদনের বাজার-অংশের শতাংশ অনুযায়ী সাজানো; এটি বর্তমান যাচাইকৃত র‍্যাংকিং বা পণ্যের মানের রেটিং নয়। কেনার আগে স্থানীয় সরবরাহ ও প্যাকেটের তথ্য যাচাই করুন।", feedRankingSource:"র‍্যাংকিংয়ের উৎস দেখুন (IDLC Monthly Business Review, মার্চ ২০২৫)", feedCode:"কোড", feedName:"ফিড কোম্পানি / নাম", feedPurchasePrice:"ক্রয় মূল্য/kg", feedSalePrice:"বিক্রয় মূল্য/kg", feedSaveProduct:"💾 ফিড পণ্য সংরক্ষণ", feedPurchaseTitle:"📥 ফিড ক্রয়", feedSaleTitle:"📤 ফিড বিক্রয়", dateLabel:"তারিখ", timeLabel:"সময়", feedProductLabel:"পণ্য", feedQuantity:"পরিমাণ (kg)", feedSupplier:"সরবরাহকারী", feedPaid:"পরিশোধিত টাকা", feedCustomer:"গ্রাহক", feedSavePurchase:"ক্রয় সংরক্ষণ", feedSaveSale:"বিক্রয় সংরক্ষণ", feedStock:"ফিডের মজুত", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
     reportsTitle:"📊 রিপোর্ট", fromDate:"শুরুর তারিখ", toDate:"শেষ তারিখ", runReport:"রিপোর্ট দেখুন",
     businessSettings:"⚙️ ব্যবসার নাম ও নিয়ম", businessName:"ব্যবসার নাম", saveSettings:"সেটিংস সংরক্ষণ",
     logout:"🚪 লগআউট", backupTitle:"💾 ব্যাকআপ ও রিস্টোর",
@@ -711,7 +737,7 @@ const translations = {
     farmerLabel:"Farmer", litersLabel:"Liters", purchaseRate:"Purchase rate/L", acceptedLabel:"Accepted?",
     saveCollection:"Save collection", recentCollections:"Recent collections", farmerPayment:"💳 Farmer payment",
     amountLabel:"Amount", methodLabel:"Method", savePayment:"Save payment", paymentList:"Payment list",
-    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"Enter custom feed/company name", feedStock:"Feed stock", feedProductTitle:"🌾 Feed Product", feedRankingNote:"Company order is based on reported market share in a March 2025 industry report using older DLS/FIAB data; it is not a current product-quality rating. Verify local availability and label specifications before buying.", feedRankingSource:"View ranking source (IDLC Monthly Business Review, March 2025)", feedCode:"Code", feedName:"Feed Company / Name", feedPurchasePrice:"Purchase Price/kg", feedSalePrice:"Sale Price/kg", feedSaveProduct:"💾 Save Feed Product", feedPurchaseTitle:"📥 Feed Purchase", feedSaleTitle:"📤 Feed Sale", dateLabel:"Date", timeLabel:"Time", feedProductLabel:"Product", feedQuantity:"Quantity (kg)", feedSupplier:"Supplier", feedPaid:"Paid Amount", feedCustomer:"Customer", feedSavePurchase:"Save Purchase", feedSaveSale:"Save Sale", feedStock:"Feed Stock",
+    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"Enter custom feed/food item name", customCompany:"Enter company / seller name", feedAnimal:"Livestock type", feedItemLabel:"Feed / food item", feedLivestockNote:"Livestock feed items are listed separately from fish and poultry feed. Product names and brands are not quality rankings.", feedStock:"Feed stock", feedProductTitle:"🌾 Feed Product", feedRankingNote:"Company order is based on reported market share in a March 2025 industry report using older DLS/FIAB data; it is not a current product-quality rating. Verify local availability and label specifications before buying.", feedRankingSource:"View ranking source (IDLC Monthly Business Review, March 2025)", feedCode:"Code", feedName:"Feed Company / Name", feedPurchasePrice:"Purchase Price/kg", feedSalePrice:"Sale Price/kg", feedSaveProduct:"💾 Save Feed Product", feedPurchaseTitle:"📥 Feed Purchase", feedSaleTitle:"📤 Feed Sale", dateLabel:"Date", timeLabel:"Time", feedProductLabel:"Product", feedQuantity:"Quantity (kg)", feedSupplier:"Supplier", feedPaid:"Paid Amount", feedCustomer:"Customer", feedSavePurchase:"Save Purchase", feedSaveSale:"Save Sale", feedStock:"Feed Stock",
     vetStock:"Veterinary stock & expiry", agroStock:"Agro stock", reportsTitle:"📊 Reports", fromDate:"From date",
     toDate:"To date", runReport:"Run report", businessSettings:"⚙️ Business name and rules", businessName:"Business name",
     saveSettings:"Save settings", logout:"🚪 Log out", backupTitle:"💾 Backup & Restore",
@@ -1813,10 +1839,14 @@ bindForm("paymentForm",async f=>insertRow("farmer_payments",{
   reference:f.reference,notes:f.notes
 },$("paymentForm")));
 bindForm("feedProductForm",async f=>{
-  const name=f.product_name_select==="__custom__" ? String(f.custom_product_name||"").trim() : f.product_name_select;
-  if(!name)throw new Error(lang()==="en"?"Enter a feed/company name.":"ফিড/কোম্পানির নাম লিখুন।");
+  const company=f.product_name_select==="__custom__"?String(f.custom_company_name||"").trim():String(f.product_name_select||"").trim();
+  const item=f.feed_item==="Other item / অন্যান্য খাবার"?String(f.custom_product_name||"").trim():String(f.feed_item||"").trim();
+  if(!company)throw new Error(lang()==="en"?"Enter a company or seller name.":"কোম্পানি বা বিক্রেতার নাম লিখুন।");
+  if(!item)throw new Error(lang()==="en"?"Enter/select a livestock feed item.":"গবাদিপশুর খাবারের নাম নির্বাচন বা লিখুন।");
+  const name=String(f.animal_type||"").trim()+" — "+item+" — "+company;
+  const notes=[String(f.notes||"").trim(),"Livestock type: "+String(f.animal_type||""),"Feed item: "+item,"Company/seller: "+company].filter(Boolean).join("\\n");
   await insertRow("feed_products",{product_code:f.product_code||null,product_name:name,unit:"kg",
-    purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes:f.notes},$("feedProductForm"));
+    purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes},$("feedProductForm"));
 });
 bindForm("feedPurchaseForm",async f=>{
   const quantity=n(f.quantity_kg), price=f.purchase_price_per_kg===""?50:n(f.purchase_price_per_kg), paid=n(f.paid_amount);
@@ -2248,8 +2278,8 @@ $("saveOfflineSettings").addEventListener("click",()=>{
 $("retryOfflineSync").addEventListener("click",()=>syncMilkCollectionQueue());
 window.addEventListener("online",()=>{setOfflineModeStatus("ইন্টারনেট ফিরে এসেছে; অপেক্ষমাণ Milk Collection রেকর্ডের অবস্থা যাচাই হচ্ছে। নিরাপত্তা যাচাই না হওয়া পর্যন্ত স্বয়ংক্রিয় পাঠানো বন্ধ আছে।");syncMilkCollectionQueue();});
 window.addEventListener("offline",()=>setOfflineModeStatus("অফলাইন: আগে সংরক্ষিত তথ্য ও দুধ সংগ্রহের ফর্ম ব্যবহার করুন।"));
-function updateFeedCustomOption(){const english=lang()==="en";$("feedNameSelect").querySelectorAll("option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});const option=[...$("feedNameSelect").options].find(item=>item.value==="__custom__");if(option)option.textContent=english?"11. Other (enter manually)":"১১. অন্যান্য (নিজে লিখুন)";$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");}
- $("feedNameSelect").addEventListener("change",updateFeedCustomOption);
+function updateFeedCustomOption(){const english=lang()==="en";$("customCompanyWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");$("customFeedWrap").classList.toggle("hidden",$("feedItemSelect").value!=="Other item / অন্যান্য খাবার");const customItem=$("customFeedWrap").querySelector("input");if(customItem)customItem.required=$("feedItemSelect").value==="Other item / অন্যান্য খাবার";const customCompany=$("customCompanyWrap").querySelector("input");if(customCompany)customCompany.required=$("feedNameSelect").value==="__custom__";}
+ $("feedNameSelect").addEventListener("change",updateFeedCustomOption);$("feedItemSelect").addEventListener("change",updateFeedCustomOption);
 document.querySelectorAll(".page[id]:not(#home):not(#milkHome)").forEach(page=>{
  if(page.querySelector(":scope > .module-home-return"))return;
  const back=document.createElement("button");
