@@ -1,0 +1,2 @@
+# Local-only TEST Supabase configuration. Never commit project keys.
+src/core/supabase-test-config.js
