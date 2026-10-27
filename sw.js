@@ -1,6 +1,6 @@
-const CACHE_NAME = "muhaimin-v4";
+const CACHE_NAME = "muhaimin-v5";
 const SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png", "./assets/milk-collection-3d.svg"];
+const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png", "./assets/milk-collection-3d.svg", "./src/core/module-registry.js"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
