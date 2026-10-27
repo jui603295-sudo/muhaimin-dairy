@@ -465,6 +465,7 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 <section id="audit" class="page"><div class="card"><h3 data-i18n="auditTitle">🧾 অডিট লগ</h3><p class="small" data-i18n="auditInfo">এই ব্রাউজারের স্থানীয় তালিকা সার্ভার-সুরক্ষিত লগের বিকল্প নয়।</p><div id="auditList"></div></div><div class="card"><h3>সার্ভার অডিট লগ / Server Audit Trail</h3><p class="small">দুধ সংগ্রহের INSERT/UPDATE/DELETE ইতিহাস দেখতে Test Supabase migration ও Main Admin অনুমতি লাগবে।</p><button type="button" class="btn" id="refreshServerAudit">সার্ভার লগ রিফ্রেশ</button><div id="serverAuditList" class="tablewrap"></div></div></section>
 </main></div>
 <div id="toast" role="status"></div>
+<script src="./src/core/module-registry.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
