@@ -21,7 +21,7 @@ const documentLike = {
     if (!Object.values(audit.routes).includes(selector)) return null;
     const parts = selector.slice(1, -1).split("=");
     const attribute = parts[0];
-    const value = parts.slice(1).join("=").replace(/^"|"$ /g, "");
+    const value = parts.slice(1).join("=").slice(1, -1);
     if (!attribute || !value || !html.includes(attribute + '="' + value + '"')) return null;
     return {
       setAttribute(name, value) {
@@ -33,7 +33,7 @@ const documentLike = {
 for (const selector of Object.values(audit.routes)) {
   const parts = selector.slice(1, -1).split("=");
   const attribute = parts[0];
-  const value = parts.slice(1).join("=").replace(/^"|"$ /g, "");
+  const value = parts.slice(1).join("=").slice(1, -1);
   assert.ok(attribute && value && html.includes(attribute + '="' + value + '"'), "Missing real UI selector: " + selector);
 }
 const result = audit.run(registry, documentLike);
