@@ -4,8 +4,8 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const html = fs.readFileSync("index.html", "utf8");
-const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)]
-  .filter(([, attrs, body]) => !/\\bsrc\\s*=/.test(attrs) && body.trim());
+const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+  .filter(([, attrs, body]) => !/\bsrc\s*=/.test(attrs) && body.trim());
 const source = scripts.map(([, , body]) => body);
 const helpers = source.find(body => body.includes("const bdParts =") && body.includes("const dateISO ="));
 assert.ok(helpers, "Core date and formatting helpers must exist in the app");
