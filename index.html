@@ -259,9 +259,78 @@ body.milk-center-mode button:focus-visible{outline:3px solid var(--green);outlin
 class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="recentCollections">সাম্প্রতিক সংগ্রহ</h3><p class="small">সংগ্রহ রসিদ প্রিন্ট/PDF করুন বা মোবাইলের Share মেনু দিয়ে পাঠান। রসিদ শেয়ারে শুধু নির্বাচিত রেকর্ডের তথ্য যাবে।</p><div class="row"><div><label for="collectionSearch">কৃষক / কেন্দ্র / রসিদ / স্কেল স্লিপ খুঁজুন</label><input id="collectionSearch" type="search" placeholder="নাম, মোবাইল, তারিখ, টিকিট নম্বর…"></div><div style="align-self:end"><button class="btn" type="button" id="exportCollectionsCsv">⬇️ CSV এক্সপোর্ট</button></div></div><div class="tablewrap" id="collectionTable"></div><div id="collectionReceiptStatus" class="small" aria-live="polite"></div></div>
 <div class="card"><h3>🧪 আলাদা মান যাচাই ও অনুমোদন / Quality Review</h3><p class="small">সংগ্রহ সংরক্ষণের পর পরীক্ষক এখানে রেকর্ড বেছে মান যাচাই করবেন। Accepted না হওয়া পর্যন্ত রেকর্ড গ্রহণযোগ্য দুধ হিসেবে গণনা হবে না।</p><form id="qualityReviewForm"><label>পরীক্ষাধীন সংগ্রহ<select name="collection_id" id="qualityReviewCollection" required></select></label><div class="row"><div><label>CLR<input name="clr" type="number" min="0" max="50" step=".1" required></label></div><div><label>দুধের তাপমাত্রা °C<input name="milk_temperature_c" type="number" min="0" max="100" step=".1"></label></div></div><div class="row"><div><label>Fat %<input name="fat_percent" type="number" min="0" max="100" step=".01"></label></div><div><label>SNF %<input name="snf_percent" type="number" min="0" max="100" step=".01"></label></div></div><div class="row"><div><label>গন্ধ পরীক্ষা<select name="smell_check" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Normal">স্বাভাবিক</option><option value="Abnormal">অস্বাভাবিক</option></select></label></div><div><label>দৃশ্যমান পরীক্ষা<select name="visual_check" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Normal">স্বাভাবিক</option><option value="Abnormal">অস্বাভাবিক</option></select></label></div></div><div class="row"><div><label>প্রাথমিক ভেজাল স্ক্রিনিং<select name="adulteration_test" required><option value="Not Tested">পরীক্ষা হয়নি</option><option value="Pass">প্রাথমিক পরীক্ষায় সমস্যা নেই</option><option value="Fail">ব্যর্থ / পুনঃপরীক্ষা</option></select></label></div><div><label>চূড়ান্ত মানের অবস্থা<select name="quality_status" required><option value="Pending">Pending</option><option value="Accepted">Accepted</option><option value="Retest Required">Retest Required</option><option value="Quarantined">Quarantined</option><option value="Rejected">Rejected</option></select></label></div></div><div class="row"><div><label>পরীক্ষক ID<input name="tester_id" required></label></div><div><label>পরীক্ষার সময়<input name="tested_at" type="datetime-local" required></label></div></div><label>ল্যাব ফল / রেফারেন্স<input name="lab_result"></label><label>নমুনার ছবি/রেফারেন্স URL<input name="sample_photo_url" type="url"></label><label>কারণ / পরীক্ষার নোট<textarea name="quality_reason"></textarea></label><button class="btn primary">মান যাচাই সংরক্ষণ ও রেকর্ড আপডেট</button></form></div></section>
 <section id="payments" class="page"><div class="card"><h3 data-i18n="farmerPayment">💳 কৃষক পেমেন্ট</h3><form id="paymentForm"><div class="row"><div><label data-i18n="dateLabel">তারিখ<input name="payment_date" id="pdate" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" required></label></div><div><label>সময় / Time<input name="payment_time" id="ptime" type="time" step="1" required></label></div><div><label data-i18n="farmerLabel">কৃষক<select name="farmer_id" id="paymentFarmer" required></select></label></div></div><div class="row"><div><label data-i18n="amountLabel">পরিমাণ<input name="amount" type="number" step=".01" min=".01" required></label></div><div><label data-i18n="methodLabel">মাধ্যম<select name="payment_method"><option>Cash</option><option>Bank</option><option>bKash</option><option>Nagad</option><option>Other</option></select></label></div></div><label>Reference<input name="reference"></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary" data-i18n="savePayment">পেমেন্ট সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="paymentList">পেমেন্ট তালিকা</h3><div class="tablewrap" id="paymentTable"></div></div></section>
-<section id="feed" class="page"><div class="card"><h3>🌾 Feed Product</h3><p class="small" data-i18n="feedDefault">ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।</p><form id="feedProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Feed Name<select name="product_name_select" id="feedNameSelect" required><option value="গোয়ালা ফিড">গোয়ালা ফিড</option><option value="নারিশ">নারিশ</option><option value="ACI Feed">ACI Feed</option><option value="Provita Feed">Provita Feed</option><option value="Fresh Feed">Fresh Feed</option><option value="অন্যান্য">অন্যান্য</option></select></label></div></div><label id="customFeedWrap" class="hidden" data-i18n="customFeed">নতুন Feed-এর নাম<input name="custom_product_name"></label><div class="row"><div><label>Purchase Price/kg<input name="purchase_price" type="number" step=".01" value="50"></label></div><div><label>Sale Price/kg<input name="sale_price" type="number" step=".01" value="50"></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">💾 Product Save</button></form></div><div class="card"><h3>📥 Feed Purchase</h3><form id="feedPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today"></label></div><div><label>Time<input name="purchase_time" type="time" step="1" class="currentTime"></label></div><div><label>Product<select name="product_id" id="feedPurchaseProduct"></select></label></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div><div><label>Price/kg<input name="purchase_price_per_kg" type="number" step=".01" value="50"></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid<input name="paid_amount" type="number" step=".01"></label></div></div><button class="btn primary">Purchase Save</button></form></div><div class="card"><h3>📤 Feed Sale</h3><form id="feedSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today"></label></div><div><label>Time<input name="sale_time" type="time" step="1" class="currentTime"></label></div><div><label>Product<select name="product_id" id="feedSaleProduct"></select></label></div></div><div class="row"><div><label>Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div><div><label>Sale Price/kg<input name="sale_price_per_kg" type="number" step=".01" value="50"></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid<input name="paid_amount" type="number"
-
-step=".01"></label></div></div><button class="btn primary">Sale Save</button></form></div><div class="card"><h3 data-i18n="feedStock">Feed Stock</h3><div class="tablewrap" id="feedStock"></div></div></section>
+<section id="feed" class="page">
+ <div class="card">
+  <h3 data-i18n="feedProductTitle">🌾 Feed Product</h3>
+  <p class="small" data-i18n="feedDefault">Default price: BDT 50/kg — editable later.</p>
+  <p class="small" data-i18n="feedRankingNote">Company order is based on reported market share in a March 2025 industry report using older DLS/FIAB data; it is not a current product-quality rating. Verify local availability and label specifications before buying.</p>
+  <p class="small"><a href="https://idlc.com/mbr/download/2025/MBRMarch2025.pdf" target="_blank" rel="noopener noreferrer" data-i18n="feedRankingSource">View ranking source (IDLC Monthly Business Review, March 2025)</a></p>
+  <form id="feedProductForm">
+   <div class="row">
+    <div><label data-i18n="feedCode">Code<input name="product_code" autocomplete="off"></label></div>
+    <div><label data-i18n="feedName">Feed Company / Name<select name="product_name_select" id="feedNameSelect" required>
+     <option value="Nourish Poultry">01. Nourish Poultry — 10.50%</option>
+     <option value="ACI Godrej Agrovet">02. ACI Godrej Agrovet — 7.81%</option>
+     <option value="RRP Agro">03. RRP Agro — 7.51%</option>
+     <option value="Paragon">04. Paragon — 7.22%</option>
+     <option value="Kazi Farms">05. Kazi Farms — 6.34%</option>
+     <option value="CP Bangladesh">06. CP Bangladesh — 6.00%</option>
+     <option value="Quality Feeds">07. Quality Feeds — 5.09%</option>
+     <option value="Nahar Agro">08. Nahar Agro — 4.76%</option>
+     <option value="City Poultry">09. City Poultry — 4.06%</option>
+     <option value="New Hope">10. New Hope — 3.90%</option>
+     <option value="__custom__">11. Other (enter manually)</option>
+    </select></label></div>
+   </div>
+   <label id="customFeedWrap" class="hidden" data-i18n="customFeed">Enter custom feed/company name<input name="custom_product_name" autocomplete="off"></label>
+   <div class="row">
+    <div><label data-i18n="feedPurchasePrice">Purchase Price/kg<input name="purchase_price" type="number" step=".01" value="50"></label></div>
+    <div><label data-i18n="feedSalePrice">Sale Price/kg<input name="sale_price" type="number" step=".01" value="50"></label></div>
+   </div>
+   <label data-i18n="notesLabel">Notes<textarea name="notes"></textarea></label>
+   <button class="btn primary" data-i18n="feedSaveProduct">💾 Save Feed Product</button>
+  </form>
+ </div>
+ <div class="card">
+  <h3 data-i18n="feedPurchaseTitle">📥 Feed Purchase</h3>
+  <form id="feedPurchaseForm">
+   <div class="row">
+    <div><label data-i18n="dateLabel">Date<input name="purchase_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today"></label></div>
+    <div><label data-i18n="timeLabel">Time<input name="purchase_time" type="time" step="1" class="currentTime"></label></div>
+    <div><label data-i18n="feedProductLabel">Product<select name="product_id" id="feedPurchaseProduct"></select></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedQuantity">Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div>
+    <div><label data-i18n="feedPurchasePrice">Purchase Price/kg<input name="purchase_price_per_kg" type="number" step=".01" value="50"></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedSupplier">Supplier<input name="supplier_name"></label></div>
+    <div><label data-i18n="feedPaid">Paid Amount<input name="paid_amount" type="number" step=".01"></label></div>
+   </div>
+   <button class="btn primary" data-i18n="feedSavePurchase">Save Purchase</button>
+  </form>
+ </div>
+ <div class="card">
+  <h3 data-i18n="feedSaleTitle">📤 Feed Sale</h3>
+  <form id="feedSaleForm">
+   <div class="row">
+    <div><label data-i18n="dateLabel">Date<input name="sale_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today"></label></div>
+    <div><label data-i18n="timeLabel">Time<input name="sale_time" type="time" step="1" class="currentTime"></label></div>
+    <div><label data-i18n="feedProductLabel">Product<select name="product_id" id="feedSaleProduct"></select></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedQuantity">Quantity (kg)<input name="quantity_kg" type="number" step=".01" min="0"></label></div>
+    <div><label data-i18n="feedSalePrice">Sale Price/kg<input name="sale_price_per_kg" type="number" step=".01" value="50"></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedCustomer">Customer<input name="customer_name"></label></div>
+    <div><label data-i18n="feedPaid">Paid Amount<input name="paid_amount" type="number" step=".01"></label></div>
+   </div>
+   <button class="btn primary" data-i18n="feedSaveSale">Save Sale</button>
+  </form>
+ </div>
+ <div class="card"><h3 data-i18n="feedStock">Feed Stock</h3><div class="tablewrap" id="feedStock"></div></div>
+</section>
 <section id="vet" class="page"><div class="card"><h3>🏥 Veterinary Company</h3><form id="vetCompanyForm"><label>Company Name<input name="company_name" required></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">Company Save</button></form></div><div class="card"><h3>💊 Veterinary Product</h3><form id="vetProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Company<select name="company_id" id="vetCompany"></select></label></div><div><label>Unit<input name="unit" value="pcs"></label></div></div><div class="row"><div><label>Batch No<input name="batch_no"></label></div><div><label>Expiry<input name="expiry_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off"></label></div></div><div class="row"><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01"></label></div></div><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Veterinary Purchase</h3><form id="vetPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today" required></label></div><div><label>Time<input name="purchase_time" type="time" step="1" class="currentTime" required></label></div><div><label>Product<select name="product_id" id="vetPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Purchase</button></form></div><div class="card"><h3>📤 Veterinary Sale</h3><form id="vetSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today" required></label></div><div><label>Time<input name="sale_time" type="time" step="1" class="currentTime" required></label></div><div><label>Product<select name="product_id" id="vetSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Sale</button></form></div><div class="card"><h3 data-i18n="vetStock">Veterinary Stock & Expiry</h3><div class="tablewrap" id="vetStock"></div></div></section>
 <section id="agro" class="page"><div class="card"><h3>🌱 Agro Care Product</h3><form id="agroProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Category<input name="category"></label></div><div><label>Company<input name="company_name"></label></div></div><div class="row"><div><label>Unit<input name="unit" value="pcs"></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div></div><label>Sale Price<input name="sale_price" type="number" step=".01"></label><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Agro Care Purchase</h3><form id="agroPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today" required></label></div><div><label>Time<input name="purchase_time" type="time" step="1" class="currentTime" required></label></div><div><label>Product<select name="product_id" id="agroPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Agro Purchase</button></form></div><div class="card"><h3>📤 Agro Care Sale</h3><form id="agroSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today" required></label></div><div><label>Time<input name="sale_time" type="time" step="1" class="currentTime" required></label></div><div><label>Product<select name="product_id" id="agroSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Agro Sale</button></form></div><div class="card"><h3 data-i18n="agroStock">Agro Stock</h3><div class="tablewrap" id="agroStock"></div></div></section>
 
@@ -620,7 +689,7 @@ const translations = {
     litersLabel:"লিটার", purchaseRate:"ক্রয় মূল্য/L", acceptedLabel:"গ্রহণ করা হয়েছে?", saveCollection:"সংগ্রহ সংরক্ষণ",
     recentCollections:"সাম্প্রতিক সংগ্রহ", farmerPayment:"💳 কৃষক পেমেন্ট", amountLabel:"পরিমাণ", methodLabel:"মাধ্যম",
     savePayment:"পেমেন্ট সংরক্ষণ", paymentList:"পেমেন্ট তালিকা", feedDefault:"ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।",
-    customFeed:"নতুন Feed-এর নাম", feedStock:"Feed Stock", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
+    customFeed:"নিজে ফিড/কোম্পানির নাম লিখুন", feedStock:"ফিডের মজুত", feedProductTitle:"🌾 ফিড পণ্য", feedRankingNote:"কোম্পানির ক্রম মার্চ ২০২৫-এর একটি শিল্প প্রতিবেদনে প্রকাশিত বাজার-অংশের তথ্য অনুসারে সাজানো; এটি বর্তমান পণ্যের মানের রেটিং নয়। কেনার আগে স্থানীয় সরবরাহ ও প্যাকেটের তথ্য যাচাই করুন।", feedRankingSource:"র‍্যাংকিংয়ের উৎস দেখুন (IDLC Monthly Business Review, মার্চ ২০২৫)", feedCode:"কোড", feedName:"ফিড কোম্পানি / নাম", feedPurchasePrice:"ক্রয় মূল্য/kg", feedSalePrice:"বিক্রয় মূল্য/kg", feedSaveProduct:"💾 ফিড পণ্য সংরক্ষণ", feedPurchaseTitle:"📥 ফিড ক্রয়", feedSaleTitle:"📤 ফিড বিক্রয়", dateLabel:"তারিখ", timeLabel:"সময়", feedProductLabel:"পণ্য", feedQuantity:"পরিমাণ (kg)", feedSupplier:"সরবরাহকারী", feedPaid:"পরিশোধিত টাকা", feedCustomer:"গ্রাহক", feedSavePurchase:"ক্রয় সংরক্ষণ", feedSaveSale:"বিক্রয় সংরক্ষণ", feedStock:"ফিডের মজুত", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
     reportsTitle:"📊 রিপোর্ট", fromDate:"শুরুর তারিখ", toDate:"শেষ তারিখ", runReport:"রিপোর্ট দেখুন",
     businessSettings:"⚙️ ব্যবসার নাম ও নিয়ম", businessName:"ব্যবসার নাম", saveSettings:"সেটিংস সংরক্ষণ",
     logout:"🚪 লগআউট", backupTitle:"💾 ব্যাকআপ ও রিস্টোর",
@@ -642,7 +711,7 @@ const translations = {
     farmerLabel:"Farmer", litersLabel:"Liters", purchaseRate:"Purchase rate/L", acceptedLabel:"Accepted?",
     saveCollection:"Save collection", recentCollections:"Recent collections", farmerPayment:"💳 Farmer payment",
     amountLabel:"Amount", methodLabel:"Method", savePayment:"Save payment", paymentList:"Payment list",
-    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"New feed name", feedStock:"Feed stock",
+    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"Enter custom feed/company name", feedStock:"Feed stock", feedProductTitle:"🌾 Feed Product", feedRankingNote:"Company order is based on reported market share in a March 2025 industry report using older DLS/FIAB data; it is not a current product-quality rating. Verify local availability and label specifications before buying.", feedRankingSource:"View ranking source (IDLC Monthly Business Review, March 2025)", feedCode:"Code", feedName:"Feed Company / Name", feedPurchasePrice:"Purchase Price/kg", feedSalePrice:"Sale Price/kg", feedSaveProduct:"💾 Save Feed Product", feedPurchaseTitle:"📥 Feed Purchase", feedSaleTitle:"📤 Feed Sale", dateLabel:"Date", timeLabel:"Time", feedProductLabel:"Product", feedQuantity:"Quantity (kg)", feedSupplier:"Supplier", feedPaid:"Paid Amount", feedCustomer:"Customer", feedSavePurchase:"Save Purchase", feedSaveSale:"Save Sale", feedStock:"Feed Stock",
     vetStock:"Veterinary stock & expiry", agroStock:"Agro stock", reportsTitle:"📊 Reports", fromDate:"From date",
     toDate:"To date", runReport:"Run report", businessSettings:"⚙️ Business name and rules", businessName:"Business name",
     saveSettings:"Save settings", logout:"🚪 Log out", backupTitle:"💾 Backup & Restore",
@@ -672,7 +741,8 @@ function applyLanguage(value) {
   if ($("resendBtn")) $("resendBtn").textContent = next==="en" ? "✉️ Resend verification" : "✉️ ভেরিফিকেশন ইমেইল";
   if ($("sendOtpBtn")) $("sendOtpBtn").textContent = next==="en" ? "Send OTP" : "OTP পাঠান";
   if ($("verifyOtpBtn")) $("verifyOtpBtn").textContent = next==="en" ? "Verify OTP" : "OTP যাচাই";
-  if (state.settings) render();
+  if (typeof updateFeedCustomOption==="function") updateFeedCustomOption();
+   if (state.settings) render();
 }
 function toast(message) {
   const el=$("toast"); if(!el) return;
@@ -1743,8 +1813,8 @@ bindForm("paymentForm",async f=>insertRow("farmer_payments",{
   reference:f.reference,notes:f.notes
 },$("paymentForm")));
 bindForm("feedProductForm",async f=>{
-  const name=f.product_name_select==="অন্যান্য" ? f.custom_product_name : f.product_name_select;
-  if(!name)throw new Error("Feed-এর নাম দিন");
+  const name=f.product_name_select==="__custom__" ? String(f.custom_product_name||"").trim() : f.product_name_select;
+  if(!name)throw new Error(lang()==="en"?"Enter a feed/company name.":"ফিড/কোম্পানির নাম লিখুন।");
   await insertRow("feed_products",{product_code:f.product_code||null,product_name:name,unit:"kg",
     purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes:f.notes},$("feedProductForm"));
 });
@@ -2178,7 +2248,8 @@ $("saveOfflineSettings").addEventListener("click",()=>{
 $("retryOfflineSync").addEventListener("click",()=>syncMilkCollectionQueue());
 window.addEventListener("online",()=>{setOfflineModeStatus("ইন্টারনেট ফিরে এসেছে; অপেক্ষমাণ Milk Collection রেকর্ডের অবস্থা যাচাই হচ্ছে। নিরাপত্তা যাচাই না হওয়া পর্যন্ত স্বয়ংক্রিয় পাঠানো বন্ধ আছে।");syncMilkCollectionQueue();});
 window.addEventListener("offline",()=>setOfflineModeStatus("অফলাইন: আগে সংরক্ষিত তথ্য ও দুধ সংগ্রহের ফর্ম ব্যবহার করুন।"));
-$("feedNameSelect").addEventListener("change",()=>$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="অন্যান্য"));
+function updateFeedCustomOption(){const option=[...$("feedNameSelect").options].find(item=>item.value==="__custom__");if(option)option.textContent=lang()==="en"?"11. Other (enter manually)":"১১. অন্যান্য (নিজে লিখুন)";$("customFeedWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");}
+ $("feedNameSelect").addEventListener("change",updateFeedCustomOption);
 document.querySelectorAll(".page[id]:not(#home):not(#milkHome)").forEach(page=>{
  if(page.querySelector(":scope > .module-home-return"))return;
  const back=document.createElement("button");
