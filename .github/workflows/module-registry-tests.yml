@@ -1,0 +1,16 @@
+name: Module Registry Tests
+on:
+  pull_request:
+  push:
+    branches:
+      - architecture/modular-enterprise-v1
+jobs:
+  module-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run module registry tests
+        run: node tests/module-registry.test.cjs
