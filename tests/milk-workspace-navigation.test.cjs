@@ -4,16 +4,23 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
-const navTargets = [...html.matchAll(/<button\\b[^>]*\\bdata-milk-page="([^"]+)"[^>]*>/g)].map(match => match[1]);
-assert.ok(navTargets.length >= 8, "Milk Center should expose its workspace navigation and home tiles");
+const navTargets = [...html.matchAll(/data-milk-page="([^"]+)"/g)].map(match => match[1]);
+assert.ok(navTargets.length >= 8, "Milk Center should expose workspace navigation and home tiles");
 
 const uniqueTargets = [...new Set(navTargets)];
-assert.equal(uniqueTargets.length, navTargets.length, "Each data-milk-page target should be represented once in the combined navigation/tile set only if duplicates are not used");
+assert.ok(uniqueTargets.length >= 8, "Expected all Milk Center workspace destinations");
 
 for (const target of uniqueTargets) {
-  const sectionPattern = new RegExp('<section\\\\b(?=[^>]*\\\\bid="' + target + '")(?=[^>]*\\\\bclass="[^"]*\\\\bpage\\\\b[^"]*")[^>]*>');
-  assert.match(html, sectionPattern, "Missing workspace page section for data-milk-page target: " + target);
+  assert.ok(
+    html.includes('<section id="' + target + '" class="page"') ||
+      html.includes('<section id="' + target + '" class="page active"'),
+    "Missing workspace page section for data-milk-page target: " + target
+  );
 }
 
-assert.match(html, /body\\.milk-center-mode\\.page-never-match/, "placeholder");
+assert.ok(html.includes("body.milk-center-mode .page:not(.active){display:none!important}"),
+  "Inactive pages must be hidden inside the Milk Center workspace");
+assert.ok(html.includes("body.milk-center-mode .page.active{display:block!important}"),
+  "The active page must remain visible inside the Milk Center workspace");
+
 console.log("PASS: Milk Center navigation targets resolve to workspace page sections");
