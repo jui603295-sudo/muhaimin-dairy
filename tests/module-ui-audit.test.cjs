@@ -19,8 +19,10 @@ const attributes = new Map();
 const documentLike = {
   querySelector(selector) {
     if (!Object.values(audit.routes).includes(selector)) return null;
-    const match = selector.match(/^\\[([^=]+)="([^"]+)"\\]$/);
-    if (!match || !html.includes(match[1] + '="' + match[2] + '"')) return null;
+    const parts = selector.slice(1, -1).split("=");
+    const attribute = parts[0];
+    const value = parts.slice(1).join("=").replace(/^"|"$ /g, "");
+    if (!attribute || !value || !html.includes(attribute + '="' + value + '"')) return null;
     return {
       setAttribute(name, value) {
         attributes.set(selector + "::" + name, value);
@@ -29,8 +31,10 @@ const documentLike = {
   }
 };
 for (const selector of Object.values(audit.routes)) {
-  const match = selector.match(/^\\[([^=]+)="([^"]+)"\\]$/);
-  assert.ok(match && html.includes(match[1] + '="' + match[2] + '"'), "Missing real UI selector: " + selector);
+  const parts = selector.slice(1, -1).split("=");
+  const attribute = parts[0];
+  const value = parts.slice(1).join("=").replace(/^"|"$ /g, "");
+  assert.ok(attribute && value && html.includes(attribute + '="' + value + '"'), "Missing real UI selector: " + selector);
 }
 const result = audit.run(registry, documentLike);
 assert.equal(result.valid, true, JSON.stringify(result.missing));
