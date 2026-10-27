@@ -19,18 +19,22 @@ jobs:
           node-version: "20"
       - name: Check Cheese Home and TEST environment isolation
         run: node tests/cheese-home-test-guard.test.cjs
+      - name: Exercise Supabase environment isolation at runtime
+        run: node tests/supabase-env-isolation.runtime.test.cjs
+      - name: Exercise core date, phone and escaping helpers
+        run: node tests/core-data-validation.runtime.test.cjs
       - name: Parse inline JavaScript and detect duplicate IDs
         run: |
           node <<'NODE'
           const fs = require('node:fs');
           const html = fs.readFileSync('index.html', 'utf8');
-          const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/g)].map(m => m[1]);
           const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
           if (duplicates.length) throw new Error('Duplicate HTML IDs: ' + [...new Set(duplicates)].join(', '));
-          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+          const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
           let checked = 0;
           for (const [, attrs, body] of scripts) {
-            if (/\bsrc\s*=/.test(attrs) || !body.trim()) continue;
+            if (/\\bsrc\\s*=/.test(attrs) || !body.trim()) continue;
             new Function(body);
             checked++;
           }
