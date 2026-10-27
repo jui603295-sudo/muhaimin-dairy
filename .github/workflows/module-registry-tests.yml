@@ -18,3 +18,5 @@ jobs:
         run: node tests/module-ui-audit.test.cjs
       - name: Run Supabase environment isolation test
         run: node tests/supabase-environment.test.cjs
+      - name: Run Cheese Home local notebook test
+        run: node tests/cheese-home.test.cjs
