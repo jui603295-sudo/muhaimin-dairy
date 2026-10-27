@@ -1,0 +1,96 @@
+name: Validate Muhaimin HTML
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "dairy-processing-module.js"
+      - "muhaimin-logo.png"
+      - "supabase/migrations/202610240001_dairy_processing_workspace.sql"
+      - "docs/DAIRY_PROCESSING_TEST_PLAN.md"
+      - ".github/workflows/validate-settings-html.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inline-javascript-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax-check dairy processing module and verify wiring
+        run: |
+          node --check dairy-processing-module.js
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const module = fs.readFileSync('dairy-processing-module.js', 'utf8');
+          const migration = fs.readFileSync('supabase/migrations/202610240001_dairy_processing_workspace.sql', 'utf8');
+          if (!html.includes('<script src="./dairy-processing-module.js"></script>')) {
+            throw new Error('Dairy processing module script is not included in index.html.');
+          }
+          if (!fs.existsSync('muhaimin-logo.png') ||
+              !module.includes('src="muhaimin-logo.png"') ||
+              !module.includes('দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠান')) {
+            throw new Error('Original logo or dairy institution module identity is missing.');
+          }
+          if (!module.includes('ফেরত এন্ট্রি উপলভ্য স্টক বাড়ায় না')) {
+            throw new Error('Return-stock safety notice is missing.');
+          }
+          const requiredFeatures = [
+            ['date-filtered reports', 'data-dp-tab="reports"'],
+            ['CSV export', 'function exportReportCsv()'],
+            ['local audit trail', 'function recordAudit('],
+            ['validated local backup restore', 'async function importDraftFile()'],
+            ['return inspection workflow', 'data-dp-return-review'],
+            ['full report includes costs', 'নগদ হিসাব (এটি প্রকৃত লাভ নয়)'],
+            ['record editing', 'function editRecord(type,id)'],
+            ['sale quality gate', 'if(v.kind==="বিক্রয়"&&(b.quality!=="গ্রহণযোগ্য"||!b.qualityApprovedBy))'],
+            ['return quantity cap', 'if(qty>sold-returned)'],
+            ['server sync stays disabled', 'serverSync:false']
+          ];
+          for (const [name, marker] of requiredFeatures) {
+            if (!module.includes(marker)) throw new Error('Missing dairy module safety/feature check: ' + name);
+          }
+          const migrationGuards = [
+            ['RLS forced on workspace tables', 'FORCE ROW LEVEL SECURITY'],
+            ['Main Admin policy', "public.has_app_role(''main_admin'')"],
+            ['transaction stock guard', 'dairy_processing_transaction_guard'],
+            ['updated_at triggers', 'dairy_processing_touch_updated_at'],
+            ['transaction batch reassignment guard', 'A transaction cannot be reassigned to another batch'],
+            ['batch output integrity guard', 'dairy_processing_batch_output_guard'],
+            ['append-only audit table', 'REVOKE INSERT, UPDATE, DELETE ON public.dairy_processing_audit FROM authenticated'],
+            ['server-side stock view', 'dairy_processing_stock'],
+            ['legacy permissive policy cleanup', 'Remove any prior policy'],
+            ['TEST-only migration guard', 'TEST-ONLY migration']
+          ];
+          for (const [name, marker] of migrationGuards) {
+            if (!migration.includes(marker)) throw new Error('Missing migration safety guard: ' + name);
+          }
+          console.log('PASS: dairy module syntax, wiring, reports, edits, backup, audit, transaction guards, and TEST migration safety markers.');
+          NODE
+      - name: Parse and syntax-check inline JavaScript
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, subprocess, tempfile
+          html = pathlib.Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script\b([^>]*)>([\s\S]*?)</script\s*>", html, re.IGNORECASE)
+          inline = [(attrs, body) for attrs, body in scripts if not re.search(r"\bsrc\s*=", attrs, re.IGNORECASE) and body.strip()]
+          if not inline:
+              raise SystemExit("No inline JavaScript blocks found.")
+          with tempfile.TemporaryDirectory() as tmp:
+              for i, (_, body) in enumerate(inline, 1):
+                  path = pathlib.Path(tmp) / f"inline-{i}.js"
+                  path.write_text(body, encoding="utf-8")
+                  result = subprocess.run(["node", "--check", str(path)], text=True, capture_output=True)
+                  if result.returncode:
+                      print(result.stdout, end="")
+                      print(result.stderr, end="")
+                      raise SystemExit(f"JavaScript syntax check failed for inline block {i}.")
+                  print(f"PASS: inline JavaScript block {i}")
+          print(f"PASS: {len(inline)} inline JavaScript blocks parsed.")
+          PY

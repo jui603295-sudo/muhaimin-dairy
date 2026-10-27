@@ -1,0 +1,265 @@
+name: Validate Muhaimin Dairy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ["fix/runtime-js-2026-10-16"]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax-check dairy processing module
+        run: node --check dairy-processing-module.js
+      - name: Verify dairy module and original logo are wired in
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          if (!html.includes('<script src="./dairy-processing-module.js"></script>')) {
+            throw new Error('Dairy processing module script is not included in index.html.');
+          }
+          if (!fs.existsSync('muhaimin-logo.png')) {
+            throw new Error('Original Muhaimin Dairy logo asset is missing.');
+          }
+          const module = fs.readFileSync('dairy-processing-module.js', 'utf8');
+          if (!module.includes('src="muhaimin-logo.png"') ||
+              !module.includes('দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠান')) {
+            throw new Error('Dairy processing workspace must retain the original logo and module identity.');
+          }
+          NODE
+      - name: Validate HTML scripts, DOM IDs, forms, and PWA shell
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const uniqueIds = new Set(ids);
+          const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+          if (duplicates.length) throw new Error('Duplicate HTML IDs: ' + [...new Set(duplicates)].join(', '));
+
+          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+          let checkedScripts = 0;
+          for (const [, attrs, body] of scripts) {
+            if (/\bsrc\s*=/.test(attrs) || !body.trim()) continue;
+            new Function(body);
+            checkedScripts++;
+          }
+          if (!checkedScripts) throw new Error('No inline JavaScript scripts were checked.');
+
+          const inlineCode = scripts.map(([, attrs, body]) => /\bsrc\s*=/.test(attrs) ? '' : body).join('\n');
+          const referencedIds = [...new Set([...inlineCode.matchAll(/\$\(["']([A-Za-z][A-Za-z0-9_-]*)["']\)/g)].map(m => m[1]))];
+          const missingIds = referencedIds.filter(id => !uniqueIds.has(id));
+          if (missingIds.length) throw new Error('JavaScript references missing HTML IDs: ' + missingIds.join(', '));
+
+          const forms = [...html.matchAll(/<form\b[^>]*\bid=["']([^"']+)["']/gi)].map(m => m[1]);
+          const boundForms = [...inlineCode.matchAll(/(?:bindForm|bindInventoryTransaction)\(["']([^"']+)["']/g)].map(m => m[1]);
+          const missingForms = forms.filter(id => !boundForms.includes(id) && !new RegExp('\\$\\(["\\x27]' + id + '["\\x27]\\)\\.addEventListener\\(["\\x27]submit').test(inlineCode));
+          if (missingForms.length) throw new Error('Forms without a submit handler: ' + missingForms.join(', '));
+
+          // Guard offline queue behavior with the persisted Milk Collection setting.
+          const syncFn = html.match(/async function syncMilkCollectionQueue\(\)\{([\s\S]*?)\n\}/);
+          if (!syncFn || !/state\.milkCollectionSettings\?\.offline_queue_enabled===false/.test(syncFn[1])) {
+            throw new Error('Offline queue sync must stop when offline_queue_enabled is false.');
+          }
+          const collectionHandler = html.slice(html.indexOf('bindForm("collectionForm"'));
+          const networkCatch = collectionHandler.match(/if\(isMilkNetworkError\(saved\.error\)\)\{([\s\S]*?)\n  \}/);
+          if (!networkCatch || !/offline_queue_enabled===false/.test(networkCatch[1]) || networkCatch[1].indexOf('offline_queue_enabled===false') > networkCatch[1].indexOf('queueMilkCollection(')) {
+            throw new Error('Offline-disabled network failures must not be placed in the local queue.');
+          }
+          const queueSync = html.slice(html.indexOf('async function syncMilkCollectionQueue'));
+          if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html) ||
+              !/await queueMilkCollection\(payload,collectorUserId,saved\.error\)/.test(networkCatch[1]) ||
+              !/if\(MILK_QUEUE_REPLAY_ENABLED!==true\)/.test(queueSync) ||
+              queueSync.indexOf('if(MILK_QUEUE_REPLAY_ENABLED!==true)') > queueSync.indexOf('await sb\.from\("milk_collections"\)\.insert\(item\.payload\)')) {
+            throw new Error('Milk Collection queue must retain local records but block replay until TEST JWT/RLS and idempotency verification.');
+          }
+          if (!/function saveOfflineSnapshot\(userId\)/.test(html) ||
+              !/function restoreOfflineSnapshot\(userId\)/.test(html) ||
+              !/localStorage\.getItem\(OFFLINE_ADMIN_KEY\)===user\.id/.test(html)) {
+            throw new Error('Offline app access must be limited to the previously verified Main Admin on this device.');
+          }
+          if (!/id="offlineCacheEnabled"/.test(html) || !/id="saveOfflineSettings"/.test(html) ||
+              !/id="retryOfflineSync"/.test(html)) {
+            throw new Error('Settings must expose offline cache control and retry-sync actions.');
+          }
+          const offlineSettingsHandler = html.slice(html.indexOf('$("saveOfflineSettings").addEventListener'));
+          if (!/window\.confirm\("অফলাইন ক্যাশে বন্ধ করলে/.test(offlineSettingsHandler) ||
+              !/if\(!confirmed\)[\s\S]*?return;/.test(offlineSettingsHandler) ||
+              !/অপেক্ষমাণ Milk Collection সারি আলাদা আছে/.test(offlineSettingsHandler)) {
+            throw new Error('Disabling offline cache must require confirmation, preserve the pending queue, and support cancellation.');
+          }
+
+          // Queue status must not reveal another account's pending-record count.
+          const queueStatusStart = html.indexOf('async function queueMilkCollection');
+          const queueStatusEnd = html.indexOf('async function exportPendingMilkQueue');
+          const queueStatusFn = html.slice(queueStatusStart, queueStatusEnd);
+          if (!/updateMilkQueueStatus\(all\.filter\(item=>item\.user_id===userId\)\.length\)/.test(queueStatusFn) ||
+              !/updateMilkQueueStatus\(user\?pending\.filter\(item=>item\.user_id===user\.id\)\.length:0\)/.test(queueStatusFn) ||
+              !/updateMilkQueueStatus\(mine\.length\)/.test(queueStatusFn) ||
+              !/updateMilkQueueStatus\(remaining\.filter\(item=>item\.user_id===user\.id\)\.length\)/.test(queueStatusFn)) {
+            throw new Error('Pending Milk Collection queue counts must be scoped to the authenticated user.');
+          }
+
+          // Backup validation is read-only and rejects cross-user, malformed, oversized, or duplicate-ID files.
+          if (!html.includes('id="validateMilkQueueBackupFile"') ||
+              !html.includes('async function validateMilkQueueBackup()') ||
+              !/file\.size>5\*1024\*1024/.test(html) ||
+              !/backup\.user_id!==user\.id/.test(html) ||
+              !/item\.user_id!==user\.id/.test(html) ||
+              !/seen\.has\(item\.id\)/.test(html) ||
+              !html.includes('কোনো রেকর্ড আমদানি, লেখা বা সিঙ্ক করা হয়নি')) {
+            throw new Error('Milk queue backup validation must remain read-only and enforce user/ID checks.');
+          }
+
+          // Pending queue backup must be explicit, local-only, and scoped to the current authenticated user.
+          if (!/id="exportPendingMilkQueue"/.test(html) ||
+              !/async function exportPendingMilkQueue\(\)/.test(html) ||
+              !/all\.filter\(item=>item\.user_id===user\.id\)/.test(html) ||
+              !/format:"muhaimin-milk-queue-backup-v1"/.test(html) ||
+              !/type:"application\/json"/.test(html) ||
+              !/ব্যাকআপে ব্যক্তিগত কৃষক\/সংগ্রহ তথ্য থাকতে পারে/.test(html)) {
+            throw new Error('Pending Milk Collection queue backup must be user-scoped, JSON-exportable, and disclose personal-data sensitivity.');
+          }
+          const queueExportStart = html.indexOf('async function exportPendingMilkQueue');
+          const queueExportEnd = html.indexOf('$("exportPendingMilkQueue")?.addEventListener', queueExportStart);
+          const queueExportFn = html.slice(queueExportStart, queueExportEnd > queueExportStart ? queueExportEnd : undefined);
+          if (!/milkQueueAction\("getAll"\)/.test(queueExportFn) ||
+              !/updateMilkQueueStatus\(mine\.length\)/.test(queueExportFn) ||
+              !/link\.download="muhaimin-milk-queue-backup-"\+today\(\)\+"\.json"/.test(queueExportFn) ||
+              /sb\.from\(["']milk_collections["']\)\.insert/.test(queueExportFn)) {
+            throw new Error('Pending queue backup must download local records without writing them to Supabase.');
+          }
+
+          // Operational tables are not part of the local offline snapshot; disclose this rather than implying cached data.
+          const operationalLoader = html.slice(html.indexOf('async function loadOperationalRecords'));
+          if (!/if\(!navigator\.onLine\)/.test(operationalLoader) ||
+              !/এই অপারেশনাল টেবিলের তথ্য দেখানো যাচ্ছে না/.test(operationalLoader) ||
+              !/ফোনে ক্যাশ করা নেই/.test(operationalLoader)) {
+            throw new Error('Offline operational views must disclose that their records are not cached.');
+          }
+
+          // When connectivity returns while an operational view is open, refresh those online-only tables.
+          if (!/window\.addEventListener\("online",\(\)=>\{[\s\S]*?\["operations","chiller","loss","finance"\]\.some\(id=>\$\(id\)\?\.classList\.contains\("active"\)\)\)loadOperationalRecords\(\)/.test(html)) {
+            throw new Error('Operational tables must refresh after connectivity returns when an operational view is active.');
+          }
+
+          // Verify the saved Milk Collection settings affect the visible and validation paths.
+          const settingsRenderer = html.slice(html.indexOf('function renderMilkCollectionSettings'));
+          if (!/farmerScanInput\"\)\.disabled=!scannerEnabled/.test(settingsRenderer) || !/startFarmerCamera\"\)\.hidden=!scannerEnabled/.test(settingsRenderer)) {
+            throw new Error('Barcode scanner setting must disable scanner input and camera controls.');
+          }
+          const receiptRow = html.slice(html.indexOf('visibleCollections.map(x=>[dateBN(x.collection_date)'));
+          if (!/receipt_print_enabled!==false/.test(receiptRow) || !/receipt_share_enabled!==false/.test(receiptRow)) {
+            throw new Error('Receipt print/share settings must control collection receipt actions.');
+          }
+          if ((html.match(/sample_photo_required===true/g) || []).length < 2) {
+            throw new Error('Required sample photo setting must be enforced on collection and quality review.');
+          }
+          if (!/quality_reason_required!==false/.test(html)) {
+            throw new Error('Quality reason setting must affect validation.');
+          }
+
+          // Protect the two-step Milk Collection quality workflow.
+          const qualityCollection = html.slice(html.indexOf('bindForm("collectionForm"'));
+          const qualityReview = html.slice(html.indexOf('bindForm("qualityReviewForm"'), html.indexOf('function openMilkQueueDb'));
+          if (!/if\(quality==="Accepted"\)throw new Error/.test(qualityCollection)) {
+            throw new Error('Collection entry must not bypass separate quality approval.');
+          }
+          if (!/f\.quality_status==="Accepted"&&\(failed\|\|f\.smell_check==="Not Tested"\|\|f\.visual_check==="Not Tested"\|\|f\.adulteration_test==="Not Tested"\)/.test(qualityReview)) {
+            throw new Error('Quality review must block acceptance when screening is failed or incomplete.');
+          }
+          if (!/!String\(f\.tester_id\|\|""\)\.trim\(\)\|\|!f\.tested_at/.test(qualityReview) || !/quality_reviewer_user_id:reviewerUserId/.test(qualityReview)) {
+            throw new Error('Quality review must record tester/time and authenticated reviewer identity.');
+          }
+          if (!/state\.milkCollectionSettings\?\.clr_min/.test(qualityReview)) {
+            throw new Error('Quality review must enforce configured CLR bounds.');
+          }
+
+          const sw = fs.readFileSync('sw.js', 'utf8');
+          new Function(sw);
+          if (!/const CACHE_NAME = "muhaimin-v4"/.test(sw) ||
+              !/const SUPABASE_JS = "https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/.test(sw) ||
+              !/cache\.add\(SUPABASE_JS\)/.test(sw) ||
+              !/url\.href === SUPABASE_JS/.test(sw)) {
+            throw new Error('PWA service worker must cache the Supabase client needed for offline app startup.');
+          }
+          const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
+          if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
+          const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
+          const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
+          if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
+
+          // Keep the TEST execution runbook and read-only SQL preflight available and safety-scoped.
+          const runbookPath = 'docs/MILK_COLLECTION_V3_TEST_RUNBOOK.md';
+          const preflightPath = 'docs/MILK_COLLECTION_TEST_PREFLIGHT_SQL.md';
+          if (!fs.existsSync(runbookPath) || !fs.existsSync(preflightPath)) {
+            throw new Error('TEST runbook and SQL preflight documents must remain present.');
+          }
+          const runbook = fs.readFileSync(runbookPath, 'utf8');
+          const preflight = fs.readFileSync(preflightPath, 'utf8');
+          if (!/separate TEST Supabase project/i.test(runbook) ||
+              !/real-JWT/i.test(runbook) ||
+              !/MILK_QUEUE_REPLAY_ENABLED = false/.test(runbook) ||
+              !/Read-only diagnostics/i.test(preflight) ||
+              !/production project ref/i.test(preflight) ||
+              !/pg_policies/i.test(preflight) ||
+              !/stop immediately if the SQL editor is connected to that project/i.test(preflight)) {
+            throw new Error('TEST runbook or SQL preflight is missing required environment, JWT/RLS, read-only, or release-gate safeguards.');
+          }
+
+          // Keep a sanitized TEST evidence template so real-JWT/RLS work has an auditable record.
+          const evidencePath = 'docs/MILK_COLLECTION_TEST_EVIDENCE_TEMPLATE.md';
+          if (!fs.existsSync(evidencePath)) {
+            throw new Error('Milk Collection TEST evidence template is missing.');
+          }
+          const evidence = fs.readFileSync(evidencePath, 'utf8');
+          if (!/Real-JWT role authorization matrix/i.test(evidence) ||
+              !/Idempotency checks/i.test(evidence) ||
+              !/Offline backup validation checks/i.test(evidence) ||
+              !/NOT RUN/i.test(evidence) ||
+              !/Never include passwords, JWTs, service-role keys/i.test(evidence) ||
+              !/UI-hidden button is not proof of server-side authorization/i.test(evidence)) {
+            throw new Error('TEST evidence template is missing role, idempotency, backup, no-secrets, or server-side authorization safeguards.');
+          }
+
+          // Validate the offline idempotency migration as source text only; never run SQL in CI.
+          const migrationPath = 'supabase/migrations/20261023_milk_collection_idempotency.sql';
+          if (!fs.existsSync(migrationPath)) throw new Error('Milk Collection idempotency migration is missing.');
+          const migration = fs.readFileSync(migrationPath, 'utf8');
+          if (!/TEST project only/i.test(migration) ||
+              !/begin\s*;/i.test(migration) || !/commit\s*;/i.test(migration) ||
+              !/add column if not exists client_record_id uuid/i.test(migration) ||
+              !/create unique index if not exists milk_collections_client_record_id_uidx/i.test(migration) ||
+              !/where client_record_id is not null/i.test(migration) ||
+              !/real-JWT RLS tests pass/i.test(migration)) {
+            throw new Error('Milk Collection migration is missing its TEST-only, transaction, idempotency-index, or RLS safety requirements.');
+          }
+          if (!/const MILK_QUEUE_REPLAY_ENABLED = false/.test(html)) {
+            throw new Error('Offline replay must remain disabled until separate TEST acceptance passes.');
+          }
+          const samplePhotoLabel = html.match(/name="sample_photo_required"[^>]*>\s*([^<]+)/);
+          if (!/ফাইল আপলোড এখনো নেই/.test(html)) {
+            throw new Error('Milk Collection must disclose that sample photo file upload is not implemented yet.');
+          }
+
+          console.log(JSON.stringify({
+            inlineScriptsParsed: checkedScripts,
+            htmlIds: ids.length,
+            duplicateIds: 0,
+            missingDomReferences: 0,
+            formsWithHandlers: forms.length,
+            serviceWorkerParsed: true,
+            pwaShellFiles: shell.length
+          }, null, 2));
+          NODE
