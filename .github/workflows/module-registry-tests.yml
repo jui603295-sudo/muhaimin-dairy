@@ -14,3 +14,5 @@ jobs:
           node-version: 20
       - name: Run module registry tests
         run: node tests/module-registry.test.cjs
+      - name: Run module UI audit tests
+        run: node tests/module-ui-audit.test.cjs
