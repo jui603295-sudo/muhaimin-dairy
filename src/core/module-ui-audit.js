@@ -15,6 +15,8 @@
     "core.branches": '[data-page="branches"]',
     "core.farmers": '[data-page="farmers"]',
     "milk-center": '[data-page="collection"]',
+    "milk-center.home": '[data-milk-page="milkHome"]',
+    "milk-center.settings": '[data-milk-page="milkSettings"]',
     "milk-center.collection": '[data-milk-page="collection"]',
     "milk-center.payments": '[data-milk-page="payments"]',
     "milk-center.quality-batch": '[data-milk-page="operations"]',
@@ -33,6 +35,8 @@
   });
 
   const WORKSPACE_PAGES = Object.freeze({
+    "milk-center.home": "milkHome",
+    "milk-center.settings": "milkSettings",
     "milk-center.collection": "collection",
     "milk-center.payments": "payments",
     "milk-center.quality-batch": "operations",
