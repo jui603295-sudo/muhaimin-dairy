@@ -11,7 +11,7 @@ const html = fs.readFileSync(indexPath, "utf8");
 const sw = fs.readFileSync(swPath, "utf8");
 assert.ok(html.includes('<script src="./src/core/module-registry.js"></script>'));
 assert.ok(html.includes('<script src="./src/core/module-ui-audit.js"></script>'));
-assert.ok(html.includes("MuhaiminModuleUIAudit.run()"));
+assert.ok(html.includes("MuhaiminModuleUIAudit.run(window.MuhaiminModuleRegistry)"));
 assert.ok(sw.includes('"./src/core/module-registry.js"'));
 assert.ok(sw.includes('"./src/core/module-ui-audit.js"'));
 
