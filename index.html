@@ -1188,7 +1188,71 @@ function printCollectionReceipt(id){
  ];
  const popup=window.open("","_blank","width=760,height=760");
  if(!popup){toast("পপ-আপ ব্লক হয়েছে। ব্রাউজারে পপ-আপ অনুমতি দিন।");return;}
- popup.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milk Collection Receipt</title><style>body{font-family:system-ui,"Noto Sans Bengali",sans-serif;padding:24px;color:#17202a}h1,h2{text-align:center;margin:6px}p{text-align:center}.receipt{max-width:720px;margin:auto;border:1px solid #cbd5e1;padding:20px;border-radius:12px}table{width:100%;border-collapse:collapse;margin-top:18px}td{padding:9px;border-bottom:1px solid #e5e7eb}td:first-child{font-weight:700;width:42%}.note{font-size:12px;margin-top:18px}@media print{button{display:none}body{padding:0}.receipt{border:0}}</style></head><body><div class="receipt"><h1>'+esc(state.settings?.business_name||"মুহাইমিন ডেইরি")+'</h1><h2>দুধ সংগ্রহ রসিদ</h2><p>Milk Collection Receipt</p><table>'+rows.map(row=>'<tr><td>'+esc(row[0])+'</td><td>'+esc(row[1])+'</td></tr>').join("")+'</table><p class="note">এই রসিদ সংগ্রহের রেকর্ডের ভিত্তিতে তৈরি। মান যাচাই সম্পন্ন না হলে Accepted দুধ হিসেবে গণনা করবেন না।</p><p><button onclick="window.print()">প্রিন্ট / Save as PDF</button></p></div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');
+ popup.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Milk Collection Receipt</title><style>body{font-family:system-ui,"Noto Sans Bengali",sans-serif;padding:24px;color:#17202a}h1,h2{text-align:center;margin:6px}p{text-align:center}.receipt{max-width:720px;margin:auto;border:1px solid #cbd5e1;padding:20px;border-radius:12px}table{width:100%;border-collapse:collapse;margin-top:18px}td{padding:9px;border-bottom:1px solid #e5e7eb}td:first-child{font-weight:700;width:42%}.note{font-size:12px;margin-top:18px}@media print{button{display:none}body{padding:0}.receipt{border:0}}</style></head><body><div class="receipt"><h1>'+esc(state.settings?.business_name||"মুহাইমিন ডেইরি")+'</h1><h2>দুধ সংগ্রহ রসিদ</h2><p>Milk Collection Receipt</p><table>'+rows.map(row=>'<tr><td>'+esc(row[0])+'</td><td>'+esc(row[1])+'</td></tr>').join("")+'</table><p class="note">এই রসিদ সংগ্রহের রেকর্ডের ভিত্তিতে তৈরি। মান যাচাই সম্পন্ন না হলে Accepted দুধ হিসেবে গণনা করবেন না।</p><p><button onclick="window.print()">প্রিন্ট / Save as PDF</button></p></div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script>
+<style id="futureAiFoundationStyles">
+.future-ai-panel{border:1px dashed #0f766e;background:var(--bg);margin:12px 0;padding:12px;border-radius:12px}
+.future-ai-panel h4{margin:0 0 6px;color:var(--green)}
+.future-ai-status{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;background:#fef3c7;color:#92400e;font-weight:700}
+.future-ai-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.future-ai-item{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg)}
+.future-ai-item strong{display:block;margin-bottom:4px}
+</style>
+
+<script id="futureAiFoundation">
+/*
+ * Future AI foundation (UI/registry scaffold only).
+ * Deliberately does not call an AI provider, send data, or enable paid services.
+ * Provider secrets must be server-side; activation requires a separately tested backend,
+ * Main Admin authorization, consent/data-scope controls, audit logging, and cost limits.
+ */
+(()=>{
+ const modules=[
+  ["home","হোম","Home"],["branches","কেন্দ্র","Branches"],["farmers","কৃষক","Farmers"],
+  ["collection","দুধ সংগ্রহ","Milk Collection"],["payments","পেমেন্ট","Payments"],
+  ["operations","দুধের মান ও ব্যাচ","Milk Quality & Batch"],["chiller","চিলার লগ","Chiller Log"],
+  ["loss","দুধের হিসাব/ক্ষতি","Milk Loss & Reconciliation"],["finance","খরচ ও বিক্রয়","Finance & Sales"],
+  ["cheeseHome","চিজ হোম","Cheese Home"],["feed","ফিড","Feed"],["vet","ভেটেরিনারি","Veterinary"],
+  ["agro","কৃষি","Agro"],["reports","রিপোর্ট","Reports"],["ledger","ফার্মার লেজার","Farmer Ledger"],
+  ["settings","সেটিংস","Settings"],["backup","ব্যাকআপ","Backup"],["audit","অডিট লগ","Audit Log"]
+ ];
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const english=()=>typeof lang==="function"&&lang()==="en";
+ function card(pageId){
+  const isEn=english(),m=modules.find(x=>x[0]===pageId);
+  const title=m?(isEn?m[2]:m[1]):pageId;
+  const el=document.createElement("aside");el.className="future-ai-panel";el.dataset.futureAiModule=pageId;
+  el.innerHTML='<h4>✨ '+(isEn?'Future AI':'ফিউচার AI')+' · '+esc(title)+'</h4>'+
+   '<p class="small">'+(isEn?'Prepared for future AI services. No AI provider is connected yet; this panel does not send data or activate a service.':'ভবিষ্যৎ AI সেবার জন্য প্রস্তুতির অংশ। এখনো কোনো AI provider সংযুক্ত নেই; এই প্যানেল তথ্য পাঠায় না বা AI চালু করে না।')+'</p>'+
+   '<span class="future-ai-status">'+(isEn?'PLANNED · DISABLED':'পরিকল্পিত · বন্ধ')+'</span> '+
+   '<button type="button" class="btn" data-future-ai-settings>'+(isEn?'AI setup & safeguards':'AI সেটআপ ও নিরাপত্তা')+'</button>';
+  el.querySelector("[data-future-ai-settings]").addEventListener("click",()=>{
+   const b=document.querySelector('#nav [data-page="settings"]');if(b)b.click();
+   const target=document.getElementById("futureAiManagement");
+   if(target)target.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  return el;
+ }
+ function mount(){
+  document.querySelectorAll("section.page").forEach(page=>{
+   if(page.querySelector(":scope > .future-ai-panel"))return;
+   page.appendChild(card(page.id||"module"));
+  });
+  const settings=document.getElementById("settings");
+  if(settings&&!document.getElementById("futureAiManagement")){
+   const panel=document.createElement("div");panel.className="card";panel.id="futureAiManagement";
+   panel.innerHTML='<h3>✨ Future AI Center / ফিউচার AI সেন্টার</h3>'+
+    '<p class="small">'+(english()?'Module-by-module AI readiness registry. Every module can be integrated later without replacing its core workflow.':'প্রতিটি মডিউলের AI-প্রস্তুতি তালিকা। মূল কার্যপ্রবাহ না বদলে ভবিষ্যতে আলাদাভাবে AI সংযুক্ত করার ভিত্তি।')+'</p>'+
+    '<div class="future-ai-list">'+modules.map(m=>'<div class="future-ai-item"><strong>'+esc(english()?m[2]:m[1])+'</strong><span class="future-ai-status">'+(english()?'PLANNED · DISABLED':'পরিকল্পিত · বন্ধ')+'</span></div>').join("")+'</div>'+
+    '<p class="small">'+(english()?'Before activation: server-side provider adapter, secrets outside the browser, Main Admin authorization, explicit data scope, audit trail, usage/cost limits, fallback without AI, and TEST-only verification are required.':'চালুর আগে সার্ভার-সাইড provider adapter, ব্রাউজারের বাইরে গোপন কী, Main Admin অনুমতি, তথ্য ব্যবহারের সীমা, Audit Log, ব্যবহার/খরচ সীমা, AI ছাড়া স্বাভাবিক কাজ এবং TEST-এ যাচাই বাধ্যতামূলক।')+'</p>'+
+    '<p class="small">'+(english()?'Current status: scaffold only. No model is connected and no AI request is sent.':'বর্তমান অবস্থা: প্রস্তুতিমূলক কাঠামো মাত্র। কোনো মডেল সংযুক্ত নেই এবং কোনো AI অনুরোধ পাঠানো হয় না।')+'</p>';
+   const first=settings.firstElementChild;if(first)first.after(panel);else settings.appendChild(panel);
+  }
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+ const language=document.getElementById("language");if(language)language.addEventListener("change",()=>{document.querySelectorAll(".future-ai-panel").forEach(p=>{const id=p.dataset.futureAiModule;const fresh=card(id);p.replaceWith(fresh);});const center=document.getElementById("futureAiManagement");if(center){center.remove();mount();}});
+})();
+</script>
+</body></html>');
  popup.document.close();
 }
 async function shareCollectionReceipt(id){
