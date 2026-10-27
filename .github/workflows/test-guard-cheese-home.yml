@@ -19,6 +19,10 @@ jobs:
           node-version: "20"
       - name: Check Cheese Home and TEST environment isolation
         run: node tests/cheese-home-test-guard.test.cjs
+      - name: Exercise Supabase environment isolation at runtime
+        run: node tests/supabase-env-isolation.runtime.test.cjs
+      - name: Exercise core date, phone and escaping helpers
+        run: node tests/core-data-validation.runtime.test.cjs
       - name: Parse inline JavaScript and detect duplicate IDs
         run: |
           node <<'NODE'
