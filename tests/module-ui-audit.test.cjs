@@ -44,6 +44,8 @@ assert.equal(result.valid, true, JSON.stringify(result.missing));
 assert.ok(result.checked >= 15);
 assert.equal(attributes.get('[data-milk-page="cheeseHome"]::data-module-id'), "milk-center.cheese-home");
 assert.equal(attributes.get('[data-milk-page="cheeseHome"]::data-module-status'), "current");
+assert.equal(attributes.get('[data-milk-page="milkHome"]::data-module-id'), "milk-center.home");
+assert.equal(attributes.get('[data-milk-page="milkSettings"]::data-module-id'), "milk-center.settings");
 
 const missingRoute = audit.run(registry, { querySelector: () => null });
 assert.equal(missingRoute.valid, false);
