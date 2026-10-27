@@ -2275,6 +2275,7 @@ async function startApp() {
   }
 
   localStorage.setItem(OFFLINE_ADMIN_KEY,user.id);
+  renderCheeseLeads();
   loadGeneralSettingsDraft();
   $("login").classList.add("hidden");
   $("accessGate").classList.add("hidden");
