@@ -1,0 +1,29 @@
+name: Milk Workspace Navigation Checks
+on:
+  pull_request:
+  push:
+    branches:
+      - fix/login-js-syntax-2026-10-16
+jobs:
+  milk-workspace-navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify Milk Center navigation and visibility
+        run: node tests/milk-workspace-navigation.test.cjs
+      - name: Check inline JavaScript syntax
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)];
+          for (const [index, match] of scripts.entries()) {
+            const source = match[1].trim();
+            if (!source) continue;
+            new Function(source);
+            process.stdout.write('PASS inline script ' + (index + 1) + '\\n');
+          }
+          NODE
