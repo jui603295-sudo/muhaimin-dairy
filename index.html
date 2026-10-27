@@ -102,6 +102,7 @@ body.module-detail-mode #nav{display:none!important}body.module-detail-mode .mod
   <button type="button" data-milk-page="chiller">🌡️ চিলার লগ</button>
   <button type="button" data-milk-page="loss">⚖️ দুধের হিসাব/ক্ষতি</button>
   <button type="button" data-milk-page="finance">💰 খরচ ও বিক্রয়</button>
+  <button type="button" data-milk-page="cheeseHome">🧀 চিজ হোম</button>
   <button type="button" data-milk-page="milkSettings">⚙️ সেটিংস</button>
  </div>
 </div>
@@ -149,6 +150,7 @@ body.module-detail-mode #nav{display:none!important}body.module-detail-mode .mod
   <button type="button" class="milk-workspace-tile" data-milk-page="loss"><span>⚖️</span><strong>দুধের হিসাব/ক্ষতি</strong><small>স্টক মিল ও পার্থক্য</small></button>
   <button type="button" class="milk-workspace-tile" data-milk-page="finance"><span>💰</span><strong>খরচ ও বিক্রয়</strong><small>ব্যয়, বিক্রয় ও প্রাপ্য</small></button>
   <button type="button" class="milk-workspace-tile milk-workspace-settings" data-milk-page="milkSettings"><span>⚙️</span><strong>দুধ সংগ্রহ সেটিংস</strong><small>মান, স্ক্যানার, রসিদ ও ভবিষ্যৎ সুবিধা</small></button>
+  <button type="button" class="milk-workspace-tile" data-milk-page="cheeseHome"><span>🧀</span><strong>চিজ হোম</strong><small>দুগ্ধজাত পণ্য উৎপাদক অংশীদার ও দুধ সরবরাহ পরিকল্পনা</small></button>
  </div>
  <div class="card milk-future-options milk-products-roadmap">
   <h4>🤝 দুগ্ধজাত পণ্য উৎপাদনকারী প্রতিষ্ঠানের জন্য দুধ সরবরাহ ও সহযোগিতা</h4>
@@ -177,6 +179,34 @@ body.module-detail-mode #nav{display:none!important}body.module-detail-mode .mod
   <p class="small">পরবর্তী পর্যায়ে: কৃষক QR/বারকোড, অফলাইন সারি ও নিরাপদ পুনঃসিঙ্ক, ডুপ্লিকেট রোধ, চিলার সীমা সতর্কতা, ল্যাব ফল ও মান-অনুমোদন, রসিদ/PDF/শেয়ার, দৈনিক মিল-ক্ষতি রিপোর্ট, খরচ-লাভ বিশ্লেষণ, স্কেল/ফ্লো-মিটার সংযোগ, ভূমিকা-ভিত্তিক অনুমতি, ব্যাকআপ/রিস্টোর, অডিট ট্রেইল এবং সংস্করণভিত্তিক সেটিংস। প্রতিটি সুবিধা আলাদাভাবে চালু/বন্ধ করার নিয়ন্ত্রণ থাকবে। অফলাইন সিঙ্ক ও হার্ডওয়্যার সংযোগ যাচাই শেষ না হওয়া পর্যন্ত বন্ধ থাকবে।</p>
  </div>
 </div></section>
+<section id="cheeseHome" class="page">
+ <div class="card milk-workspace-home">
+  <h3>🧀 চিজ হোম — দুগ্ধজাত পণ্য উৎপাদক সহযোগিতা</h3>
+  <p class="small">বাইরের পনির/ছানা, দই, ঘি/মাখন, পাস্তুরিত দুধ ও দুগ্ধপানীয় উৎপাদক প্রতিষ্ঠানের সঙ্গে কাঁচা দুধ সরবরাহের সম্ভাব্য সমন্বয়ের জন্য। মুহাইমিন নিজে এসব পণ্য উৎপাদন করে—এমন দাবি নয়।</p>
+  <div class="milk-workspace-grid supplier-type-grid" role="list" aria-label="সম্ভাব্য ক্রেতা ও সহযোগী প্রতিষ্ঠানের ধরন">
+   <div class="milk-workspace-tile" role="listitem"><span>🧀</span><strong>পনির ও ছানা উৎপাদক</strong><small>দুধের চাহিদা ও মানের শর্ত</small></div>
+   <div class="milk-workspace-tile" role="listitem"><span>🥣</span><strong>দই উৎপাদক</strong><small>দৈনিক/সাপ্তাহিক সরবরাহ পরিকল্পনা</small></div>
+   <div class="milk-workspace-tile" role="listitem"><span>🧈</span><strong>ঘি ও মাখন উৎপাদক</strong><small>পরিমাণ, CLR ও গ্রহণের শর্ত</small></div>
+   <div class="milk-workspace-tile" role="listitem"><span>🥛</span><strong>পাস্তুরিত দুধ উৎপাদক</strong><small>প্রক্রিয়াজাতকারী প্রতিষ্ঠানে সরবরাহ</small></div>
+   <div class="milk-workspace-tile" role="listitem"><span>🥤</span><strong>দুগ্ধপানীয় উৎপাদক</strong><small>লাচ্ছি/মিল্কশেকের চাহিদা</small></div>
+   <div class="milk-workspace-tile" role="listitem"><span>🍮</span><strong>দুধের মিষ্টান্ন উৎপাদক</strong><small>সম্ভাব্য ব্যবসায়িক যোগাযোগ</small></div>
+  </div>
+  <h4>📋 ভবিষ্যৎ ব্যবস্থাপনা সুবিধা</h4>
+  <p class="small">প্রতিষ্ঠান, চাহিদা, মানের শর্ত, ব্যাচ, চালান, পাওনা, পিকআপ ও অভিযোগ ব্যবস্থাপনা—এসব সার্ভারভিত্তিক সুবিধা TEST ডেটাবেস ও অনুমতি যাচাইয়ের পর আলাদাভাবে চালু করতে হবে।</p>
+  <div class="card">
+   <h4>📇 সম্ভাব্য ক্রেতা/সহযোগী যোগাযোগ খাতা — স্থানীয় ড্রাফট</h4>
+   <p class="small">তথ্য শুধু এই ব্রাউজার/ফোনে থাকবে; Supabase বা অন্য ডিভাইসে সিঙ্ক হয় না। সার্ভার-সংরক্ষিত ব্যবসায়িক রেকর্ড হিসেবে ব্যবহার করবেন না।</p>
+   <form id="cheeseLeadForm">
+    <div class="row"><div><label>প্রতিষ্ঠান/ক্রেতার নাম<input name="name" maxlength="120" required></label></div><div><label>প্রতিষ্ঠানের ধরন<select name="kind" required><option>পনির/ছানা</option><option>দই</option><option>ঘি/মাখন</option><option>পাস্তুরিত দুধ</option><option>দুগ্ধপানীয়</option><option>মিষ্টান্ন</option><option>অন্যান্য</option></select></label></div></div>
+    <div class="row"><div><label>যোগাযোগের ব্যক্তি<input name="contact" maxlength="100"></label></div><div><label>মোবাইল<input name="phone" type="tel" inputmode="tel" maxlength="24" placeholder="01XXXXXXXXX"></label></div></div>
+    <div class="row"><div><label>সম্ভাব্য চাহিদা (লিটার/দিন)<input name="liters" type="number" min="0" max="10000000" step="0.01" value="0" required></label></div><div><label>প্রয়োজনীয় CLR (যদি জানা থাকে)<input name="clr" type="number" min="0" max="50" step="0.1"></label></div></div>
+    <label>নোট<textarea name="notes" maxlength="1000" rows="2"></textarea></label>
+    <div class="row"><button class="btn primary" type="submit">ড্রাফট যোগাযোগ সংরক্ষণ</button><button class="btn" type="reset">ফর্ম খালি করুন</button></div>
+   </form>
+   <p id="cheeseLeadStatus" class="small" role="status">স্থানীয় ড্রাফট তালিকা লোড হয়নি।</p><div class="tablewrap" id="cheeseLeadTable"></div>
+  </div>
+ </div>
+</section>
 <section id="collection" class="page">
 <section id="supplier-cooperation-plan" class="card" aria-labelledby="supplierPlanTitle">
  <h3 id="supplierPlanTitle">🤝 মুহাইমিনের দুগ্ধ-প্রক্রিয়াজাতকারী সরবরাহ সহযোগিতা</h3>
@@ -439,11 +469,29 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 <section id="audit" class="page"><div class="card"><h3 data-i18n="auditTitle">🧾 অডিট লগ</h3><p class="small" data-i18n="auditInfo">এই ব্রাউজারের স্থানীয় তালিকা সার্ভার-সুরক্ষিত লগের বিকল্প নয়।</p><div id="auditList"></div></div><div class="card"><h3>সার্ভার অডিট লগ / Server Audit Trail</h3><p class="small">দুধ সংগ্রহের INSERT/UPDATE/DELETE ইতিহাস দেখতে Test Supabase migration ও Main Admin অনুমতি লাগবে।</p><button type="button" class="btn" id="refreshServerAudit">সার্ভার লগ রিফ্রেশ</button><div id="serverAuditList" class="tablewrap"></div></div></section>
 </main></div>
 <div id="toast" role="status"></div>
+<script>
+"use strict";
+// TEST config is local-only; missing/invalid config blocks startup instead of falling back to Production.
+const MUHAIMIN_ENV = new URLSearchParams(window.location.search).get("env") === "test" ? "test" : "production";
+if (MUHAIMIN_ENV === "test") document.write('<script src="./src/core/supabase-test-config.js"><\\/script>');
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
-const SUPABASE_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+const MUHAIMIN_TEST_CONFIG = window.MUHAIMIN_TEST_SUPABASE_CONFIG;
+const MUHAIMIN_PRODUCTION_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
+const MUHAIMIN_PRODUCTION_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+const MUHAIMIN_TEST_URL = typeof MUHAIMIN_TEST_CONFIG?.url === "string" ? MUHAIMIN_TEST_CONFIG.url.replace(/\\/+$/, "") : "";
+const MUHAIMIN_TEST_KEY = typeof MUHAIMIN_TEST_CONFIG?.anonKey === "string" ? MUHAIMIN_TEST_CONFIG.anonKey.trim() : "";
+if (MUHAIMIN_ENV === "test" && (!MUHAIMIN_TEST_CONFIG ||
+    !/^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/i.test(MUHAIMIN_TEST_URL) ||
+    MUHAIMIN_TEST_URL === MUHAIMIN_PRODUCTION_URL ||
+    !MUHAIMIN_TEST_KEY || MUHAIMIN_TEST_KEY === MUHAIMIN_PRODUCTION_KEY)) {
+  document.body.innerHTML = '<main><section class="card"><h2>TEST Supabase কনফিগারেশন অনুপস্থিত বা অনিরাপদ</h2><p>Production URL/key দিয়ে TEST চালানো যাবে না। আলাদা TEST project URL ও anon/publishable key দিয়ে স্থানীয় src/core/supabase-test-config.js ফাইল তৈরি করুন।</p></section></main>';
+  throw new Error("TEST environment blocked: distinct TEST Supabase URL and key are required.");
+}
+const SUPABASE_URL = MUHAIMIN_ENV === "test" ? MUHAIMIN_TEST_URL : MUHAIMIN_PRODUCTION_URL;
+const SUPABASE_PUBLISHABLE_KEY = MUHAIMIN_ENV === "test" ? MUHAIMIN_TEST_KEY : MUHAIMIN_PRODUCTION_KEY;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = id => document.getElementById(id);
 const state = {
@@ -2211,6 +2259,7 @@ async function startApp() {
   }
 
   localStorage.setItem(OFFLINE_ADMIN_KEY,user.id);
+  renderCheeseLeads();
   loadGeneralSettingsDraft();
   $("login").classList.add("hidden");
   $("accessGate").classList.add("hidden");
@@ -2243,6 +2292,49 @@ $("accessGateLogout").onclick=async()=>{
   try { await sb.auth.signOut(); location.reload(); }
   catch(error) { $("accessGateMessage").textContent=error.message || String(error); }
 };
+// Cheese Home local-only prospect notebook; it does not sync to the server.
+const CHEESE_LEADS_KEY = "muhaimin-cheese-leads-v1:";
+function cheeseLeadsStorageKey(){
+  const userId=localStorage.getItem(OFFLINE_ADMIN_KEY);
+  return userId ? CHEESE_LEADS_KEY+userId : CHEESE_LEADS_KEY+"unverified";
+}
+function cheeseEscape(value){
+  return String(value==null?"":value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+function readCheeseLeads(){
+  try { const value=JSON.parse(localStorage.getItem(cheeseLeadsStorageKey())||"[]"); return Array.isArray(value)?value.filter(x=>x&&typeof x.name==="string"):[]; }
+  catch(_){ return []; }
+}
+function renderCheeseLeads(){
+  const table=$("cheeseLeadTable"),status=$("cheeseLeadStatus");
+  if(!table||!status)return;
+  const leads=readCheeseLeads();
+  status.textContent=leads.length+"টি স্থানীয় ড্রাফট যোগাযোগ। সার্ভারে সিঙ্ক হয়নি।";
+  if(!leads.length){table.innerHTML='<p class="small">এখনো কোনো যোগাযোগ সংরক্ষিত নেই।</p>';return;}
+  table.innerHTML='<table><thead><tr><th>প্রতিষ্ঠান</th><th>ধরন/চাহিদা</th><th>যোগাযোগ</th><th>নোট</th><th>কাজ</th></tr></thead><tbody>'+
+    leads.map((lead,index)=>{const phone=String(lead.phone||"").replace(/[^0-9+]/g,"");
+      return '<tr><td><strong>'+cheeseEscape(lead.name)+'</strong><br>'+cheeseEscape(lead.kind||"")+'</td><td>'+cheeseEscape(lead.liters||0)+' L/দিন'+(lead.clr!==""&&lead.clr!=null?'<br>CLR '+cheeseEscape(lead.clr):"")+'</td><td>'+cheeseEscape(lead.contact||"")+(phone?'<br><a href="tel:'+cheeseEscape(phone)+'">📞 '+cheeseEscape(lead.phone)+'</a>':"")+'</td><td>'+cheeseEscape(lead.notes||"")+'</td><td><button type="button" class="btn danger" data-cheese-delete="'+index+'">মুছুন</button></td></tr>';
+    }).join("")+'</tbody></table>';
+}
+const cheeseLeadForm=$("cheeseLeadForm");
+if(cheeseLeadForm){
+ cheeseLeadForm.addEventListener("submit",event=>{
+  event.preventDefault(); const data=new FormData(cheeseLeadForm);
+  const lead={name:String(data.get("name")||"").trim(),kind:String(data.get("kind")||""),contact:String(data.get("contact")||"").trim(),phone:String(data.get("phone")||"").trim(),liters:Number(data.get("liters")||0),clr:data.get("clr")===""?"":Number(data.get("clr")),notes:String(data.get("notes")||"").trim(),created_at:new Date().toISOString()};
+  if(!lead.name||!Number.isFinite(lead.liters)||lead.liters<0||(lead.clr!==""&&(!Number.isFinite(lead.clr)||lead.clr<0||lead.clr>50))){$("cheeseLeadStatus").textContent="তথ্য যাচাই করুন; ড্রাফট সংরক্ষণ করা হয়নি।";return;}
+  const leads=readCheeseLeads();leads.unshift(lead);
+  try{localStorage.setItem(cheeseLeadsStorageKey(),JSON.stringify(leads));cheeseLeadForm.reset();renderCheeseLeads();$("cheeseLeadStatus").textContent="স্থানীয় ড্রাফট সংরক্ষিত হয়েছে; সার্ভারে সিঙ্ক হয়নি।";}
+  catch(_){$("cheeseLeadStatus").textContent="ফোনের ব্রাউজারে সংরক্ষণ ব্যর্থ হয়েছে। স্টোরেজ পরীক্ষা করুন।";}
+ });
+ $("cheeseLeadTable")?.addEventListener("click",event=>{
+  const button=event.target.closest("[data-cheese-delete]");if(!button)return;
+  const index=Number(button.getAttribute("data-cheese-delete"));const leads=readCheeseLeads();
+  if(!Number.isInteger(index)||index<0||index>=leads.length)return;
+  leads.splice(index,1);try{localStorage.setItem(cheeseLeadsStorageKey(),JSON.stringify(leads));renderCheeseLeads();}catch(_){$("cheeseLeadStatus").textContent="মুছতে গিয়ে স্থানীয় স্টোরেজে সমস্যা হয়েছে।";}
+ });
+}
+renderCheeseLeads();
+
 setToday();
 (async()=>{
   try { const result=await sb.auth.getSession(); if(result.data && result.data.session)await startApp(); }
