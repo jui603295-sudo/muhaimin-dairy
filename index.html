@@ -473,7 +473,7 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 "use strict";
 // TEST config is local-only; missing/invalid config blocks startup instead of falling back to Production.
 const MUHAIMIN_ENV = new URLSearchParams(window.location.search).get("env") === "test" ? "test" : "production";
-if (MUHAIMIN_ENV === "test") document.write('<script src="./src/core/supabase-test-config.js"><\\/script>');
+if (MUHAIMIN_ENV === "test") document.write('<script src="./src/core/supabase-test-config.js"><\/script>');
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -481,10 +481,10 @@ if (MUHAIMIN_ENV === "test") document.write('<script src="./src/core/supabase-te
 const MUHAIMIN_TEST_CONFIG = window.MUHAIMIN_TEST_SUPABASE_CONFIG;
 const MUHAIMIN_PRODUCTION_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
 const MUHAIMIN_PRODUCTION_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
-const MUHAIMIN_TEST_URL = typeof MUHAIMIN_TEST_CONFIG?.url === "string" ? MUHAIMIN_TEST_CONFIG.url.replace(/\\/+$/, "") : "";
+const MUHAIMIN_TEST_URL = typeof MUHAIMIN_TEST_CONFIG?.url === "string" ? MUHAIMIN_TEST_CONFIG.url.replace(/\/+$/, "") : "";
 const MUHAIMIN_TEST_KEY = typeof MUHAIMIN_TEST_CONFIG?.anonKey === "string" ? MUHAIMIN_TEST_CONFIG.anonKey.trim() : "";
 if (MUHAIMIN_ENV === "test" && (!MUHAIMIN_TEST_CONFIG ||
-    !/^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/i.test(MUHAIMIN_TEST_URL) ||
+    !/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(MUHAIMIN_TEST_URL) ||
     MUHAIMIN_TEST_URL === MUHAIMIN_PRODUCTION_URL ||
     !MUHAIMIN_TEST_KEY || MUHAIMIN_TEST_KEY === MUHAIMIN_PRODUCTION_KEY)) {
   document.body.innerHTML = '<main><section class="card"><h2>TEST Supabase কনফিগারেশন অনুপস্থিত বা অনিরাপদ</h2><p>Production URL/key দিয়ে TEST চালানো যাবে না। আলাদা TEST project URL ও anon/publishable key দিয়ে স্থানীয় src/core/supabase-test-config.js ফাইল তৈরি করুন।</p></section></main>';
