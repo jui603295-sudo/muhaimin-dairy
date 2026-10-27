@@ -17,4 +17,14 @@ assert.ok(css.includes("overflow-x:auto"), "Milk Center navigation should scroll
 assert.ok(css.includes("overscroll-behavior-x:contain"), "Horizontal navigation should contain overscroll");
 assert.ok(html.includes('data-milk-page="cheeseHome"'), "Cheese Home must remain reachable from Milk Center");
 assert.ok(html.includes('<section id="cheeseHome" class="page">'), "Cheese Home page must exist");
-console.log("PASS: Milk Center active-page and mobile navigation checks");
+
+const targets = [...html.matchAll(/data-milk-page="([^"]+)"/g)].map(match => match[1]);
+for (const target of new Set(targets)) {
+  assert.ok(
+    html.includes('<section id="' + target + '" class="page"') ||
+      html.includes('<section id="' + target + '" class="page active"'),
+    "Every Milk Center navigation target must resolve to a page section: " + target
+  );
+}
+
+console.log("PASS: Milk Center active-page, mobile navigation, and target mapping checks");
