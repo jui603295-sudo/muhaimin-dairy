@@ -47,6 +47,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 
 body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav .milk-workspace-nav-links{display:none!important}body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav{position:relative;top:auto;z-index:2;padding:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav>strong{margin:0 auto 0 0}body.milk-center-mode.milk-workspace-detail #milkWorkspaceNav button{min-height:42px;padding:10px 12px;border-radius:10px;font-weight:700}body.milk-center-mode.milk-workspace-detail .page.active{min-width:0}body.milk-center-mode.milk-workspace-detail .page.active .card{max-width:100%}body.milk-center-mode.milk-workspace-detail button:focus-visible{outline:3px solid #0f766e;outline-offset:2px}
 body.module-detail-mode #nav{display:none!important}body.module-detail-mode .module-home-return{display:block;min-height:44px;margin:0 0 12px;padding:10px 14px;border-radius:10px;font-weight:700}body.module-detail-mode .page.active{max-width:100%}body.module-detail-mode .page.active .card{max-width:100%}body.module-detail-mode button:focus-visible{outline:3px solid #0f766e;outline-offset:2px}
+.feed-finance-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--border,#ddd)}.feed-finance-row:last-child{border-bottom:0}
 </style>
 <style id="milkWorkspaceHorizontalLayout">#milkHome .milk-workspace-grid{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}#milkHome .milk-workspace-grid>.milk-workspace-tile{flex:0 0 clamp(138px,42vw,180px);width:clamp(138px,42vw,180px);min-width:138px;scroll-snap-align:start}#milkHome .milk-workspace-grid>.milk-workspace-tile:focus-visible{outline:3px solid var(--green);outline-offset:2px}#milkHome .milk-workspace-grid>.milk-workspace-tile.active{border-color:var(--green);background:#e3f5f1;box-shadow:0 0 0 1px #0f766e20}
 /* Milk Center navigation: one active workspace page and touch-friendly horizontal menus. */
@@ -330,8 +331,16 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
     <div><label data-i18n="feedPurchasePrice">Purchase Price/kg<input name="purchase_price_per_kg" type="number" step=".01" value="50"></label></div>
    </div>
    <div class="row">
-    <div><label data-i18n="feedSupplier">Supplier<input name="supplier_name"></label></div>
-    <div><label data-i18n="feedPaid">Paid Amount<input name="paid_amount" type="number" step=".01"></label></div>
+    <div><label data-i18n="feedSupplier">Supplier / Farmer<input name="supplier_name" required></label></div>
+    <div><label data-i18n="feedPartyPhone">Mobile number<input name="supplier_phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedPartyPhoto">Farmer / supplier photo<input name="party_photo" type="file" accept="image/*" capture="environment"></label><img id="feedPurchasePhotoPreview" class="hidden" alt="Supplier photo preview" style="max-width:120px;border-radius:8px"></div>
+    <div><label data-i18n="feedPaymentMode">Payment mode<select name="payment_method" id="feedPurchasePaymentMode"><option value="cash" data-en-label="Cash (fully paid)" data-bn-label="নগদ (সম্পূর্ণ পরিশোধ)">Cash (fully paid)</option><option value="credit" data-en-label="Credit (due)" data-bn-label="বাকি">Credit (due)</option><option value="partial" data-en-label="Partial payment" data-bn-label="আংশিক পরিশোধ">Partial payment</option></select></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedPaid">Paid Amount<input name="paid_amount" type="number" min="0" step=".01" value="0"></label></div>
+    <div><button type="button" class="btn" id="captureFeedPurchaseLocation" data-i18n="feedCaptureLocation">📍 Capture live location</button><p class="small" id="feedPurchaseLocationStatus" aria-live="polite"></p><input type="hidden" name="supplier_latitude"><input type="hidden" name="supplier_longitude"></div>
    </div>
    <button class="btn primary" data-i18n="feedSavePurchase">Save Purchase</button>
   </form>
@@ -349,12 +358,21 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
     <div><label data-i18n="feedSalePrice">Sale Price/kg<input name="sale_price_per_kg" type="number" step=".01" value="50"></label></div>
    </div>
    <div class="row">
-    <div><label data-i18n="feedCustomer">Customer<input name="customer_name"></label></div>
-    <div><label data-i18n="feedPaid">Paid Amount<input name="paid_amount" type="number" step=".01"></label></div>
+    <div><label data-i18n="feedCustomer">Customer / Farmer<input name="customer_name" required></label></div>
+    <div><label data-i18n="feedPartyPhone">Mobile number<input name="customer_phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedPartyPhoto">Buyer / customer photo<input name="party_photo" type="file" accept="image/*" capture="environment"></label><img id="feedSalePhotoPreview" class="hidden" alt="Buyer photo preview" style="max-width:120px;border-radius:8px"></div>
+    <div><label data-i18n="feedPaymentMode">Payment mode<select name="payment_method" id="feedSalePaymentMode"><option value="cash" data-en-label="Cash (fully paid)" data-bn-label="নগদ (সম্পূর্ণ পরিশোধ)">Cash (fully paid)</option><option value="credit" data-en-label="Credit (due)" data-bn-label="বাকি">Credit (due)</option><option value="partial" data-en-label="Partial payment" data-bn-label="আংশিক পরিশোধ">Partial payment</option></select></label></div>
+   </div>
+   <div class="row">
+    <div><label data-i18n="feedPaid">Paid Amount<input name="paid_amount" type="number" min="0" step=".01" value="0"></label></div>
+    <div><button type="button" class="btn" id="captureFeedSaleLocation" data-i18n="feedCaptureLocation">📍 Capture live location</button><p class="small" id="feedSaleLocationStatus" aria-live="polite"></p><input type="hidden" name="customer_latitude"><input type="hidden" name="customer_longitude"></div>
    </div>
    <button class="btn primary" data-i18n="feedSaveSale">Save Sale</button>
   </form>
  </div>
+ <div class="card"><h3 data-i18n="feedFinanceTitle">📊 Feed income, expense & due reports</h3><p class="small" data-i18n="feedFinanceNote">Daily, weekly (last 7 days), and monthly totals are calculated from loaded feed purchase and sale records.</p><div id="feedFinanceReport" class="stats-grid"></div></div>
  <div class="card"><h3 data-i18n="feedStock">Feed Stock</h3><div class="tablewrap" id="feedStock"></div></div>
 </section>
 <section id="vet" class="page"><div class="card"><h3>🏥 Veterinary Company</h3><form id="vetCompanyForm"><label>Company Name<input name="company_name" required></label><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><button class="btn primary">Company Save</button></form></div><div class="card"><h3>💊 Veterinary Product</h3><form id="vetProductForm"><div class="row"><div><label>Code<input name="product_code"></label></div><div><label>Product Name<input name="product_name" required></label></div></div><div class="row"><div><label>Company<select name="company_id" id="vetCompany"></select></label></div><div><label>Unit<input name="unit" value="pcs"></label></div></div><div class="row"><div><label>Batch No<input name="batch_no"></label></div><div><label>Expiry<input name="expiry_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off"></label></div></div><div class="row"><div><label>Purchase Price<input name="purchase_price" type="number" step=".01"></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01"></label></div></div><button class="btn primary">Product Save</button></form></div><div class="card"><h3>📥 Veterinary Purchase</h3><form id="vetPurchaseForm"><div class="row"><div><label>Date<input name="purchase_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today" required></label></div><div><label>Time<input name="purchase_time" type="time" step="1" class="currentTime" required></label></div><div><label>Product<select name="product_id" id="vetPurchaseProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Purchase Price<input name="purchase_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Supplier<input name="supplier_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Purchase</button></form></div><div class="card"><h3>📤 Veterinary Sale</h3><form id="vetSaleForm"><div class="row"><div><label>Date<input name="sale_date" type="text" inputmode="numeric" placeholder="DD-MM-YYYY" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" data-date-input autocomplete="off" class="today" required></label></div><div><label>Time<input name="sale_time" type="time" step="1" class="currentTime" required></label></div><div><label>Product<select name="product_id" id="vetSaleProduct" required></select></label></div></div><div class="row"><div><label>Quantity<input name="quantity" type="number" step=".01" min=".01" required></label></div><div><label>Sale Price<input name="sale_price" type="number" step=".01" min="0" required></label></div></div><div class="row"><div><label>Customer<input name="customer_name"></label></div><div><label>Paid Amount<input name="paid_amount" type="number" step=".01" min="0" value="0"></label></div></div><label>Note<textarea name="note"></textarea></label><button class="btn primary">Save Veterinary Sale</button></form></div><div class="card"><h3 data-i18n="vetStock">Veterinary Stock & Expiry</h3><div class="tablewrap" id="vetStock"></div></div></section>
@@ -715,7 +733,7 @@ const translations = {
     litersLabel:"লিটার", purchaseRate:"ক্রয় মূল্য/L", acceptedLabel:"গ্রহণ করা হয়েছে?", saveCollection:"সংগ্রহ সংরক্ষণ",
     recentCollections:"সাম্প্রতিক সংগ্রহ", farmerPayment:"💳 কৃষক পেমেন্ট", amountLabel:"পরিমাণ", methodLabel:"মাধ্যম",
     savePayment:"পেমেন্ট সংরক্ষণ", paymentList:"পেমেন্ট তালিকা", feedDefault:"ডিফল্ট দাম: ৳৫০ / kg — পরে পরিবর্তন করা যাবে।",
-    customFeed:"নিজে ফিড/খাবারের নাম লিখুন", customCompany:"কোম্পানি / বিক্রেতার নাম লিখুন", feedAnimal:"গবাদিপশুর ধরন", feedItemLabel:"ফিড / খাবারের ধরন", feedLivestockNote:"গবাদিপশুর খাবার আলাদা তালিকাভুক্ত; মাছ ও পোলট্রির ফিড এর সঙ্গে মেশানো নয়। পণ্যের নাম বা ব্র্যান্ড কোনো মান-র‍্যাংকিং নয়।", feedStock:"ফিডের মজুত", feedProductTitle:"🌾 ফিড পণ্য", feedRankingNote:"কোম্পানির ক্রম মার্চ ২০২৫-এ প্রকাশিত একটি শিল্প প্রতিবেদনের বাজার-অংশের শতাংশ অনুযায়ী সাজানো; এটি বর্তমান যাচাইকৃত র‍্যাংকিং বা পণ্যের মানের রেটিং নয়। কেনার আগে স্থানীয় সরবরাহ ও প্যাকেটের তথ্য যাচাই করুন।", feedRankingSource:"র‍্যাংকিংয়ের উৎস দেখুন (IDLC Monthly Business Review, মার্চ ২০২৫)", feedCode:"কোড", feedName:"ফিড কোম্পানি / নাম", feedPurchasePrice:"ক্রয় মূল্য/kg", feedSalePrice:"বিক্রয় মূল্য/kg", feedSaveProduct:"💾 ফিড পণ্য সংরক্ষণ", feedPurchaseTitle:"📥 ফিড ক্রয়", feedSaleTitle:"📤 ফিড বিক্রয়", dateLabel:"তারিখ", timeLabel:"সময়", feedProductLabel:"পণ্য", feedQuantity:"পরিমাণ (kg)", feedSupplier:"সরবরাহকারী", feedPaid:"পরিশোধিত টাকা", feedCustomer:"গ্রাহক", feedSavePurchase:"ক্রয় সংরক্ষণ", feedSaveSale:"বিক্রয় সংরক্ষণ", feedStock:"ফিডের মজুত", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
+    customFeed:"নিজে ফিড/খাবারের নাম লিখুন", customCompany:"কোম্পানি / বিক্রেতার নাম লিখুন", feedPartyPhone:"মোবাইল নম্বর", feedPartyPhoto:"খামারি / ক্রেতার ছবি", feedPaymentMode:"পরিশোধের ধরন", feedCaptureLocation:"📍 লাইভ লোকেশন নিন", feedFinanceTitle:"📊 ফিডের আয়, ব্যয় ও বাকি রিপোর্ট", feedFinanceNote:"দৈনিক, সাপ্তাহিক (শেষ ৭ দিন) ও মাসিক হিসাব লোড করা ফিড ক্রয়-বিক্রির রেকর্ড থেকে গণনা হয়।", feedAnimal:"গবাদিপশুর ধরন", feedItemLabel:"ফিড / খাবারের ধরন", feedLivestockNote:"গবাদিপশুর খাবার আলাদা তালিকাভুক্ত; মাছ ও পোলট্রির ফিড এর সঙ্গে মেশানো নয়। পণ্যের নাম বা ব্র্যান্ড কোনো মান-র‍্যাংকিং নয়।", feedStock:"ফিডের মজুত", feedProductTitle:"🌾 ফিড পণ্য", feedRankingNote:"কোম্পানির ক্রম মার্চ ২০২৫-এ প্রকাশিত একটি শিল্প প্রতিবেদনের বাজার-অংশের শতাংশ অনুযায়ী সাজানো; এটি বর্তমান যাচাইকৃত র‍্যাংকিং বা পণ্যের মানের রেটিং নয়। কেনার আগে স্থানীয় সরবরাহ ও প্যাকেটের তথ্য যাচাই করুন।", feedRankingSource:"র‍্যাংকিংয়ের উৎস দেখুন (IDLC Monthly Business Review, মার্চ ২০২৫)", feedCode:"কোড", feedName:"ফিড কোম্পানি / নাম", feedPurchasePrice:"ক্রয় মূল্য/kg", feedSalePrice:"বিক্রয় মূল্য/kg", feedSaveProduct:"💾 ফিড পণ্য সংরক্ষণ", feedPurchaseTitle:"📥 ফিড ক্রয়", feedSaleTitle:"📤 ফিড বিক্রয়", dateLabel:"তারিখ", timeLabel:"সময়", feedProductLabel:"পণ্য", feedQuantity:"পরিমাণ (kg)", feedSupplier:"সরবরাহকারী", feedPaid:"পরিশোধিত টাকা", feedCustomer:"গ্রাহক", feedSavePurchase:"ক্রয় সংরক্ষণ", feedSaveSale:"বিক্রয় সংরক্ষণ", feedStock:"ফিডের মজুত", vetStock:"Veterinary Stock & Expiry", agroStock:"Agro Stock",
     reportsTitle:"📊 রিপোর্ট", fromDate:"শুরুর তারিখ", toDate:"শেষ তারিখ", runReport:"রিপোর্ট দেখুন",
     businessSettings:"⚙️ ব্যবসার নাম ও নিয়ম", businessName:"ব্যবসার নাম", saveSettings:"সেটিংস সংরক্ষণ",
     logout:"🚪 লগআউট", backupTitle:"💾 ব্যাকআপ ও রিস্টোর",
@@ -737,7 +755,7 @@ const translations = {
     farmerLabel:"Farmer", litersLabel:"Liters", purchaseRate:"Purchase rate/L", acceptedLabel:"Accepted?",
     saveCollection:"Save collection", recentCollections:"Recent collections", farmerPayment:"💳 Farmer payment",
     amountLabel:"Amount", methodLabel:"Method", savePayment:"Save payment", paymentList:"Payment list",
-    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"Enter custom feed/food item name", customCompany:"Enter company / seller name", feedAnimal:"Livestock type", feedItemLabel:"Feed / food item", feedLivestockNote:"Livestock feed items are listed separately from fish and poultry feed. Product names and brands are not quality rankings.", feedStock:"Feed stock", feedProductTitle:"🌾 Feed Product", feedRankingNote:"Company order is based on reported market share in a March 2025 industry report using older DLS/FIAB data; it is not a current product-quality rating. Verify local availability and label specifications before buying.", feedRankingSource:"View ranking source (IDLC Monthly Business Review, March 2025)", feedCode:"Code", feedName:"Feed Company / Name", feedPurchasePrice:"Purchase Price/kg", feedSalePrice:"Sale Price/kg", feedSaveProduct:"💾 Save Feed Product", feedPurchaseTitle:"📥 Feed Purchase", feedSaleTitle:"📤 Feed Sale", dateLabel:"Date", timeLabel:"Time", feedProductLabel:"Product", feedQuantity:"Quantity (kg)", feedSupplier:"Supplier", feedPaid:"Paid Amount", feedCustomer:"Customer", feedSavePurchase:"Save Purchase", feedSaveSale:"Save Sale", feedStock:"Feed Stock",
+    feedDefault:"Default price: BDT 50/kg — editable later.", customFeed:"Enter custom feed/food item name", customCompany:"Enter company / seller name", feedPartyPhone:"Mobile number", feedPartyPhoto:"Farmer / buyer photo", feedPaymentMode:"Payment mode", feedCaptureLocation:"📍 Capture live location", feedFinanceTitle:"📊 Feed income, expense & due reports", feedFinanceNote:"Daily, weekly (last 7 days), and monthly totals are calculated from loaded feed purchase and sale records.", feedAnimal:"Livestock type", feedItemLabel:"Feed / food item", feedLivestockNote:"Livestock feed items are listed separately from fish and poultry feed. Product names and brands are not quality rankings.", feedStock:"Feed stock", feedProductTitle:"🌾 Feed Product", feedRankingNote:"Company order is based on reported market share in a March 2025 industry report using older DLS/FIAB data; it is not a current product-quality rating. Verify local availability and label specifications before buying.", feedRankingSource:"View ranking source (IDLC Monthly Business Review, March 2025)", feedCode:"Code", feedName:"Feed Company / Name", feedPurchasePrice:"Purchase Price/kg", feedSalePrice:"Sale Price/kg", feedSaveProduct:"💾 Save Feed Product", feedPurchaseTitle:"📥 Feed Purchase", feedSaleTitle:"📤 Feed Sale", dateLabel:"Date", timeLabel:"Time", feedProductLabel:"Product", feedQuantity:"Quantity (kg)", feedSupplier:"Supplier", feedPaid:"Paid Amount", feedCustomer:"Customer", feedSavePurchase:"Save Purchase", feedSaveSale:"Save Sale", feedStock:"Feed Stock",
     vetStock:"Veterinary stock & expiry", agroStock:"Agro stock", reportsTitle:"📊 Reports", fromDate:"From date",
     toDate:"To date", runReport:"Run report", businessSettings:"⚙️ Business name and rules", businessName:"Business name",
     saveSettings:"Save settings", logout:"🚪 Log out", backupTitle:"💾 Backup & Restore",
@@ -1004,7 +1022,30 @@ function render() {
   $("setClr").value=state.settings.default_clr ?? 28;
   $("setCommission").value=state.settings.milk_commission ?? 1;
   renderMilkCollectionSettings(state.milkCollectionSettings);
-  setToday(); renderLedger(); renderAudit();
+  setToday(); renderLedger(); renderAudit(); renderFeedFinanceReport();
+}
+function renderFeedFinanceReport(){
+ const host=$("feedFinanceReport");if(!host)return;
+ const now=new Date();const todayKey=today();
+ const dayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const weekStart=new Date(dayStart);weekStart.setDate(weekStart.getDate()-6);
+ const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+ const keyDate=value=>{if(!value)return null;const d=new Date(String(value).slice(0,10)+"T00:00:00");return Number.isNaN(d.getTime())?null:d;};
+ const inRange=(value,start,end)=>{const d=keyDate(value);return !!d&&d>=start&&d<=end;};
+ const periods=[{label:lang()==="en"?"Today":"আজ",start:dayStart,end:dayStart},{label:lang()==="en"?"Last 7 days":"শেষ ৭ দিন",start:weekStart,end:dayStart},{label:lang()==="en"?"This month":"এই মাস",start:monthStart,end:dayStart}];
+ host.innerHTML=periods.map(p=>{
+  const purchases=state.feedPurchases.filter(r=>inRange(r.purchase_date,p.start,p.end));
+  const sales=state.feedSales.filter(r=>inRange(r.sale_date,p.start,p.end));
+  const expense=purchases.reduce((sum,r)=>sum+n(r.quantity_kg)*n(r.purchase_price_per_kg),0);
+  const income=sales.reduce((sum,r)=>sum+n(r.quantity_kg)*n(r.sale_price_per_kg),0);
+  const received=sales.reduce((sum,r)=>sum+n(r.paid_amount),0);
+  const due=sales.reduce((sum,r)=>sum+Math.max(0,n(r.due_amount)||n(r.quantity_kg)*n(r.sale_price_per_kg)-n(r.paid_amount)),0);
+  const paidOut=purchases.reduce((sum,r)=>sum+n(r.paid_amount),0);
+  const purchaseDue=purchases.reduce((sum,r)=>sum+Math.max(0,n(r.due_amount)||n(r.quantity_kg)*n(r.purchase_price_per_kg)-n(r.paid_amount)),0);
+  const labels=lang()==="en"?["Sales","Purchase expense","Net margin*","Received","Customer due","Paid to suppliers","Supplier due"]:["বিক্রয়","ক্রয় ব্যয়","নিট ব্যবধান*","আদায়","ক্রেতার বাকি","সরবরাহকারীকে পরিশোধ","সরবরাহকারীর বাকি"];
+  const values=[money(income),money(expense),money(income-expense),money(received),money(due),money(paidOut),money(purchaseDue)];
+  return '<div class="card"><h4>'+esc(p.label)+'</h4>'+labels.map((label,i)=>'<p class="feed-finance-row"><span>'+esc(label)+'</span><b>'+values[i]+'</b></p>').join("")+'</div>';
+ }).join("");
 }
 function stockTable(products,purchases,sales,quantityField) {
   return table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Purchased":"ক্রয়",lang()==="en"?"Sold":"বিক্রি",lang()==="en"?"Stock":"স্টক"],
@@ -1848,25 +1889,35 @@ bindForm("feedProductForm",async f=>{
   await insertRow("feed_products",{product_code:f.product_code||null,product_name:name,unit:"kg",
     purchase_price:n(f.purchase_price||50),sale_price:n(f.sale_price||50),notes},$("feedProductForm"));
 });
-bindForm("feedPurchaseForm",async f=>{
+bindForm("feedPurchaseForm",async (f,form)=>{
   const quantity=n(f.quantity_kg), price=f.purchase_price_per_kg===""?50:n(f.purchase_price_per_kg), paid=n(f.paid_amount);
   if(!f.product_id)throw new Error(lang()==="en"?"Select a feed product first.":"আগে ফিড পণ্য নির্বাচন করুন।");
   if(!Number.isFinite(quantity)||quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
   if(!Number.isFinite(price)||price<0)throw new Error(lang()==="en"?"Purchase price must be zero or greater.":"ক্রয়মূল্য শূন্য বা তার বেশি হতে হবে।");
   if(!Number.isFinite(paid)||paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  const total=quantity*price, mode=f.payment_method||"cash";
+  const finalPaid=mode==="cash"?total:mode==="credit"?0:paid;
+  if(finalPaid>total)throw new Error(lang()==="en"?"Paid amount cannot exceed total purchase value.":"পরিশোধের টাকা মোট ক্রয়মূল্যের বেশি হতে পারে না।");
+  const photo=await compressBranchPhoto(form.querySelector('input[name="party_photo"]')?.files?.[0]);
   await insertRow("feed_purchases",{purchase_date:f.purchase_date||today(),purchase_time:f.purchase_time||currentTime(),product_id:f.product_id,
-    supplier_name:f.supplier_name,quantity_kg:quantity,purchase_price_per_kg:price,
-    paid_amount:paid},$("feedPurchaseForm"));
+    supplier_name:f.supplier_name,supplier_phone:f.supplier_phone,supplier_photo_data:photo||null,
+    supplier_latitude:f.supplier_latitude?Number(f.supplier_latitude):null,supplier_longitude:f.supplier_longitude?Number(f.supplier_longitude):null,
+    payment_method:mode,quantity_kg:quantity,purchase_price_per_kg:price,paid_amount:finalPaid,due_amount:Math.max(0,total-finalPaid)},$("feedPurchaseForm"));
 });
-bindForm("feedSaleForm",async f=>{
+bindForm("feedSaleForm",async (f,form)=>{
   const quantity=n(f.quantity_kg), price=f.sale_price_per_kg===""?50:n(f.sale_price_per_kg), paid=n(f.paid_amount);
   if(!f.product_id)throw new Error(lang()==="en"?"Select a feed product first.":"আগে ফিড পণ্য নির্বাচন করুন।");
   if(!Number.isFinite(quantity)||quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
   if(!Number.isFinite(price)||price<0)throw new Error(lang()==="en"?"Sale price must be zero or greater.":"বিক্রয়মূল্য শূন্য বা তার বেশি হতে হবে।");
   if(!Number.isFinite(paid)||paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  const total=quantity*price, mode=f.payment_method||"cash";
+  const finalPaid=mode==="cash"?total:mode==="credit"?0:paid;
+  if(finalPaid>total)throw new Error(lang()==="en"?"Paid amount cannot exceed total sale value.":"পরিশোধের টাকা মোট বিক্রয়মূল্যের বেশি হতে পারে না।");
+  const photo=await compressBranchPhoto(form.querySelector('input[name="party_photo"]')?.files?.[0]);
   await insertRow("feed_sales",{sale_date:f.sale_date||today(),sale_time:f.sale_time||currentTime(),product_id:f.product_id,
-    customer_name:f.customer_name,quantity_kg:quantity,sale_price_per_kg:price,
-    paid_amount:paid},$("feedSaleForm"));
+    customer_name:f.customer_name,customer_phone:f.customer_phone,customer_photo_data:photo||null,
+    customer_latitude:f.customer_latitude?Number(f.customer_latitude):null,customer_longitude:f.customer_longitude?Number(f.customer_longitude):null,
+    payment_method:mode,quantity_kg:quantity,sale_price_per_kg:price,paid_amount:finalPaid,due_amount:Math.max(0,total-finalPaid)},$("feedSaleForm"));
 });
 bindForm("vetCompanyForm",async f=>insertRow("vet_companies",{company_name:f.company_name,notes:f.notes},$("vetCompanyForm")));
 bindForm("vetProductForm",async f=>insertRow("vet_products",{
@@ -2278,8 +2329,14 @@ $("saveOfflineSettings").addEventListener("click",()=>{
 $("retryOfflineSync").addEventListener("click",()=>syncMilkCollectionQueue());
 window.addEventListener("online",()=>{setOfflineModeStatus("ইন্টারনেট ফিরে এসেছে; অপেক্ষমাণ Milk Collection রেকর্ডের অবস্থা যাচাই হচ্ছে। নিরাপত্তা যাচাই না হওয়া পর্যন্ত স্বয়ংক্রিয় পাঠানো বন্ধ আছে।");syncMilkCollectionQueue();});
 window.addEventListener("offline",()=>setOfflineModeStatus("অফলাইন: আগে সংরক্ষিত তথ্য ও দুধ সংগ্রহের ফর্ম ব্যবহার করুন।"));
-function updateFeedCustomOption(){const english=lang()==="en";$("feedItemSelect").querySelectorAll("option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});$("feedAnimalType").querySelectorAll("option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});$("customCompanyWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");$("customFeedWrap").classList.toggle("hidden",$("feedItemSelect").value!=="Other item / অন্যান্য খাবার");const customItem=$("customFeedWrap").querySelector("input");if(customItem)customItem.required=$("feedItemSelect").value==="Other item / অন্যান্য খাবার";const customCompany=$("customCompanyWrap").querySelector("input");if(customCompany)customCompany.required=$("feedNameSelect").value==="__custom__";}
+function updateFeedCustomOption(){const english=lang()==="en";$("feedItemSelect").querySelectorAll("option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});$("feedAnimalType").querySelectorAll("option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});document.querySelectorAll("#feedPurchasePaymentMode option[data-en-label],#feedSalePaymentMode option[data-en-label]").forEach(option=>{option.textContent=english?option.dataset.enLabel:option.dataset.bnLabel;});$("customCompanyWrap").classList.toggle("hidden",$("feedNameSelect").value!=="__custom__");$("customFeedWrap").classList.toggle("hidden",$("feedItemSelect").value!=="Other item / অন্যান্য খাবার");const customItem=$("customFeedWrap").querySelector("input");if(customItem)customItem.required=$("feedItemSelect").value==="Other item / অন্যান্য খাবার";const customCompany=$("customCompanyWrap").querySelector("input");if(customCompany)customCompany.required=$("feedNameSelect").value==="__custom__";}
  $("feedNameSelect").addEventListener("change",updateFeedCustomOption);$("feedItemSelect").addEventListener("change",updateFeedCustomOption);
+function wireFeedPartyLocation(buttonId,formId,statusId,latName,lonName){$(buttonId)?.addEventListener("click",()=>{const form=$(formId),status=$(statusId);if(!navigator.geolocation){status.textContent=lang()==="en"?"Location is not supported on this device.":"এই ডিভাইসে লোকেশন সুবিধা নেই।";return;}status.textContent=lang()==="en"?"Requesting location…":"লাইভ লোকেশন নেওয়া হচ্ছে…";navigator.geolocation.getCurrentPosition(position=>{form.elements[latName].value=position.coords.latitude.toFixed(7);form.elements[lonName].value=position.coords.longitude.toFixed(7);status.textContent=(lang()==="en"?"Location captured; accuracy about ":"লোকেশন নেওয়া হয়েছে; নির্ভুলতা প্রায় ")+Math.round(position.coords.accuracy)+" m";},error=>{status.textContent=error.code===1?(lang()==="en"?"Location permission denied.":"লোকেশন অনুমতি দেওয়া হয়নি।"):error.code===2?(lang()==="en"?"Location unavailable; enable GPS and retry.":"লোকেশন পাওয়া যায়নি; GPS চালু করে আবার চেষ্টা করুন।"):(lang()==="en"?"Location request timed out; retry.":"লোকেশন পেতে সময় শেষ; আবার চেষ্টা করুন।");},{enableHighAccuracy:true,timeout:15000,maximumAge:0});});}
+wireFeedPartyLocation("captureFeedPurchaseLocation","feedPurchaseForm","feedPurchaseLocationStatus","supplier_latitude","supplier_longitude");
+wireFeedPartyLocation("captureFeedSaleLocation","feedSaleForm","feedSaleLocationStatus","customer_latitude","customer_longitude");
+function wireFeedPhotoPreview(formId,previewId){$(formId)?.querySelector('input[name="party_photo"]')?.addEventListener("change",async event=>{try{const src=await compressBranchPhoto(event.target.files?.[0]);const img=$(previewId);if(src){img.src=src;img.classList.remove("hidden");}else{img.removeAttribute("src");img.classList.add("hidden");}}catch(error){toast(error.message||String(error));}});}
+wireFeedPhotoPreview("feedPurchaseForm","feedPurchasePhotoPreview");wireFeedPhotoPreview("feedSaleForm","feedSalePhotoPreview");
+
 document.querySelectorAll(".page[id]:not(#home):not(#milkHome)").forEach(page=>{
  if(page.querySelector(":scope > .module-home-return"))return;
  const back=document.createElement("button");
