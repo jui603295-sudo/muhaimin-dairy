@@ -1305,6 +1305,7 @@ $("clearBranchLocation")?.addEventListener("click",()=>{$("branchLatitude").valu
 const BD_GEO_URL="https://iqbalhasandev.github.io/bangladesh-geo-json/bangladesh-geo.json";
 const BD_GEO_CACHE_KEY="muhaimin-bangladesh-geo-v1";
 let bdGeoTree=[];
+function addressField(prefix,field){const form=$(prefix==="branch"?"branchForm":"farmerForm");return form?.elements[prefix+"_"+field]||null;}
 function addressNorm(value){return String(value??"").normalize("NFKC").trim().toLocaleLowerCase("bn-BD").replace(/[\s।.\-_/]+/g,"");}
 function addressName(item){return String(item?.bn_name||item?.name||"").trim();}
 function addressOptionLabel(item){const bn=addressName(item),en=String(item?.name||"").trim();return en&&addressNorm(en)!==addressNorm(bn)?bn+" / "+en:bn;}
@@ -1317,15 +1318,15 @@ function addressSelectOptions(select,items,placeholder,selectedValue=""){
  if(wanted){const match=[...select.options].find(o=>addressNorm(o.value)===wanted||addressNorm(o.textContent)===wanted);if(match)select.value=match.value;}
 }
 function addressDivisions(){return bdGeoTree;}
-function addressDistricts(prefix){const div=$(prefix+"_division")?.value;return addressDivisions().find(x=>addressNorm(addressName(x))===addressNorm(div)||addressNorm(x.name)===addressNorm(div))?.districts||[];}
-function addressUpazilas(prefix){const dist=$(prefix+"_district")?.value;return addressDistricts(prefix).find(x=>addressNorm(addressName(x))===addressNorm(dist)||addressNorm(x.name)===addressNorm(dist))?.upazilas||[];}
-function addressLocalities(prefix){const upazila=$(prefix+"_upazila")?.value;const item=addressUpazilas(prefix).find(x=>addressNorm(addressName(x))===addressNorm(upazila)||addressNorm(x.name)===addressNorm(upazila));if(!item)return [];return [...(item.unions||[]).map(x=>({...x,__kind:"ইউনিয়ন"})),...(item.pourashavas||[]).map(x=>({...x,__kind:"পৌরসভা"}))].sort((a,b)=>addressName(a).localeCompare(addressName(b),"bn"));}
-function refreshAddressDistrict(prefix,selected=""){addressSelectOptions($(prefix+"_district"),addressDistricts(prefix),"জেলা নির্বাচন করুন",selected);refreshAddressUpazila(prefix);}
-function refreshAddressUpazila(prefix,selected=""){addressSelectOptions($(prefix+"_upazila"),addressUpazilas(prefix),"উপজেলা / থানা নির্বাচন করুন",selected);refreshAddressLocality(prefix);}
-function refreshAddressLocality(prefix,selected=""){addressSelectOptions($(prefix+"_union_name"),addressLocalities(prefix),"ইউনিয়ন / পৌরসভা নির্বাচন করুন",selected);}
-function resetAddressForm(prefix){const div=$(prefix+"_division");if(div)div.value="";refreshAddressDistrict(prefix);const d=$(prefix+"_district");if(d)d.value="";refreshAddressUpazila(prefix);const u=$(prefix+"_upazila");if(u)u.value="";refreshAddressLocality(prefix);}
+function addressDistricts(prefix){const div=addressField(prefix,"division")?.value;return addressDivisions().find(x=>addressNorm(addressName(x))===addressNorm(div)||addressNorm(x.name)===addressNorm(div))?.districts||[];}
+function addressUpazilas(prefix){const dist=addressField(prefix,"district")?.value;return addressDistricts(prefix).find(x=>addressNorm(addressName(x))===addressNorm(dist)||addressNorm(x.name)===addressNorm(dist))?.upazilas||[];}
+function addressLocalities(prefix){const upazila=addressField(prefix,"upazila")?.value;const item=addressUpazilas(prefix).find(x=>addressNorm(addressName(x))===addressNorm(upazila)||addressNorm(x.name)===addressNorm(upazila));if(!item)return [];return [...(item.unions||[]).map(x=>({...x,__kind:"ইউনিয়ন"})),...(item.pourashavas||[]).map(x=>({...x,__kind:"পৌরসভা"}))].sort((a,b)=>addressName(a).localeCompare(addressName(b),"bn"));}
+function refreshAddressDistrict(prefix,selected=""){addressSelectOptions(addressField(prefix,"district"),addressDistricts(prefix),"জেলা নির্বাচন করুন",selected);refreshAddressUpazila(prefix);}
+function refreshAddressUpazila(prefix,selected=""){addressSelectOptions(addressField(prefix,"upazila"),addressUpazilas(prefix),"উপজেলা / থানা নির্বাচন করুন",selected);refreshAddressLocality(prefix);}
+function refreshAddressLocality(prefix,selected=""){addressSelectOptions(addressField(prefix,"union_name"),addressLocalities(prefix),"ইউনিয়ন / পৌরসভা নির্বাচন করুন",selected);}
+function resetAddressForm(prefix){const div=addressField(prefix,"division");if(div)div.value="";refreshAddressDistrict(prefix);const d=addressField(prefix,"district");if(d)d.value="";refreshAddressUpazila(prefix);const u=addressField(prefix,"upazila");if(u)u.value="";refreshAddressLocality(prefix);}
 async function populateAddressForm(prefix,record={}){
- const div=$(prefix+"_division"),district=$(prefix+"_district"),upazila=$(prefix+"_upazila"),locality=$(prefix+"_union_name");
+ const div=addressField(prefix,"division"),district=addressField(prefix,"district"),upazila=addressField(prefix,"upazila"),locality=addressField(prefix,"union_name");
  addressSelectOptions(div,addressDivisions(),"বিভাগ নির্বাচন করুন",record.division||"");
  refreshAddressDistrict(prefix,record.district||"");
  refreshAddressUpazila(prefix,record.upazila||"");
@@ -1343,7 +1344,7 @@ async function loadBangladeshGeo(){
  return bdGeoTree;
 }
 function setupAddressForm(prefix){
- const division=$(prefix+"_division"),district=$(prefix+"_district"),upazila=$(prefix+"_upazila");
+ const division=addressField(prefix,"division"),district=addressField(prefix,"district"),upazila=addressField(prefix,"upazila");
  if(!division||division.dataset.geoBound==="1")return;
  division.dataset.geoBound="1";
  division.addEventListener("change",()=>refreshAddressDistrict(prefix));
