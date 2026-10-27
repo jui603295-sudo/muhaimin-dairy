@@ -19,11 +19,18 @@ jobs:
           node - <<'NODE'
           const fs = require('node:fs');
           const html = fs.readFileSync('index.html', 'utf8');
-          const scripts = [...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)];
-          for (const [index, match] of scripts.entries()) {
-            const source = match[1].trim();
-            if (!source) continue;
-            new Function(source);
-            process.stdout.write('PASS inline script ' + (index + 1) + '\\n');
+          let cursor = 0;
+          let index = 0;
+          while ((cursor = html.indexOf('<script', cursor)) !== -1) {
+            const openEnd = html.indexOf('>', cursor);
+            const close = html.indexOf('</script>', openEnd + 1);
+            if (openEnd < 0 || close < 0) throw new Error('Malformed script tag');
+            const source = html.slice(openEnd + 1, close).trim();
+            if (source) {
+              new Function(source);
+              process.stdout.write('PASS inline script ' + (index + 1) + '\n');
+            }
+            index += 1;
+            cursor = close + 9;
           }
           NODE
