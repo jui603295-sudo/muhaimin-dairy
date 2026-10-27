@@ -1,0 +1,39 @@
+name: TEST guard and Cheese Home checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - fix/port-cheese-home-test-guard-default
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check Cheese Home and TEST environment isolation
+        run: node tests/cheese-home-test-guard.test.cjs
+      - name: Parse inline JavaScript and detect duplicate IDs
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+          if (duplicates.length) throw new Error('Duplicate HTML IDs: ' + [...new Set(duplicates)].join(', '));
+          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+          let checked = 0;
+          for (const [, attrs, body] of scripts) {
+            if (/\bsrc\s*=/.test(attrs) || !body.trim()) continue;
+            new Function(body);
+            checked++;
+          }
+          if (checked < 2) throw new Error('Expected multiple inline scripts to be syntax-checked.');
+          console.log('Parsed ' + checked + ' inline scripts; no duplicate IDs.');
+          NODE
