@@ -12,7 +12,7 @@ assert.ok(helpers, "Core date and formatting helpers must exist in the app");
 const start = helpers.indexOf("const bdParts =");
 const end = helpers.indexOf("const translations =");
 assert.ok(start >= 0 && end > start, "Expected bounded core helper section");
-const snippet = helpers.slice(start, end) + "\nglobalThis.__testApi = { bdParts, today, dateDisplay, dateISO, formatDateTyping, dateTimeBD, storedTime, esc, phoneHref };";
+const phoneHelper = source.map(body => { const match = body.match(/function phoneHref\\(value\\) \\{[\\s\\S]*?\\n\\}/); return match && match[0]; }).find(Boolean);\nassert.ok(phoneHelper, "Phone link helper must exist in the app");\nconst snippet = helpers.slice(start, end) + "\\n" + phoneHelper + "\\nglobalThis.__testApi = { bdParts, today, dateDisplay, dateISO, formatDateTyping, dateTimeBD, storedTime, esc, phoneHref };";
 const context = { Intl, Date, Object, String, Number, Math, localStorage: { getItem: () => "bn" } };
 vm.createContext(context);
 vm.runInContext(snippet, context, { timeout: 1000 });
