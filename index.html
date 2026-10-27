@@ -860,8 +860,17 @@ function stockTable(products,purchases,sales,quantityField) {
     }));
 }
 function reportHtml(rows) {
-  const from=$("reportFrom") ? dateISO($("reportFrom").value) : "";
-  const to=$("reportTo") ? dateISO($("reportTo").value) : "";
+  const fromRaw=$("reportFrom") ? $("reportFrom").value.trim() : "";
+  const toRaw=$("reportTo") ? $("reportTo").value.trim() : "";
+  const from=fromRaw ? dateISO(fromRaw) : "";
+  const to=toRaw ? dateISO(toRaw) : "";
+  const invalidDate=(fromRaw && !from)||(toRaw && !to);
+  if(invalidDate || (from && to && from>to)) {
+    const message=invalidDate
+      ? (lang()==="en"?"Enter valid dates in DD-MM-YYYY format.":"সঠিক তারিখ দিন-মাস-বছর (DD-MM-YYYY) বিন্যাসে লিখুন।")
+      : (lang()==="en"?"Start date must be on or before end date.":"শুরুর তারিখ শেষ তারিখের পরে হতে পারবে না।");
+    return '<p class="small" role="alert">'+esc(message)+'</p>';
+  }
   const filtered=rows.filter(x=>x.accepted!==false && (!from || x.collection_date>=from) && (!to || x.collection_date<=to));
   const total=filtered.reduce((sum,x)=>sum+n(x.liters),0);
   const commission=total*n(state.settings ? state.settings.milk_commission : 1);
