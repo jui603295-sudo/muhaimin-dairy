@@ -32,6 +32,16 @@
     "admin.backup-restore": '[data-page="backup"]'
   });
 
+  const WORKSPACE_PAGES = Object.freeze({
+    "milk-center.collection": "collection",
+    "milk-center.payments": "payments",
+    "milk-center.quality-batch": "operations",
+    "milk-center.chiller": "chiller",
+    "milk-center.loss": "loss",
+    "milk-center.finance": "finance",
+    "milk-center.cheese-home": "cheeseHome"
+  });
+
   function run(registry, documentLike) {
     const errors = [];
     if (!registry || typeof registry.list !== "function" || typeof registry.validate !== "function") {
@@ -55,6 +65,11 @@
       const element = doc.querySelector(selector);
       if (!element) {
         missing.push({ id: module.id, selector: selector, reason: "UI control not found" });
+        return;
+      }
+      const workspacePage = WORKSPACE_PAGES[module.id];
+      if (workspacePage && (typeof doc.getElementById !== "function" || !doc.getElementById(workspacePage))) {
+        missing.push({ id: module.id, selector: "#"+workspacePage, reason: "Workspace page not found" });
         return;
       }
       checked += 1;
