@@ -16,6 +16,10 @@ assert.ok(html.includes('document.querySelectorAll("#nav button").forEach(button
 assert.ok(html.includes('document.querySelectorAll("[data-milk-page]").forEach(button=>button.addEventListener("click"'));
 assert.ok(html.includes('<button type="button" data-milk-page="cheeseHome">🧀 চিজ হোম</button>'), "Cheese Home must be present in Milk Center workspace navigation");
 assert.ok(html.includes('<button type="button" class="milk-workspace-tile" data-milk-page="cheeseHome">'), "Cheese Home must be available as a Milk Center home tile");
+const milkHomeStart = html.indexOf('<section id="milkHome" class="page">');
+const milkHomeEnd = html.indexOf("</section>", milkHomeStart);
+const cheeseTileAt = html.indexOf('<button type="button" class="milk-workspace-tile" data-milk-page="cheeseHome">');
+assert.ok(milkHomeStart >= 0 && milkHomeEnd > milkHomeStart && cheeseTileAt > milkHomeStart && cheeseTileAt < milkHomeEnd, "Cheese Home tile must be inside the Milk Center home page");
 assert.ok(html.includes('<section id="cheeseHome" class="page">'), "Cheese Home workspace page must exist");
 assert.ok(html.includes('document.querySelectorAll("[data-milk-settings]")'), "Milk Center settings shortcut must remain wired");
 assert.ok(html.includes('const target=requested==="collection"?"milkHome":requested;'));
