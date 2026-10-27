@@ -466,9 +466,12 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 </main></div>
 <div id="toast" role="status"></div>
 <script src="./src/core/module-registry.js"></script>
+<script src="./src/core/module-ui-audit.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
+const moduleUiAudit = window.MuhaiminModuleUIAudit ? window.MuhaiminModuleUIAudit.run(window.MuhaiminModuleRegistry) : null;
+if (moduleUiAudit && !moduleUiAudit.valid) console.warn("[Muhaimin module UI audit]", moduleUiAudit);
 const SUPABASE_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
