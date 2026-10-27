@@ -16,3 +16,5 @@ jobs:
         run: node tests/module-registry.test.cjs
       - name: Run module UI audit tests
         run: node tests/module-ui-audit.test.cjs
+      - name: Run Supabase environment isolation test
+        run: node tests/supabase-environment.test.cjs
