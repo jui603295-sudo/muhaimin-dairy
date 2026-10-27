@@ -575,6 +575,12 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
    <div><label><input id="msAgroExpiry" name="agro_expiry_alert" type="checkbox" checked> মেয়াদ সতর্কতা</label></div>
    <div><label><input id="msAgroStock" name="agro_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
   </div>
+  <h4>📩 SMS ব্যবস্থাপনা / SMS Settings</h4>
+  <div class="row">
+   <div><label>SMS মোড<select id="msSmsMode" name="sms_mode"><option value="free">Free — বিনামূল্যের SMS</option><option value="paid">Paid — পেইড SMS</option></select></label></div>
+   <div><label><input id="msSmsEnabled" name="sms_enabled" type="checkbox" checked> SMS সুবিধা সক্রিয়</label></div>
+  </div>
+  <p class="small">ডিফল্ট মোড Free। বৈধ ফ্রি SMS সেবা/কোটা না থাকলে পেইড SMS স্বয়ংক্রিয়ভাবে পাঠানো হবে না। Paid নির্বাচন শুধু সেটিংসের পছন্দ সংরক্ষণ করে; গেটওয়ে কনফিগারেশন, খরচ-সীমা ও Main Admin অনুমোদন ছাড়া পেইড SMS পাঠানো হবে না। এই সেটিংস বর্তমানে এই ফোনের লোকাল ড্রাফটে সংরক্ষিত হয়।</p>
   <h4>📊 রিপোর্ট ও 📒 ফার্মার লেজার</h4>
   <div class="row">
    <div><label>তারিখ বিন্যাস<select id="msDateFormat" name="date_format"><option value="DD-MM-YYYY">DD-MM-YYYY</option></select></label></div>
@@ -2254,7 +2260,8 @@ const MODULE_SETTINGS_DRAFT_DEFAULTS={
  feed_default_price:50,feed_stock_alert:true,feed_expiry_alert:true,
  vet_batch_tracking:true,vet_expiry_alert:true,vet_stock_alert:true,
  agro_batch_tracking:true,agro_expiry_alert:true,agro_stock_alert:true,
- date_format:"DD-MM-YYYY",bangladesh_time:true,report_pdf:true,report_share:true
+ date_format:"DD-MM-YYYY",bangladesh_time:true,report_pdf:true,report_share:true,
+ sms_mode:"free",sms_enabled:true
 };
 const MODULE_SETTINGS_DRAFT_FIELDS={
  branch_default_target:"msBranchTarget",branch_status_control:"msBranchStatus",
@@ -2263,7 +2270,8 @@ const MODULE_SETTINGS_DRAFT_FIELDS={
  feed_default_price:"msFeedPrice",feed_stock_alert:"msFeedStockAlert",feed_expiry_alert:"msFeedExpiry",
  vet_batch_tracking:"msVetBatch",vet_expiry_alert:"msVetExpiry",vet_stock_alert:"msVetLowStock",
  agro_batch_tracking:"msAgroBatch",agro_expiry_alert:"msAgroExpiry",agro_stock_alert:"msAgroStock",
- date_format:"msDateFormat",bangladesh_time:"msBangladeshTime",report_pdf:"msReportPdf",report_share:"msReportShare"
+ date_format:"msDateFormat",bangladesh_time:"msBangladeshTime",report_pdf:"msReportPdf",report_share:"msReportShare",
+ sms_mode:"msSmsMode",sms_enabled:"msSmsEnabled"
 };
 function applyModuleSettingsDraft(values){
  const merged={...MODULE_SETTINGS_DRAFT_DEFAULTS,...(values||{})};
