@@ -481,16 +481,20 @@ if (MUHAIMIN_ENV === "test") {
 const moduleUiAudit = window.MuhaiminModuleUIAudit ? window.MuhaiminModuleUIAudit.run(window.MuhaiminModuleRegistry) : null;
 if (moduleUiAudit && !moduleUiAudit.valid) console.warn("[Muhaimin module UI audit]", moduleUiAudit);
 const MUHAIMIN_TEST_CONFIG = window.MUHAIMIN_TEST_SUPABASE_CONFIG;
+const MUHAIMIN_PRODUCTION_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
+const MUHAIMIN_PRODUCTION_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+const MUHAIMIN_TEST_URL = typeof MUHAIMIN_TEST_CONFIG?.url === "string" ? MUHAIMIN_TEST_CONFIG.url.replace(/\/+$/, "") : "";
+const MUHAIMIN_TEST_KEY = typeof MUHAIMIN_TEST_CONFIG?.anonKey === "string" ? MUHAIMIN_TEST_CONFIG.anonKey.trim() : "";
 if (MUHAIMIN_ENV === "test" && (!MUHAIMIN_TEST_CONFIG ||
-    typeof MUHAIMIN_TEST_CONFIG.url !== "string" ||
-    !/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(MUHAIMIN_TEST_CONFIG.url) ||
-    typeof MUHAIMIN_TEST_CONFIG.anonKey !== "string" ||
-    !MUHAIMIN_TEST_CONFIG.anonKey.trim())) {
-  document.body.innerHTML = '<main><section class="card"><h2>TEST Supabase কনফিগারেশন অনুপস্থিত</h2><p>Production-এ সংযোগ করা হয়নি। আলাদা TEST project URL ও anon/publishable key দিয়ে স্থানীয় src/core/supabase-test-config.js ফাইল তৈরি করুন।</p></section></main>';
-  throw new Error("TEST environment blocked: valid local TEST Supabase config is required.");
+    !/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(MUHAIMIN_TEST_URL) ||
+    MUHAIMIN_TEST_URL === MUHAIMIN_PRODUCTION_URL ||
+    !MUHAIMIN_TEST_KEY ||
+    MUHAIMIN_TEST_KEY === MUHAIMIN_PRODUCTION_KEY)) {
+  document.body.innerHTML = '<main><section class="card"><h2>TEST Supabase কনফিগারেশন অনুপস্থিত বা অনিরাপদ</h2><p>Production URL/key দিয়ে TEST চালানো যাবে না। আলাদা TEST project URL ও anon/publishable key দিয়ে স্থানীয় src/core/supabase-test-config.js ফাইল তৈরি করুন।</p></section></main>';
+  throw new Error("TEST environment blocked: a distinct TEST Supabase URL and key are required.");
 }
-const SUPABASE_URL = MUHAIMIN_ENV === "test" ? MUHAIMIN_TEST_CONFIG.url : "https://hhqshslzoznwyprhjzia.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = MUHAIMIN_ENV === "test" ? MUHAIMIN_TEST_CONFIG.anonKey : "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+const SUPABASE_URL = MUHAIMIN_ENV === "test" ? MUHAIMIN_TEST_URL : MUHAIMIN_PRODUCTION_URL;
+const SUPABASE_PUBLISHABLE_KEY = MUHAIMIN_ENV === "test" ? MUHAIMIN_TEST_KEY : MUHAIMIN_PRODUCTION_KEY;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = id => document.getElementById(id);
 const state = {
