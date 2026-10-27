@@ -28,6 +28,9 @@ const documentLike = {
         attributes.set(selector + "::" + name, value);
       }
     };
+  },
+  getElementById(id) {
+    return html.includes('id="' + id + '"') ? { id } : null;
   }
 };
 for (const selector of Object.values(audit.routes)) {
@@ -45,4 +48,15 @@ assert.equal(attributes.get('[data-milk-page="cheeseHome"]::data-module-status')
 const missingRoute = audit.run(registry, { querySelector: () => null });
 assert.equal(missingRoute.valid, false);
 assert.ok(missingRoute.missing.some(item => item.id === "milk-center.cheese-home"));
+
+const missingWorkspacePage = audit.run(registry, {
+  querySelector(selector) {
+    return Object.values(audit.routes).includes(selector) ? { setAttribute() {} } : null;
+  },
+  getElementById(id) {
+    return id === "cheeseHome" ? null : { id };
+  }
+});
+assert.equal(missingWorkspacePage.valid, false);
+assert.ok(missingWorkspacePage.missing.some(item => item.id === "milk-center.cheese-home" && item.reason === "Workspace page not found"));
 console.log("PASS: existing UI routes are mapped to the module registry");
