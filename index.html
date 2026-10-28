@@ -1013,7 +1013,7 @@ function render() {
   fill("vetCompany",state.vetCompanies,"company_name");
   fill("vetPurchaseProduct",state.vetProducts,"product_name"); fill("vetSaleProduct",state.vetProducts,"product_name");
   fill("agroPurchaseProduct",state.agroProducts,"product_name"); fill("agroSaleProduct",state.agroProducts,"product_name");
-  $("feedStock").innerHTML=stockTable(state.feedProducts,state.feedPurchases,state.feedSales,"quantity_kg");
+  $("feedStock").innerHTML=feedStockTable(state.feedProducts,state.feedPurchases,state.feedSales);
   $("vetStock").innerHTML=table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Expiry":"মেয়াদ",lang()==="en"?"Status":"অবস্থা"],
     state.vetProducts.map(p=>{
       const expiry=p.expiry_date;
@@ -1060,6 +1060,16 @@ function stockTable(products,purchases,sales,quantityField) {
       const sold=sales.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x[quantityField]),0);
       return [esc(p.product_name||""),bought,sold,bought-sold];
     }));
+}
+function feedStockTable(products,purchases,sales){
+ const alertEnabled=state.settings?.feed_stock_alert!==false&&state.settings?.feed_stock_alert!=="false";
+ return table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Purchased":"ক্রয়",lang()==="en"?"Sold":"বিক্রি",lang()==="en"?"Stock (kg)":"মজুত (কেজি)",lang()==="en"?"Stock alert":"স্টক সতর্কতা"],products.map(p=>{
+  const bought=purchases.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x.quantity_kg),0);
+  const sold=sales.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x.quantity_kg),0);
+  const stock=bought-sold;
+  const status=!alertEnabled?"—":stock<=0?(lang()==="en"?"Out of stock":"স্টক নেই"):(lang()==="en"?"Available":"মজুত আছে");
+  return [esc(p.product_name||""),bought,sold,stock,esc(status)];
+ }));
 }
 function reportHtml(rows) {
   const fromRaw=$("reportFrom") ? $("reportFrom").value.trim() : "";
