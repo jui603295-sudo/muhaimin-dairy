@@ -567,6 +567,7 @@ class="btn primary" data-i18n="saveCollection">সংগ্রহ সংরক�
   <div class="row">
    <div><label>ডিফল্ট ফিড মূল্য (৳/কেজি)<input id="msFeedPrice" name="feed_default_price" type="number" min="0" max="100000" step="0.01" value="50"></label></div>
    <div><label><input id="msFeedStockAlert" name="feed_stock_alert" type="checkbox" checked> কম স্টক সতর্কতা</label></div>
+   <div><label>কম স্টকের সীমা (কেজি)<input id="msFeedLowStockThreshold" name="feed_low_stock_kg" type="number" min="0" max="1000000" step="0.01" value="10"></label></div>
    <div><label><input id="msFeedExpiry" name="feed_expiry_alert" type="checkbox" checked> মেয়াদোত্তীর্ণ সতর্কতা</label></div>
   </div>
   <h4>🩺 ভেটেরিনারি / Veterinary</h4>
@@ -1069,13 +1070,17 @@ function stockTable(products,purchases,sales,quantityField) {
       return [esc(p.product_name||""),bought,sold,bought-sold];
     }));
 }
+function feedModuleSetting(key,fallback){
+ try{const raw=localStorage.getItem(moduleSettingsDraftKey());const parsed=raw?JSON.parse(raw):null;return parsed?.settings&&Object.prototype.hasOwnProperty.call(parsed.settings,key)?parsed.settings[key]:fallback;}catch(_){return fallback;}
+}
 function feedStockTable(products,purchases,sales){
- const alertEnabled=state.settings?.feed_stock_alert!==false&&state.settings?.feed_stock_alert!=="false";
+ const alertEnabled=feedModuleSetting("feed_stock_alert",true)!==false&&feedModuleSetting("feed_stock_alert",true)!=="false";
+ const lowStockKg=Math.max(0,n(feedModuleSetting("feed_low_stock_kg",10)));
  return table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Purchased":"ক্রয়",lang()==="en"?"Sold":"বিক্রি",lang()==="en"?"Stock (kg)":"মজুত (কেজি)",lang()==="en"?"Stock alert":"স্টক সতর্কতা"],products.map(p=>{
   const bought=purchases.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x.quantity_kg),0);
   const sold=sales.filter(x=>String(x.product_id)===String(p.id)).reduce((sum,x)=>sum+n(x.quantity_kg),0);
   const stock=bought-sold;
-  const status=!alertEnabled?"—":stock<=0?(lang()==="en"?"Out of stock":"স্টক নেই"):(lang()==="en"?"Available":"মজুত আছে");
+  const status=!alertEnabled?"—":stock<=0?(lang()==="en"?"Out of stock":"স্টক নেই"):stock<=lowStockKg?(lang()==="en"?"Low stock":"কম স্টক"):(lang()==="en"?"Available":"মজুত আছে");
   return [esc(p.product_name||""),bought,sold,stock,esc(status)];
  }));
 }
@@ -1086,7 +1091,7 @@ function feedProductManagementTable(products){
  ]));
 }
 function feedExpiryTable(purchases){
- const enabled=state.settings?.feed_expiry_alert!==false&&state.settings?.feed_expiry_alert!=="false";
+ const enabled=feedModuleSetting("feed_expiry_alert",true)!==false&&feedModuleSetting("feed_expiry_alert",true)!=="false";
  const todayISO=today();
  const cutoff=new Date(todayISO+"T00:00:00Z");cutoff.setUTCDate(cutoff.getUTCDate()+30);
  const cutoffISO=cutoff.toISOString().slice(0,10);
@@ -2300,7 +2305,7 @@ const MODULE_SETTINGS_DRAFT_DEFAULTS={
  branch_default_target:500,branch_status_control:"enabled",
  farmer_mobile_required:true,farmer_direct_call:true,farmer_ledger_link:true,
  payment_cycle:"weekly",payment_receipt:true,payment_share:true,
- feed_default_price:50,feed_stock_alert:true,feed_expiry_alert:true,
+ feed_default_price:50,feed_stock_alert:true,feed_low_stock_kg:10,feed_expiry_alert:true,
  vet_batch_tracking:true,vet_expiry_alert:true,vet_stock_alert:true,
  agro_batch_tracking:true,agro_expiry_alert:true,agro_stock_alert:true,
  date_format:"DD-MM-YYYY",bangladesh_time:true,report_pdf:true,report_share:true,
@@ -2310,7 +2315,7 @@ const MODULE_SETTINGS_DRAFT_FIELDS={
  branch_default_target:"msBranchTarget",branch_status_control:"msBranchStatus",
  farmer_mobile_required:"msFarmerMobile",farmer_direct_call:"msFarmerCall",farmer_ledger_link:"msFarmerLedger",
  payment_cycle:"msPaymentCycle",payment_receipt:"msPaymentReceipt",payment_share:"msPaymentShare",
- feed_default_price:"msFeedPrice",feed_stock_alert:"msFeedStockAlert",feed_expiry_alert:"msFeedExpiry",
+ feed_default_price:"msFeedPrice",feed_stock_alert:"msFeedStockAlert",feed_low_stock_kg:"msFeedLowStockThreshold",feed_expiry_alert:"msFeedExpiry",
  vet_batch_tracking:"msVetBatch",vet_expiry_alert:"msVetExpiry",vet_stock_alert:"msVetLowStock",
  agro_batch_tracking:"msAgroBatch",agro_expiry_alert:"msAgroExpiry",agro_stock_alert:"msAgroStock",
  date_format:"msDateFormat",bangladesh_time:"msBangladeshTime",report_pdf:"msReportPdf",report_share:"msReportShare",
@@ -2347,6 +2352,7 @@ $("moduleSettingsDraftForm").addEventListener("submit",event=>{
   }
   if(!Number.isFinite(values.branch_default_target)||values.branch_default_target<0||values.branch_default_target>1000000)throw new Error("শাখার দৈনিক লক্ষ্য ০–১০,০০,০০০ লিটারের মধ্যে দিন।");
   if(!Number.isFinite(values.feed_default_price)||values.feed_default_price<0||values.feed_default_price>100000)throw new Error("ফিডের মূল্য ০–১,০০,০০০ টাকার মধ্যে দিন।");
+  if(!Number.isFinite(values.feed_low_stock_kg)||values.feed_low_stock_kg<0||values.feed_low_stock_kg>1000000)throw new Error("কম স্টকের সীমা ০–১০,০০,০০০ কেজির মধ্যে দিন।");
   const key=moduleSettingsDraftKey();
   localStorage.setItem(key,JSON.stringify({schema_version:1,updated_at:new Date().toISOString(),settings:values}));
   status.textContent="লোকাল ড্রাফট এই ফোনে সংরক্ষিত হয়েছে। এটি Supabase-এ পাঠানো হয়নি এবং কার্যকর ব্যবসার নিয়ম পরিবর্তন করেনি।";
