@@ -1938,6 +1938,7 @@ bindForm("feedPurchaseForm",async (f,form)=>{
   if(!Number.isFinite(quantity)||quantity<=0)throw new Error(lang()==="en"?"Quantity must be greater than zero.":"পরিমাণ শূন্যের বেশি হতে হবে।");
   if(!Number.isFinite(price)||price<0)throw new Error(lang()==="en"?"Purchase price must be zero or greater.":"ক্রয়মূল্য শূন্য বা তার বেশি হতে হবে।");
   if(!Number.isFinite(paid)||paid<0)throw new Error(lang()==="en"?"Paid amount cannot be negative.":"পরিশোধের পরিমাণ ঋণাত্মক হতে পারে না।");
+  if(f.expiry_date&&!dateISO(f.expiry_date))throw new Error(lang()==="en"?"Enter a valid expiry date in DD-MM-YYYY format.":"মেয়াদ শেষের সঠিক তারিখ DD-MM-YYYY বিন্যাসে লিখুন।");
   const total=quantity*price, mode=f.payment_method||"cash";
   const finalPaid=mode==="cash"?total:mode==="credit"?0:paid;
   if(finalPaid>total)throw new Error(lang()==="en"?"Paid amount cannot exceed total purchase value.":"পরিশোধের টাকা মোট ক্রয়মূল্যের বেশি হতে পারে না।");
