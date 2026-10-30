@@ -902,6 +902,11 @@ async function insertRow(tableName,data,form) {
   const result=await sb.from(tableName).insert(data);
   if(result.error) {
     const message=String(result.error.message||"");
+    if(tableName==="farmers" && result.error.code==="23505") {
+      throw new Error(lang()==="en"
+        ? "This farmer record conflicts with an existing database uniqueness rule. No record was saved. Refresh the farmer list and review the farmer code before retrying."
+        : "এই কৃষক রেকর্ডটি ডেটাবেসের বিদ্যমান ইউনিক নিয়মের সঙ্গে সংঘর্ষ করেছে। কোনো রেকর্ড সংরক্ষণ হয়নি। কৃষক তালিকা রিফ্রেশ করে কোড যাচাই করে আবার চেষ্টা করুন।");
+    }
     if(timeKeys.length && /column .* does not exist|schema cache|could not find .*column/i.test(message)) {
       throw new Error(lang()==="en"
         ? "Time could not be saved because Supabase cannot find the time column. No record was saved. Verify the table has the required *_time column, then run NOTIFY pgrst, 'reload schema'; in the Supabase SQL Editor and try again."
