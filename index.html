@@ -875,6 +875,28 @@ function renderLedger() {
   const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),esc(x.time),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
   result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
 }
+async function assertFarmerCodeAvailable(value) {
+  const farmerCode=String(value||"").trim().toUpperCase();
+  if(!/^[A-Z0-9-]{1,32}$/.test(farmerCode)) {
+    throw new Error(lang()==="en"
+      ? "Farmer code may contain only letters, numbers, and hyphens (1–32 characters)."
+      : "কৃষক কোডে শুধু ইংরেজি অক্ষর, সংখ্যা ও হাইফেন ব্যবহার করুন (১–৩২ অক্ষর)।");
+  }
+  const alreadyLoaded=state.farmers.some(row=>String(row.farmer_code||"").trim().toUpperCase()===farmerCode);
+  if(alreadyLoaded) {
+    throw new Error(lang()==="en" ? "This farmer code is already registered. Use a different code." : "এই কৃষক কোডটি আগে থেকেই নিবন্ধিত। অন্য কোড ব্যবহার করুন।");
+  }
+  const result=await sb.from("farmers").select("id,name,farmer_code").ilike("farmer_code",farmerCode).limit(1);
+  if(result.error) {
+    throw new Error(lang()==="en"
+      ? "Could not verify whether this farmer code already exists. No record was saved; check database access and retry."
+      : "কৃষক কোডটি আগে আছে কি না যাচাই করা যায়নি। কোনো রেকর্ড সংরক্ষণ হয়নি; ডেটাবেস অনুমতি যাচাই করে আবার চেষ্টা করুন।");
+  }
+  if(result.data?.length) {
+    throw new Error(lang()==="en" ? "This farmer code is already registered. Use a different code." : "এই কৃষক কোডটি আগে থেকেই নিবন্ধিত। অন্য কোড ব্যবহার করুন।");
+  }
+  return farmerCode;
+}
 async function insertRow(tableName,data,form) {
   const timeKeys=Object.keys(data).filter(key=>/_time$/.test(key));
   const result=await sb.from(tableName).insert(data);
@@ -1039,7 +1061,7 @@ $("farmerPhoto")?.addEventListener("change",async event=>{const input=event.curr
 $("captureFarmerLocation")?.addEventListener("click",()=>{const status=$("farmerLocationStatus");if(!navigator.geolocation){status.textContent="এই ব্রাউজারে GPS সমর্থিত নয়।";return;}status.textContent="লোকেশন নেওয়া হচ্ছে…";navigator.geolocation.getCurrentPosition(position=>{const f=$("farmerForm");f.elements.latitude.value=String(position.coords.latitude);f.elements.longitude.value=String(position.coords.longitude);f.elements.location_accuracy.value=String(Math.round(position.coords.accuracy));f.elements.location_captured_at.value=new Date(position.timestamp).toISOString();status.textContent="লোকেশন নেওয়া হয়েছে • নির্ভুলতা প্রায় "+Math.round(position.coords.accuracy)+" মিটার";},error=>{status.textContent=error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি।":error.code===2?"লোকেশন পাওয়া যায়নি।":"লোকেশন নিতে সময় শেষ হয়েছে।";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});});
 
 bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes,country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null},$("branchForm")));
-bindForm("farmerForm",async f=>{const photoInput=$("farmerPhoto");const photoData=photoInput?.dataset?.compressedDataUrl||null;return insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:(f.farmer_union_name==="manual"?f.farmer_locality_manual:(f.farmer_union_name||"").replace(/^(union|pourashava)::/,""))||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,latitude:f.latitude!==""?Number(f.latitude):null,longitude:f.longitude!==""?Number(f.longitude):null,location_accuracy:f.location_accuracy!==""?Number(f.location_accuracy):null,location_captured_at:f.location_captured_at||null,registered_at:f.registered_at||null},$("farmerForm"));});
+bindForm("farmerForm",async f=>{f.farmer_code=await assertFarmerCodeAvailable(f.farmer_code);const photoInput=$("farmerPhoto");const photoData=photoInput?.dataset?.compressedDataUrl||null;return insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:(f.farmer_union_name==="manual"?f.farmer_locality_manual:(f.farmer_union_name||"").replace(/^(union|pourashava)::/,""))||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,latitude:f.latitude!==""?Number(f.latitude):null,longitude:f.longitude!==""?Number(f.longitude):null,location_accuracy:f.location_accuracy!==""?Number(f.location_accuracy):null,location_captured_at:f.location_captured_at||null,registered_at:f.registered_at||null},$("farmerForm"));});
 $("saveCollectionDraft").addEventListener("click",async()=>{try{await saveCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("restoreCollectionDraft").addEventListener("click",async()=>{try{await restoreCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("clearCollectionDraft").addEventListener("click",async()=>{try{await clearCollectionDraft();}catch(error){toast(error.message||String(error));}});
