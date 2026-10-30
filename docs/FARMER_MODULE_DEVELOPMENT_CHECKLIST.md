@@ -35,8 +35,9 @@
 | F-12 | Legacy farmer records are not backfilled or rewritten | PASS — migration review | registered_at nullable; migration explicitly leaves old rows NULL |
 | F-13 | Existing farmer records remain readable after schema change | BLOCKED | Requires isolated TEST schema + read workflow |
 | F-14 | New farmer record persists all fields correctly | BLOCKED | Requires TEST database and authenticated insert/readback |
-| F-15 | Duplicate farmer code is checked against loaded and current database records before insert | PARTIAL — source + static CI only | PR #50; check fails closed if lookup errors; no database unique constraint or concurrent-submit guarantee proven |
+| F-15 | Duplicate farmer code is checked against loaded and current database records before insert | PARTIAL — source + static checks only | PR #50; check fails closed if lookup errors; no database unique constraint or concurrent-submit guarantee proven |
 | F-17 | Mobile-number duplicate policy is defined and enforced | BLOCKED | Shared family phone numbers may be legitimate; business rule and TEST behavior need confirmation |
+| F-18 | Farmer insert reports a safe, farmer-specific message when a database uniqueness rule rejects a concurrent/conflicting insert | PARTIAL — source-level only | SQLSTATE `23505` is handled only for `farmers`; this is defensive error handling, not proof that a unique constraint exists |
 | F-16 | Main Admin authorization and RLS protect farmer records | BLOCKED | Requires actual Supabase Auth JWT tests; static CI is insufficient |
 
 ## 3. Verification ledger — evidence already collected
@@ -47,6 +48,7 @@
 | C-02 | HTML DOM IDs and form-handler references | PASS | Same Actions run | Farmer form markup or handlers change |
 | C-03 | PWA shell and Service Worker static validation | PASS | Same Actions run | sw.js, app shell, or precache list changes |
 | C-04 | Farmer duplicate-code guard is wired before insert and fails closed on lookup errors | PASS — source-level validation, not GitHub Actions | Commit `b0c46431b18d973d3a82fd759aadf9c225b2321d`: 2 inline scripts parsed; loaded-list check, case-insensitive database lookup, fail-closed error path, pre-insert order, and the workflow assertion were executed against exact branch contents | Farmer duplicate guard, farmer submit handler, or its CI assertion changes |
+| C-05 | Farmer insert handles PostgreSQL unique-violation code 23505 with a localized no-save message | PARTIAL — source and workflow assertion authored; CI not run | New branch source check; no TEST constraint or concurrent insert test | Farmer insert/error handling or its CI assertion changes |
 | D-01 | Address JSON parses and hierarchy counts match | PASS | PR #47 CI validation | Address JSON changes |
 | D-02 | Thakurgaon Sadar sample hierarchy exists | PASS | Data audit recorded in PR #47 development evidence | Address JSON changes |
 | D-03 | Farmer cascade selector wiring exists | PASS | PR #47 CI/source review | Address form or cascade JS changes |
@@ -78,6 +80,7 @@ Do these once, in order, and record evidence in this file:
 |---|---|
 | data/bangladesh-address.json | D-01, D-02, D-03, OFF-01 |
 | Farmer address HTML/JS | C-01, C-02, D-03, UI-01, relevant REG-01 |
+| Farmer insert error handling | C-01, C-02, C-05, UI-01, DB-04 when TEST constraint is available |
 | Photo compression/preview/save code | C-01, C-02, F-06, DB-02, DB-03, persistence test, UI-01 |
 | GPS capture or serialization | C-01, C-02, F-07, F-08, DB-02, persistence test, UI-01 |
 | Registration timestamp code/migration | C-01, C-02, DB-01, DB-02, persistence test |
