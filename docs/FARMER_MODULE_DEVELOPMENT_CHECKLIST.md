@@ -54,6 +54,7 @@
 | DB-02 | Required photo/GPS/timestamp columns exist in TEST | BLOCKED | TEST project is not currently available | When isolated TEST is accessible |
 | DB-03 | Farmers RLS policies and JWT behavior | BLOCKED | No real TEST Auth/JWT run | When isolated TEST Auth is accessible or policy changes |
 | DB-04 | Database unique constraint prevents concurrent duplicate farmer codes | BLOCKED | No schema/constraint evidence; client preflight alone is not atomic | When isolated TEST schema is accessible; inspect duplicates first, then add/test a safe unique constraint if business rules permit |
+| DB-05 | Existing farmer-code duplicates, blank codes, indexes, and constraints are inventoried without writes | PARTIAL — diagnostic authored; not run | `supabase/diagnostics/farmer_duplicate_code_preflight.sql`; CI checks SELECT-only source structure | When isolated TEST is available; rerun after farmer_code schema or uniqueness policy changes |
 | UI-01 | Real Android/mobile form interaction | BLOCKED | No device/browser evidence yet | First authorized TEST preview session |
 | OFF-01 | Offline address selector works after first install | BLOCKED | Static precache review only | Service Worker or dataset changes; first device run |
 | REG-01 | Existing farmer and milk collection workflows unaffected | BLOCKED | No integration/regression runtime evidence | Before release; rerun only impacted workflows after later changes |
@@ -62,7 +63,7 @@
 
 Do these once, in order, and record evidence in this file:
 
-1. **TEST schema preflight:** run the SELECT-only diagnostic in PR #48 against the isolated TEST database. Save query output. Do not point it at Production.
+1. **TEST schema preflight:** run the SELECT-only diagnostics in PR #48 and PR #51 against the isolated TEST database. Save query outputs. Do not point them at Production.
 2. **Migration compatibility:** confirm the farmers table and all six expected columns/types. Confirm migration ledger status before applying any migration. Resolve mismatches before proceeding.
 3. **TEST migrations:** apply only the reviewed farmer migrations to TEST, then record migration versions and resulting schema.
 4. **Auth/RLS:** run actual authenticated Main Admin and non-admin JWT checks for SELECT/INSERT/UPDATE; verify unauthorized access is denied. Never infer this from mocked CI.
@@ -82,6 +83,7 @@ Do these once, in order, and record evidence in this file:
 | GPS capture or serialization | C-01, C-02, F-07, F-08, DB-02, persistence test, UI-01 |
 | Registration timestamp code/migration | C-01, C-02, DB-01, DB-02, persistence test |
 | RLS/policy/auth code | DB-03 and relevant integration/regression tests |
+| farmer_code normalization/uniqueness schema or policy | DB-04, DB-05, C-04 and duplicate/concurrent persistence tests |
 | sw.js or app shell | C-03, OFF-01, UI-01 |
 | Unrelated module source | Only tests affected by the dependency/DOM/data impact review; do not rerun this entire suite by default |
 
