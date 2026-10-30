@@ -167,9 +167,36 @@ jobs:
             throw new Error('Quality review must enforce configured CLR bounds.');
           }
 
+          // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
+          const addressPath = 'data/bangladesh-address.json';
+          if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
+          const addressTree = JSON.parse(fs.readFileSync(addressPath, 'utf8'));
+          const count = (items, getter) => items.reduce((total, item) => total + getter(item), 0);
+          const districtCount = count(addressTree, d => d.districts.length);
+          const upazilaCount = count(addressTree, d => count(d.districts, z => z.upazilas.length));
+          const unionCount = count(addressTree, d => count(d.districts, z => count(z.upazilas, u => u.unions.length)));
+          const pourashavaCount = count(addressTree, d => count(d.districts, z => count(z.upazilas, u => u.pourashavas.length)));
+          if (addressTree.length !== 8 || districtCount !== 64 || upazilaCount !== 495 ||
+              unionCount !== 4540 || pourashavaCount !== 328) {
+            throw new Error('Bangladesh address hierarchy counts do not match the reviewed dataset.');
+          }
+          if (!html.includes('id="farmerDivision"') || !html.includes('id="farmerDistrict"') ||
+              !html.includes('id="farmerUpazila"') || !html.includes('id="farmerUnion"') ||
+              !html.includes('name="registered_at"') || !/registered_at:f\.registered_at\|\|null/.test(html)) {
+            throw new Error('Farmer address cascade or registration timestamp form binding is missing.');
+          }
+          const registrationMigrationPath = 'supabase/migrations/202610310001_farmer_registered_at.sql';
+          if (!fs.existsSync(registrationMigrationPath)) throw new Error('Farmer registration timestamp migration is missing.');
+          const registrationMigration = fs.readFileSync(registrationMigrationPath, 'utf8');
+          if (!/TEST-first/i.test(registrationMigration) ||
+              !/add column if not exists registered_at timestamptz/i.test(registrationMigration) ||
+              !/alter column registered_at set default now\(\)/i.test(registrationMigration) ||
+              !/legacy rows may remain NULL/i.test(registrationMigration)) {
+            throw new Error('Farmer timestamp migration must preserve legacy rows and provide a default for new records.');
+          }
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
-          if (!/const CACHE_NAME = "muhaimin-v4"/.test(sw) ||
+          if (!/const CACHE_NAME = "muhaimin-v5"/.test(sw) ||
               !/const SUPABASE_JS = "https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/.test(sw) ||
               !/cache\.add\(SUPABASE_JS\)/.test(sw) ||
               !/url\.href === SUPABASE_JS/.test(sw)) {
@@ -178,6 +205,9 @@ jobs:
           const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
           if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
           const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
+          if (!shell.includes('./data/bangladesh-address.json')) {
+            throw new Error('Offline PWA shell must pre-cache the Bangladesh address dataset.');
+          }
           const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
           if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
 
