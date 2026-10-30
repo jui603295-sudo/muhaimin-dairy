@@ -167,6 +167,17 @@ jobs:
             throw new Error('Quality review must enforce configured CLR bounds.');
           }
 
+          // Farmer-code duplicate preflight must fail closed before any insert.
+          const farmerCodeGuard = html.slice(html.indexOf('async function assertFarmerCodeAvailable'), html.indexOf('async function insertRow'));
+          const farmerSubmit = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          if (!/state\\.farmers\\.some/.test(farmerCodeGuard) ||
+              !/sb\\.from\\("farmers"\\)\\.select\\("id,name,farmer_code"\\)\\.ilike\\("farmer_code",farmerCode\\)\\.limit\\(1\\)/.test(farmerCodeGuard) ||
+              !/if\\(result\\.error\\)/.test(farmerCodeGuard) ||
+              farmerSubmit.indexOf('await assertFarmerCodeAvailable(f.farmer_code)') < 0 ||
+              farmerSubmit.indexOf('await assertFarmerCodeAvailable(f.farmer_code)') > farmerSubmit.indexOf('insertRow("farmers"')) {
+            throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
+          }
+
           // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
           const addressPath = 'data/bangladesh-address.json';
           if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
