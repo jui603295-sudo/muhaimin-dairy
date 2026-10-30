@@ -539,8 +539,9 @@ function render() {
   const farmerPhotoCell=f=>{const src=typeof f.photo_data_url==="string"&&f.photo_data_url.length<=650000&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(f.photo_data_url)?f.photo_data_url:"";return src?'<img src="'+esc(src)+'" alt="কৃষকের ছবি" loading="lazy" style="width:44px;height:44px;object-fit:cover;border-radius:8px">':'—';};
   const farmerAddressLabel=f=>[f.division,f.district,f.upazila,f.union_name,f.village_name].filter(Boolean).map(esc).join(" / ")||"—";
   const farmerGpsLabel=f=>f.latitude!=null&&f.longitude!=null?"সংরক্ষিত"+(f.location_accuracy!=null?" • ±"+esc(f.location_accuracy)+"m":""):"নেই";
-  $("farmerTable").innerHTML=table(["Code","ছবি",lang()==="en"?"Name":"নাম",lang()==="en"?"Mobile":"মোবাইল",lang()==="en"?"Branch":"কেন্দ্র","ঠিকানা","GPS",lang()==="en"?"Status":"অবস্থা",lang()==="en"?"Contact":"যোগাযোগ"],
-    state.farmers.map(f=>[esc(f.farmer_code||""),farmerPhotoCell(f),esc(f.name||""),esc(f.mobile||f.phone||""),esc(branchName(f.branch_id)),farmerAddressLabel(f),farmerGpsLabel(f),esc(f.status||""),callButton(f.mobile||f.phone)]));
+  const farmerRegisteredLabel=f=>{const value=f.registered_at||f.created_at;if(!value)return "পুরোনো রেকর্ড";const date=new Date(value);return Number.isNaN(date.getTime())?"—":new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(date);};
+  $("farmerTable").innerHTML=table(["Code","ছবি",lang()==="en"?"Name":"নাম",lang()==="en"?"Mobile":"মোবাইল",lang()==="en"?"Branch":"কেন্দ্র","নিবন্ধন","ঠিকানা","GPS",lang()==="en"?"Status":"অবস্থা",lang()==="en"?"Contact":"যোগাযোগ"],
+    state.farmers.map(f=>[esc(f.farmer_code||""),farmerPhotoCell(f),esc(f.name||""),esc(f.mobile||f.phone||""),esc(branchName(f.branch_id)),esc(farmerRegisteredLabel(f)),farmerAddressLabel(f),farmerGpsLabel(f),esc(f.status||""),callButton(f.mobile||f.phone)]));
   const qualitySelect=$("qualityReviewCollection");
   if(qualitySelect){
    const previousQualityId=qualitySelect.value;
