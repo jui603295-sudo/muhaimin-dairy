@@ -178,6 +178,16 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // A failed GPS recapture must clear any previous coordinates and reject invalid fixes.
+          const gpsHandler = html.slice(html.indexOf('$("captureFarmerLocation")'), html.indexOf('bindForm("branchForm"'));
+          if (!/clearCapturedLocation\(\)/.test(gpsHandler) ||
+              !/!Number\.isFinite\(lat\)/.test(gpsHandler) ||
+              !/!Number\.isFinite\(lon\)/.test(gpsHandler) ||
+              !/!Number\.isFinite\(accuracy\)/.test(gpsHandler) ||
+              !/clearCapturedLocation\(\);status\.textContent=error\.code/.test(gpsHandler)) {
+            throw new Error('Farmer GPS recapture must clear stale coordinates on start/failure and validate returned coordinates.');
+          }
+
           // If a future TEST-approved farmers unique constraint rejects a concurrent duplicate,
           // surface a safe farmer-specific message; do not claim the constraint already exists.
           const farmerInsert = html.slice(html.indexOf('async function insertRow'), html.indexOf('function bindForm'));
