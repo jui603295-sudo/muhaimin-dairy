@@ -46,7 +46,7 @@
 | C-01 | JavaScript syntax / HTML script validation | PASS | PR #47 Actions run #41144081164, static-checks job | Any inline JS change |
 | C-02 | HTML DOM IDs and form-handler references | PASS | Same Actions run | Farmer form markup or handlers change |
 | C-03 | PWA shell and Service Worker static validation | PASS | Same Actions run | sw.js, app shell, or precache list changes |
-| C-04 | Farmer duplicate-code guard is wired before insert and fails closed on lookup errors | PENDING CI | PR #50 workflow assertion | Farmer duplicate guard or farmer submit handler changes |
+| C-04 | Farmer duplicate-code guard is wired before insert and fails closed on lookup errors | PASS — source-level validation, not GitHub Actions | Commit `b0c46431b18d973d3a82fd759aadf9c225b2321d`: 2 inline scripts parsed; loaded-list check, case-insensitive database lookup, fail-closed error path, pre-insert order, and the workflow assertion were executed against exact branch contents | Farmer duplicate guard, farmer submit handler, or its CI assertion changes |
 | D-01 | Address JSON parses and hierarchy counts match | PASS | PR #47 CI validation | Address JSON changes |
 | D-02 | Thakurgaon Sadar sample hierarchy exists | PASS | Data audit recorded in PR #47 development evidence | Address JSON changes |
 | D-03 | Farmer cascade selector wiring exists | PASS | PR #47 CI/source review | Address form or cascade JS changes |
