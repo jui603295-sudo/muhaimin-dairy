@@ -90,7 +90,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <div class="card"><h3 data-i18n="branchStatus">📍 কেন্দ্রভিত্তিক অবস্থা</h3><div id="homeBranches"></div></div>
 </section>
 <section id="branches" class="page"><div class="card"><h3 data-i18n="branchList">🏢 সংগ্রহ কেন্দ্র</h3><div class="tablewrap" id="branchTable"></div></div><div class="card"><h3 data-i18n="newBranch">➕ নতুন কেন্দ্র</h3><form id="branchForm"><div class="row"><div><label>Code<input name="code" placeholder="B006" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="branch_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="branch_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="branch_district" list="branch_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="branch_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="branch_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="branch_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="branch_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="dailyTargetLiters">দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label data-i18n="statusLabel">অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><div class="row"><button class="btn" type="button" id="saveCollectionDraft">📝 ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="restoreCollectionDraft">↩️ ড্রাফট ফিরিয়ে আনুন</button><button class="btn" type="button" id="clearCollectionDraft">🗑️ ড্রাফট মুছুন</button></div><p class="small">ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।</p><button class="btn primary" data-i18n="save">সংরক্ষণ</button></form></div></section>
-<section id="farmers" class="page"><div class="card"><h3 data-i18n="addFarmer">👨‍🌾 কৃষক যোগ করুন</h3><form id="farmerForm"><div class="row"><div><label>Farmer Code<input name="farmer_code" placeholder="F00001" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><div class="row"><div><label data-i18n="mobileLabel">মোবাইল<input name="mobile" required type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></label></div><div><label>পুরোনো ঠিকানা / অতিরিক্ত ঠিকানা<input name="village" placeholder="ঐচ্ছিক"></label></div></div><div class="row"><div><label>কৃষকের ছবি / Photo<input name="farmer_photo" id="farmerPhoto" type="file" accept="image/*" capture="environment"></label><small class="small">ছবি নির্বাচন/তোলার পর ছোট আকারে সংরক্ষণের জন্য প্রস্তুত হবে।</small><img id="farmerPhotoPreview" class="hidden" alt="কৃষকের ছবির প্রিভিউ" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-top:8px"></div><div><label>নিবন্ধনের তারিখ ও সময় / Date &amp; time<input id="farmerRegisteredAt" type="text" readonly></label><label>লাইভ লোকেশন / GPS</label><button class="btn" type="button" id="captureFarmerLocation">📍 বর্তমান লোকেশন নিন</button><small id="farmerLocationStatus" class="small" role="status">বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না।</small><input type="hidden" name="latitude"><input type="hidden" name="longitude"><input type="hidden" name="location_accuracy"><input type="hidden" name="location_captured_at"></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="farmer_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="farmer_division" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div><div class="row"><div><label>জেলা / District<input name="farmer_district" list="farmer_districtOptions" autocomplete="address-level2" placeholder="জেলার নাম"></label><datalist id="farmer_districtOptions"><option value="ঠাকুরগাঁও"><option value="পঞ্চগড়"><option value="দিনাজপুর"><option value="রংপুর"></datalist></div><div><label>উপজেলা / থানা<input name="farmer_upazila" autocomplete="address-level3" placeholder="উপজেলা / থানার নাম"></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<input name="farmer_union_name" placeholder="ইউনিয়ন / পৌরসভার নাম"></label></div><div><label>গ্রাম / মহল্লা<input name="farmer_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="farmerBranch" required></select></label></div><div><label data-i18n="expectedMilk">আনুমানিক L/day<input name="expected_liters" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveFarmer">কৃষক সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="farmerList">📋 কৃষক তালিকা</h3><div class="tablewrap" id="farmerTable"></div></div></section>
+<section id="farmers" class="page"><div class="card"><h3 data-i18n="addFarmer">👨‍🌾 কৃষক যোগ করুন</h3><form id="farmerForm"><div class="row"><div><label>Farmer Code<input name="farmer_code" placeholder="F00001" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><div class="row"><div><label data-i18n="mobileLabel">মোবাইল<input name="mobile" required type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></label></div><div><label>পুরোনো ঠিকানা / অতিরিক্ত ঠিকানা<input name="village" placeholder="ঐচ্ছিক"></label></div></div><div class="row"><div><label>কৃষকের ছবি / Photo<input name="farmer_photo" id="farmerPhoto" type="file" accept="image/*" capture="environment"></label><small class="small">ছবি নির্বাচন/তোলার পর ছোট আকারে সংরক্ষণের জন্য প্রস্তুত হবে।</small><img id="farmerPhotoPreview" class="hidden" alt="কৃষকের ছবির প্রিভিউ" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-top:8px"></div><div><label>নিবন্ধনের তারিখ ও সময় / Date &amp; time<input id="farmerRegisteredAt" type="text" readonly></label><label>লাইভ লোকেশন / GPS</label><button class="btn" type="button" id="captureFarmerLocation">📍 বর্তমান লোকেশন নিন</button><small id="farmerLocationStatus" class="small" role="status">বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না।</small><input type="hidden" name="latitude"><input type="hidden" name="longitude"><input type="hidden" name="location_accuracy"><input type="hidden" name="location_captured_at"></div></div><fieldset class="address-fields"><legend>ঠিকানা / Address</legend><div class="row"><div><label>দেশ / Country<select name="farmer_country" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="farmer_division" id="farmerDivision" required><option value="">বিভাগ নির্বাচন</option></select></label></div></div><div class="row"><div><label>জেলা / District<select name="farmer_district" id="farmerDistrict" autocomplete="address-level2" disabled><option value="">আগে বিভাগ নির্বাচন করুন</option></select></label></div><div><label>উপজেলা / থানা<select name="farmer_upazila" id="farmerUpazila" autocomplete="address-level3" disabled><option value="">আগে জেলা নির্বাচন করুন</option></select></label></div></div><div class="row"><div><label>ইউনিয়ন / পৌরসভা<select name="farmer_union_name" id="farmerUnion" disabled><option value="">আগে উপজেলা নির্বাচন করুন</option></select></label><input name="farmer_locality_manual" id="farmerLocalityManual" class="hidden" placeholder="ইউনিয়ন / পৌরসভার নাম লিখুন"></div><div><label>গ্রাম / মহল্লা<input name="farmer_village_name" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম"></label></div></div></fieldset><div class="row"><div><label data-i18n="branchLabel">কেন্দ্র<select name="branch_id" id="farmerBranch" required></select></label></div><div><label data-i18n="expectedMilk">আনুমানিক L/day<input name="expected_liters" type="number" step=".01"></label></div></div><button class="btn primary" data-i18n="saveFarmer">কৃষক সংরক্ষণ</button></form></div><div class="card"><h3 data-i18n="farmerList">📋 কৃষক তালিকা</h3><div class="tablewrap" id="farmerTable"></div></div></section>
 <section id="collection" class="page">
 <div class="card milk-workspace-home">
  <h3 class="section-title">🥛 দুধ সংগ্রহ — মডিউল হোম</h3>
@@ -536,8 +536,11 @@ function render() {
   fill("paymentFarmer",state.farmers,"name"); fill("ledgerFarmer",state.farmers,"name");
   updateFarmerSelect();
   renderMilkSmartInsights();
-  $("farmerTable").innerHTML=table(["Code",lang()==="en"?"Name":"নাম",lang()==="en"?"Mobile":"মোবাইল",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Status":"অবস্থা",lang()==="en"?"Contact":"যোগাযোগ"],
-    state.farmers.map(f=>[esc(f.farmer_code||""),esc(f.name||""),esc(f.mobile||f.phone||""),esc(branchName(f.branch_id)),esc(f.status||""),callButton(f.mobile||f.phone)]));
+  const farmerPhotoCell=f=>{const src=typeof f.photo_data_url==="string"&&f.photo_data_url.length<=650000&&/^data:image\\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(f.photo_data_url)?f.photo_data_url:"";return src?'<img src="'+esc(src)+'" alt="কৃষকের ছবি" loading="lazy" style="width:44px;height:44px;object-fit:cover;border-radius:8px">':'—';};
+  const farmerAddressLabel=f=>[f.division,f.district,f.upazila,f.union_name,f.village_name].filter(Boolean).map(esc).join(" / ")||"—";
+  const farmerGpsLabel=f=>f.latitude!=null&&f.longitude!=null?"সংরক্ষিত"+(f.location_accuracy!=null?" • ±"+esc(f.location_accuracy)+"m":""):"নেই";
+  $("farmerTable").innerHTML=table(["Code","ছবি",lang()==="en"?"Name":"নাম",lang()==="en"?"Mobile":"মোবাইল",lang()==="en"?"Branch":"কেন্দ্র","ঠিকানা","GPS",lang()==="en"?"Status":"অবস্থা",lang()==="en"?"Contact":"যোগাযোগ"],
+    state.farmers.map(f=>[esc(f.farmer_code||""),farmerPhotoCell(f),esc(f.name||""),esc(f.mobile||f.phone||""),esc(branchName(f.branch_id)),farmerAddressLabel(f),farmerGpsLabel(f),esc(f.status||""),callButton(f.mobile||f.phone)]));
   const qualitySelect=$("qualityReviewCollection");
   if(qualitySelect){
    const previousQualityId=qualitySelect.value;
@@ -892,7 +895,7 @@ function bindForm(id,handler) {
   const form=$(id); if(!form)return;
   form.addEventListener("submit",async event=>{
     event.preventDefault();
-    try { await handler(formObj(form),form); }
+    try { if(id==="farmerForm")setFarmerRegistrationTime(); await handler(formObj(form),form); }
     catch(error) { toast(error && error.message ? error.message : String(error)); }
   });
 }
@@ -955,13 +958,86 @@ $("verifyOtpBtn").onclick=async()=>{
   } catch(error) { $("loginMsg").textContent=error.message || String(error); }
 };
 $("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}catch(error){toast(error.message || String(error));}};
+
+// Offline cascading Bangladesh address picker (source attribution: data/README.md).
+let farmerAddressTree=[];
+function setFarmerAddressOptions(select,items,placeholder,valueOf=item=>item.bn){
+ if(!select)return;
+ select.replaceChildren();
+ const first=document.createElement("option");first.value="";first.textContent=placeholder;select.appendChild(first);
+ for(const item of items||[]){
+  const option=document.createElement("option");option.value=valueOf(item);
+  option.textContent=item.bn+(item.en&&item.en!==item.bn?" / "+item.en:"");
+  select.appendChild(option);
+ }
+ select.disabled=!(items&&items.length);
+}
+function resetFarmerAddressChildren(level){
+ if(level<=1)setFarmerAddressOptions($("farmerDistrict"),[],"আগে বিভাগ নির্বাচন করুন");
+ if(level<=2)setFarmerAddressOptions($("farmerUpazila"),[],"আগে জেলা নির্বাচন করুন");
+ if(level<=3){
+  const locality=$("farmerUnion");setFarmerAddressOptions(locality,[],"আগে উপজেলা নির্বাচন করুন",item=>item.value);
+  if(locality)locality.disabled=true;
+  $("farmerLocalityManual")?.classList.add("hidden");
+ }
+}
+async function initFarmerAddressPicker(){
+ const response=await fetch("./data/bangladesh-address.json");
+ if(!response.ok)throw new Error("বাংলাদেশের ঠিকানার ডেটা লোড করা যায়নি।");
+ farmerAddressTree=await response.json();
+ setFarmerAddressOptions($("farmerDivision"),farmerAddressTree,"বিভাগ নির্বাচন");
+ $("farmerDivision")?.addEventListener("change",event=>{
+  const division=farmerAddressTree.find(item=>item.bn===event.target.value);
+  resetFarmerAddressChildren(1);
+  setFarmerAddressOptions($("farmerDistrict"),division?.districts||[],"জেলা নির্বাচন");
+ });
+ $("farmerDistrict")?.addEventListener("change",event=>{
+  const division=farmerAddressTree.find(item=>item.bn===$("farmerDivision").value);
+  const district=division?.districts.find(item=>item.bn===event.target.value);
+  resetFarmerAddressChildren(2);
+  setFarmerAddressOptions($("farmerUpazila"),district?.upazilas||[],"উপজেলা / থানা নির্বাচন");
+ });
+ $("farmerUpazila")?.addEventListener("change",event=>{
+  const division=farmerAddressTree.find(item=>item.bn===$("farmerDivision").value);
+  const district=division?.districts.find(item=>item.bn===$("farmerDistrict").value);
+  const upazila=district?.upazilas.find(item=>item.bn===event.target.value);
+  const locality=$("farmerUnion");if(!locality)return;
+  locality.replaceChildren();
+  const first=document.createElement("option");first.value="";first.textContent="ইউনিয়ন / পৌরসভা নির্বাচন";locality.appendChild(first);
+  for(const item of upazila?.unions||[]){
+   const option=document.createElement("option");option.value="union::"+item.bn;
+   option.textContent=item.bn+(item.en&&item.en!==item.bn?" / "+item.en:"")+" (ইউনিয়ন)";
+   locality.appendChild(option);
+  }
+  for(const item of upazila?.pourashavas||[]){
+   const option=document.createElement("option");option.value="pourashava::"+item.bn;
+   option.textContent=item.bn+(item.en&&item.en!==item.bn?" / "+item.en:"")+" (পৌরসভা)";
+   locality.appendChild(option);
+  }
+  const manual=document.createElement("option");manual.value="manual";manual.textContent="অন্যান্য / ম্যানুয়াল";locality.appendChild(manual);
+  locality.disabled=false;
+  $("farmerLocalityManual")?.classList.add("hidden");
+ });
+ $("farmerUnion")?.addEventListener("change",event=>{
+  const manual=event.target.value==="manual";
+  $("farmerLocalityManual")?.classList.toggle("hidden",!manual);
+  if(manual)$("farmerLocalityManual")?.focus();
+ });
+ $("language")?.addEventListener("change",()=>{});
+}
+initFarmerAddressPicker().catch(error=>{
+ const status=$("farmerLocationStatus");
+ if(status)status.textContent="ঠিকানার তালিকা লোড হয়নি; পরে অনলাইন হলে পৃষ্ঠা রিফ্রেশ করুন।";
+ console.error(error);
+});
+
 function setFarmerRegistrationTime(){const el=$("farmerRegisteredAt");if(el)el.value=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date())+" (বাংলাদেশ সময়)";}
 setFarmerRegistrationTime();
 $("farmerPhoto")?.addEventListener("change",async event=>{const input=event.currentTarget, file=input.files?.[0], preview=$("farmerPhotoPreview");delete input.dataset.compressedDataUrl;if(!file){preview?.classList.add("hidden");return;}if(!file.type.startsWith("image/")){toast("শুধু ছবি নির্বাচন করুন।");input.value="";return;}try{const bitmap=await createImageBitmap(file);const max=720,scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();const data=canvas.toDataURL("image/jpeg",0.72);if(data.length>650000)throw new Error("ছবিটি ছোট করে আবার নির্বাচন করুন।");input.dataset.compressedDataUrl=data;if(preview){preview.src=data;preview.classList.remove("hidden");}}catch(error){toast(error.message||"ছবি প্রস্তুত করা যায়নি।");input.value="";}});
 $("captureFarmerLocation")?.addEventListener("click",()=>{const status=$("farmerLocationStatus");if(!navigator.geolocation){status.textContent="এই ব্রাউজারে GPS সমর্থিত নয়।";return;}status.textContent="লোকেশন নেওয়া হচ্ছে…";navigator.geolocation.getCurrentPosition(position=>{const f=$("farmerForm");f.elements.latitude.value=String(position.coords.latitude);f.elements.longitude.value=String(position.coords.longitude);f.elements.location_accuracy.value=String(Math.round(position.coords.accuracy));f.elements.location_captured_at.value=new Date(position.timestamp).toISOString();status.textContent="লোকেশন নেওয়া হয়েছে • নির্ভুলতা প্রায় "+Math.round(position.coords.accuracy)+" মিটার";},error=>{status.textContent=error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি।":error.code===2?"লোকেশন পাওয়া যায়নি।":"লোকেশন নিতে সময় শেষ হয়েছে।";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});});
 
 bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes,country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null},$("branchForm")));
-bindForm("farmerForm",async f=>{const photoInput=$("farmerPhoto");const photoData=photoInput?.dataset?.compressedDataUrl||null;return insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,latitude:f.latitude?Number(f.latitude):null,longitude:f.longitude?Number(f.longitude):null,location_accuracy:f.location_accuracy?Number(f.location_accuracy):null,location_captured_at:f.location_captured_at||null},$("farmerForm"));});
+bindForm("farmerForm",async f=>{const photoInput=$("farmerPhoto");const photoData=photoInput?.dataset?.compressedDataUrl||null;return insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:(f.farmer_union_name==="manual"?f.farmer_locality_manual:(f.farmer_union_name||"").replace(/^(union|pourashava)::/,""))||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,latitude:f.latitude!==""?Number(f.latitude):null,longitude:f.longitude!==""?Number(f.longitude):null,location_accuracy:f.location_accuracy!==""?Number(f.location_accuracy):null,location_captured_at:f.location_captured_at||null},$("farmerForm"));});
 $("saveCollectionDraft").addEventListener("click",async()=>{try{await saveCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("restoreCollectionDraft").addEventListener("click",async()=>{try{await restoreCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("clearCollectionDraft").addEventListener("click",async()=>{try{await clearCollectionDraft();}catch(error){toast(error.message||String(error));}});
