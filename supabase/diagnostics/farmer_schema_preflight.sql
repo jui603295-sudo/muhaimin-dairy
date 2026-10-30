@@ -83,17 +83,13 @@ where ns.nspname = 'public'
   )
 order by con.conname;
 
--- 6) Migration ledger evidence, if Supabase's migration history table exists.
+-- 6) Report whether Supabase migration history is visible to this session.
+-- If it exists, inspect the two expected versions with your migration tooling;
+-- this script intentionally avoids querying a possibly absent relation.
 select
   to_regclass('supabase_migrations.schema_migrations') as migration_ledger,
   case
     when to_regclass('supabase_migrations.schema_migrations') is null
-      then 'Ledger not visible in this role/session; verify via Supabase migration tooling'
-    else 'Ledger exists; query versions below if permitted'
+      then 'NOT VISIBLE: verify migration history with Supabase CLI/dashboard'
+    else 'VISIBLE: verify versions 202610280001 and 202610310001 with migration tooling'
   end as result;
-
-select version
-from supabase_migrations.schema_migrations
-where to_regclass('supabase_migrations.schema_migrations') is not null
-  and version in ('202610280001', '202610310001')
-order by version;
