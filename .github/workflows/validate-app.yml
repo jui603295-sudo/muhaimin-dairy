@@ -255,6 +255,20 @@ jobs:
             throw new Error('TEST evidence template is missing role, idempotency, backup, no-secrets, or server-side authorization safeguards.');
           }
 
+          // Keep farmer-code uniqueness diagnostics SELECT-only and evidence-oriented.
+          const farmerDiagPath = 'supabase/diagnostics/farmer_duplicate_code_preflight.sql';
+          if (!fs.existsSync(farmerDiagPath)) throw new Error('Farmer duplicate-code diagnostic is missing.');
+          const farmerDiag = fs.readFileSync(farmerDiagPath, 'utf8');
+          const farmerDiagSql = farmerDiag.replace(/--[^\\n]*/g, '');
+          if (!/from public\\.farmers/i.test(farmerDiagSql) ||
+              !/upper\\(btrim\\(farmer_code::text\\)\\)/i.test(farmerDiagSql) ||
+              !/having count\\(\\*\\) > 1/i.test(farmerDiagSql) ||
+              !/from pg_indexes/i.test(farmerDiagSql) ||
+              !/from pg_constraint/i.test(farmerDiagSql) ||
+              /\\b(insert into|update\\s+public\\.|delete from|create\\s+(unique\\s+)?index|alter table|drop\\s+table|grant\\s|revoke\\s)\\b/i.test(farmerDiagSql)) {
+            throw new Error('Farmer duplicate-code diagnostic must report normalized duplicates and existing indexes/constraints using SELECT only.');
+          }
+
           // Validate the offline idempotency migration as source text only; never run SQL in CI.
           const migrationPath = 'supabase/migrations/20261023_milk_collection_idempotency.sql';
           if (!fs.existsSync(migrationPath)) throw new Error('Milk Collection idempotency migration is missing.');
