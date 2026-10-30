@@ -181,10 +181,6 @@ jobs:
           // If a future TEST-approved farmers unique constraint rejects a concurrent duplicate,
           // surface a safe farmer-specific message; do not claim the constraint already exists.
           const farmerInsert = html.slice(html.indexOf('async function insertRow'), html.indexOf('function bindForm'));
-          if (!/tableName==="farmers" && result\.error\.code==="23505"/.test(farmerInsert) ||
-              !/tableName==="farmers" && result\.error\.code==="23505"/.test(farmerInsert)) {
-            // Keep the exact guard below as the source-level contract.
-          }
           if (!/tableName==="farmers"\s*&&\s*result\.error\.code==="23505"/.test(farmerInsert) ||
               !/কোনো রেকর্ড সংরক্ষণ হয়নি/.test(farmerInsert)) {
             throw new Error('Farmer unique-conflict errors must be handled without claiming a database constraint is already installed.');
