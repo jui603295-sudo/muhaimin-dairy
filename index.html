@@ -528,9 +528,12 @@ function optionalLocationNumber(value,min,max,label){
  if(!Number.isFinite(number)||number<min||number>max)throw new Error(label+" তথ্য সঠিক নয়।");
  return number;
 }
-function validateFreshFarmerLocation(form){
+function validateFreshFarmerLocation(form,existing){
  const latitude=String(form.latitude||"").trim(),longitude=String(form.longitude||"").trim();
  if(!latitude&&!longitude)return;
+ const sameSavedCoordinates=!!existing&&existing.latitude!==null&&existing.latitude!==undefined&&
+  Number(latitude)===Number(existing.latitude)&&Number(longitude)===Number(existing.longitude);
+ if(sameSavedCoordinates)return;
  const accuracy=Number(form.location_accuracy);
  const capturedAt=Date.parse(String(form.location_captured_at||""));
  const age=Date.now()-capturedAt;
@@ -1341,9 +1344,10 @@ bindForm("branchForm",async f=>{
  return id?updateRow("branches",id,payload,form):insertRow("branches",payload,form);
 });
 bindForm("farmerForm",async f=>{
- validateFreshFarmerLocation(f);\n const form=$("farmerForm"),id=f.record_id;
+ const form=$("farmerForm"),id=f.record_id;
  const existing=id?state.farmers.find(item=>String(item.id)===String(id)):null;
  if(id&&!existing)throw new Error("সম্পাদনার কৃষক রেকর্ড তালিকায় নেই। আবার লোড করুন।");
+ validateFreshFarmerLocation(f,existing);
  const payload=farmerPayloadFromForm(f,existing);
  return id?updateRow("farmers",id,payload,form):insertRow("farmers",payload,form);
 });
