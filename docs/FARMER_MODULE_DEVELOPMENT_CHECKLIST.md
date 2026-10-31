@@ -60,6 +60,7 @@
 | DB-02 | Required photo/GPS/timestamp columns exist in TEST | BLOCKED | TEST project is not currently available | When isolated TEST is accessible |
 | DB-03 | Farmers RLS policies and JWT behavior | BLOCKED | No real TEST Auth/JWT run | When isolated TEST Auth is accessible or policy changes |
 | DB-04 | Database unique constraint prevents concurrent duplicate farmer codes | BLOCKED | No schema/constraint evidence; client preflight alone is not atomic | When isolated TEST schema is accessible; inspect duplicates first, then add/test a safe unique constraint if business rules permit |
+| DB-06 | Farmer photo persistence column/storage strategy matches the app payload and access controls | BLOCKED — SELECT-only diagnostic authored; not executed | `supabase/diagnostics/farmer_photo_schema_preflight.sql` inventories `photo_data_url` type, storage-path alternatives, RLS policies, constraints and indexes; no schema writes | When isolated TEST is accessible; review results, existing Storage bucket/policies, backup and authenticated read/write behavior before choosing a migration |
 | UI-01 | Real Android/mobile form interaction | BLOCKED | No device/browser evidence yet | First authorized TEST preview session |
 | OFF-01 | Offline address selector works after first install | BLOCKED | Static precache review only | Service Worker or dataset changes; first device run |
 | REG-01 | Existing farmer and milk collection workflows unaffected | BLOCKED | No integration/regression runtime evidence | Before release; rerun only impacted workflows after later changes |
@@ -68,7 +69,7 @@
 
 Do these once, in order, and record evidence in this file:
 
-1. **TEST schema preflight:** run the SELECT-only diagnostic in PR #48 against the isolated TEST database. Save query output. Do not point it at Production.
+1. **TEST schema preflight:** run the SELECT-only diagnostics in PR #48 and `supabase/diagnostics/farmer_photo_schema_preflight.sql` against the isolated TEST database. Save query output. Do not point them at Production.
 2. **Migration compatibility:** confirm the farmers table and all six expected columns/types. Confirm migration ledger status before applying any migration. Resolve mismatches before proceeding.
 3. **TEST migrations:** apply only the reviewed farmer migrations to TEST, then record migration versions and resulting schema.
 4. **Auth/RLS:** run actual authenticated Main Admin and non-admin JWT checks for SELECT/INSERT/UPDATE; verify unauthorized access is denied. Never infer this from mocked CI.
@@ -85,7 +86,7 @@ Do these once, in order, and record evidence in this file:
 | data/bangladesh-address.json | D-01, D-02, D-03, OFF-01 |
 | Farmer address HTML/JS | C-01, C-02, D-03, UI-01, relevant REG-01 |
 | Farmer insert error handling | C-01, C-02, C-05, UI-01, DB-04 when TEST constraint is available |
-| Photo compression/preview/save code | C-01, C-02, C-07, F-06, F-20, DB-02, DB-03, persistence test, UI-01 |
+| Photo compression/preview/save code | C-01, C-02, C-07, F-06, F-20, DB-02, DB-03, DB-06, persistence test, UI-01 |
 | GPS capture or serialization | C-01, C-02, C-06, F-07, F-08, F-19, DB-02, persistence test, UI-01 |
 | Registration timestamp code/migration | C-01, C-02, DB-01, DB-02, persistence test |
 | RLS/policy/auth code | DB-03 and relevant integration/regression tests |
