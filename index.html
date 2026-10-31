@@ -975,6 +975,12 @@ async function restoreAddressFields(prefix,record){
  const village=document.getElementById(prefix+"Village");
  if(village)village.value=record?.village_name||"";
 }
+function recordFormWritePending(kind){
+ const form=$(kind+"Form");
+ if(form?.dataset.submitting!=="true")return false;
+ toast("সংরক্ষণ চলছে—শেষ হওয়ার আগে অন্য রেকর্ড সম্পাদনা বা বাতিল করা যাবে না।");
+ return true;
+}
 function clearEditState(kind){
  const form=$(kind+"Form");
  if(!form)return;
@@ -992,6 +998,7 @@ function clearEditState(kind){
  }
 }
 async function editBranchRecord(id){
+ if(recordFormWritePending("branch"))return;
  const row=state.branches.find(item=>String(item.id)===String(id));
  if(!row)throw new Error("কেন্দ্রের রেকর্ড পাওয়া যায়নি। তালিকা রিফ্রেশ করুন।");
  const form=$("branchForm");
@@ -1007,6 +1014,7 @@ async function editBranchRecord(id){
  form.scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function editFarmerRecord(id){
+ if(recordFormWritePending("farmer"))return;
  const row=state.farmers.find(item=>String(item.id)===String(id));
  if(!row)throw new Error("কৃষকের রেকর্ড পাওয়া যায়নি। তালিকা রিফ্রেশ করুন।");
  const form=$("farmerForm");
@@ -1276,8 +1284,8 @@ $("farmerTable").addEventListener("click",async event=>{
  const button=event.target.closest('[data-record-action="edit-farmer"]');if(!button)return;
  try{await editFarmerRecord(button.dataset.recordId);}catch(error){toast(error.message||String(error));}
 });
-$("cancelBranchEdit").addEventListener("click",()=>clearEditState("branch"));
-$("cancelFarmerEdit").addEventListener("click",()=>clearEditState("farmer"));
+$("cancelBranchEdit").addEventListener("click",()=>{if(!recordFormWritePending("branch"))clearEditState("branch");});
+$("cancelFarmerEdit").addEventListener("click",()=>{if(!recordFormWritePending("farmer"))clearEditState("farmer");});
 $("saveCollectionDraft").addEventListener("click",async()=>{try{await saveCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("restoreCollectionDraft").addEventListener("click",async()=>{try{await restoreCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("clearCollectionDraft").addEventListener("click",async()=>{try{await clearCollectionDraft();}catch(error){toast(error.message||String(error));}});
