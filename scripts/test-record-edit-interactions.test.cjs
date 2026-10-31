@@ -272,10 +272,14 @@ function makeSubmitForm() {
     dataset: {}, attrs: {}, listeners: {}, elements: {},
     addEventListener(type,handler) { this.listeners[type]=handler; },
     querySelector() { return this.submitButton; },
+    querySelectorAll() { return this.controls; },
     setAttribute(name,value) { this.attrs[name]=value; },
     removeAttribute(name) { delete this.attrs[name]; },
-    submitButton: { disabled:false }
+    submitButton: { disabled:false },
+    nameInput: {disabled:false},
+    locationSelect: {disabled:true}
   };
+  form.controls=[form.submitButton,form.nameInput,form.locationSelect];
   return form;
 }
 
@@ -297,11 +301,15 @@ test("bindForm ignores rapid duplicate submits while a write is pending", async 
   assert.equal(calls,1);
   assert.equal(form.dataset.submitting,"true");
   assert.equal(form.submitButton.disabled,true);
+  assert.equal(form.nameInput.disabled,true);
+  assert.equal(form.locationSelect.disabled,true);
   assert.equal(form.attrs["aria-busy"],"true");
   resolveWrite();
   await first;
   assert.equal(form.dataset.submitting,undefined);
   assert.equal(form.submitButton.disabled,false);
+  assert.equal(form.nameInput.disabled,false);
+  assert.equal(form.locationSelect.disabled,true);
   assert.equal(form.attrs["aria-busy"],undefined);
 });
 
