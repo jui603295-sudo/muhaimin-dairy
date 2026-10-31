@@ -167,9 +167,184 @@ jobs:
             throw new Error('Quality review must enforce configured CLR bounds.');
           }
 
+          // Farmer-code duplicate preflight must fail closed before any insert.
+          const farmerCodeGuard = html.slice(html.indexOf('async function assertFarmerCodeAvailable'), html.indexOf('async function insertRow'));
+          const farmerSubmit = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          if (!/state\.farmers\.some/.test(farmerCodeGuard) ||
+              !/sb\.from\("farmers"\)\.select\("id,name,farmer_code"\)\.ilike\("farmer_code",farmerCode\)\.limit\(1\)/.test(farmerCodeGuard) ||
+              !/if\(result\.error\)/.test(farmerCodeGuard) ||
+              farmerSubmit.indexOf('await assertFarmerCodeAvailable(f.farmer_code)') < 0 ||
+              farmerSubmit.indexOf('await assertFarmerCodeAvailable(f.farmer_code)') > farmerSubmit.indexOf('insertRow("farmers"')) {
+            throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
+          }
+
+          // Farmer branch selector should show its recorded administrative address without blocking legitimate cross-area registrations.
+          const branchAddressStart = html.indexOf('function branchAddressLabel');
+          const branchAddressEnd = html.indexOf('function farmerName', branchAddressStart);
+          const branchAddressSource = html.slice(branchAddressStart, branchAddressEnd);
+          if (branchAddressStart < 0 ||
+              !branchAddressSource.includes('branch.division') ||
+              !branchAddressSource.includes('branch.district') ||
+              !branchAddressSource.includes('branch.upazila') ||
+              !branchAddressSource.includes('branch.union_name') ||
+              !branchAddressSource.includes('branch.village_name') ||
+              !branchAddressSource.includes('fillFarmerBranchSelect') ||
+              !branchAddressSource.includes('state.branches.some(') ||
+              !html.includes('fillFarmerBranchSelect();')) {
+            throw new Error('Farmer branch selector must show branch address context and preserve a still-valid selection.');
+          }
+
+          // A successful farmer save must clear the in-memory photo so it cannot leak to the next farmer.
+          const insertRowStart = html.indexOf('async function insertRow');
+          const insertRowEnd = html.indexOf('function bindForm', insertRowStart);
+          const insertRowSource = html.slice(insertRowStart, insertRowEnd);
+          const resetAt = insertRowSource.indexOf('if(form)form.reset()');
+          const farmerPhotoCleanupAt = insertRowSource.indexOf('if(tableName==="farmers")');
+          if (resetAt < 0 || farmerPhotoCleanupAt < resetAt ||
+              !insertRowSource.includes('delete photoInput.dataset.compressedDataUrl') ||
+              !insertRowSource.includes('photoInput.value=""') ||
+              !insertRowSource.includes('photoPreview.removeAttribute("src")') ||
+              !insertRowSource.includes('photoPreview.classList.add("hidden")')) {
+            throw new Error('Successful farmer save must clear the selected photo, compressed data and preview.');
+          }
+
+          // Farmer records must reference a currently loaded branch before insert.
+          const branchHelperStart = html.indexOf('function assertFarmerBranchAvailable');
+          const branchHelperEnd = html.indexOf('function normalizeBanglaDigits', branchHelperStart);
+          const branchHelper = html.slice(branchHelperStart, branchHelperEnd);
+          const branchSubmitStart = html.indexOf('bindForm("farmerForm"');
+          const branchSubmitEnd = html.indexOf('$("saveCollectionDraft")', branchSubmitStart);
+          const branchSubmit = html.slice(branchSubmitStart, branchSubmitEnd);
+          if (branchHelperStart < 0 ||
+              !branchHelper.includes('state.branches.find(') ||
+              !branchHelper.includes('if(!selectedId)') ||
+              !branchHelper.includes('if(!branch)') ||
+              !branchSubmit.includes('f.branch_id=assertFarmerBranchAvailable(f.branch_id)') ||
+              branchSubmit.indexOf('assertFarmerBranchAvailable') > branchSubmit.indexOf('insertRow("farmers"')) {
+            throw new Error('Farmer insert must fail closed unless branch_id references a loaded branch.');
+          }
+
+          // Farmer failed inserts must preserve all form values and photo preview/data.
+          const failedSaveInsertStart = html.indexOf('async function insertRow(');
+          const failedSaveInsertEnd = html.indexOf('function bindForm(', failedSaveInsertStart);
+          const failedSaveInsertSource = html.slice(failedSaveInsertStart, failedSaveInsertEnd);
+          const insertErrorEnd = failedSaveInsertSource.indexOf('  if(form)form.reset();');
+          const insertErrorBlock = failedSaveInsertSource.slice(0, insertErrorEnd);
+          const farmerBindStart = html.indexOf('bindForm("farmerForm"');
+          const farmerBindEnd = html.indexOf('$("saveCollectionDraft")', farmerBindStart);
+          const farmerBindSource = html.slice(farmerBindStart, farmerBindEnd);
+          if (failedSaveInsertStart < 0 || failedSaveInsertEnd < 0 ||
+              insertErrorEnd < 0 ||
+              !insertErrorBlock.includes('if(result.error)') ||
+              !insertErrorBlock.includes('throw result.error') ||
+              insertErrorBlock.includes('form.reset()') ||
+              failedSaveInsertSource.indexOf('if(result.error)') > failedSaveInsertSource.indexOf('if(form)form.reset()') ||
+              !farmerBindSource.includes('insertRow("farmers"') ||
+              !/catch\(error\)\s*\{\s*toast\(/.test(html.slice(html.indexOf('function bindForm('), html.indexOf('$("language")'))) ) {
+            throw new Error('Farmer failed-save path must report the error without resetting the form or clearing photo state; reset is allowed only after insert success.');
+          }
+
+          // Farmer branch selector stays disabled until branches load and when none exist.
+          const farmerBranchMarkup = html.match(/<select name="branch_id" id="farmerBranch"[^>]*>/)?.[0] || '';
+          const branchSelectStart = html.indexOf('function fillFarmerBranchSelect');
+          const branchSelectEnd = html.indexOf('function farmerName', branchSelectStart);
+          const branchSelectSource = html.slice(branchSelectStart, branchSelectEnd);
+          if (!/id="farmerBranch"[^>]*disabled/.test(farmerBranchMarkup) ||
+              !branchSelectSource.includes('state.branches.length===0') ||
+              !branchSelectSource.includes('select.disabled=true') ||
+              !branchSelectSource.includes('select.disabled=false')) {
+            throw new Error('Farmer branch selector must remain disabled during initial loading and when no branches are available, then enable after a successful branch list load.');
+          }
+
+          // Farmer mobile input accepts common Bangladesh formats and normalizes to local 11-digit form.
+          const mobileHelperStart = html.indexOf('function normalizeBanglaDigits');
+          const mobileHelperEnd = html.indexOf('async function assertFarmerCodeAvailable', mobileHelperStart);
+          const mobileHelper = html.slice(mobileHelperStart, mobileHelperEnd);
+          const farmerMobileSubmit = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          if (mobileHelperStart < 0 ||
+              !mobileHelper.includes('replace(/[০-৯]/g') ||
+              !mobileHelper.includes('/^01[3-9]\\d{8}$/') ||
+              !mobileHelper.includes('/^\\+8801[3-9]\\d{8}$/') ||
+              !mobileHelper.includes('return local') ||
+              !farmerMobileSubmit.includes('f.mobile=normalizeFarmerMobile(f.mobile)') ||
+              /mobile.*(?:duplicate|unique)|(?:duplicate|unique).*mobile/i.test(mobileHelper)) {
+            throw new Error('Farmer mobile validation must normalize Bangla digits and accepted Bangladesh formats without imposing mobile uniqueness.');
+          }
+
+          // Read-only Farmer photo schema diagnostic must remain SELECT-only and TEST-scoped.
+          const photoSchemaPath = 'supabase/diagnostics/farmer_photo_schema_preflight.sql';
+          if (!fs.existsSync(photoSchemaPath)) throw new Error('Farmer photo schema preflight is missing.');
+          const photoSchemaSql = fs.readFileSync(photoSchemaPath, 'utf8');
+          const executablePhotoSql = photoSchemaSql.replace(/--.*$/gm, '');
+          if (!/TEST-only, read-only preflight/i.test(photoSchemaSql) ||
+              !/information_schema\.columns/i.test(executablePhotoSql) ||
+              !/photo_data_url/i.test(executablePhotoSql) ||
+              !/photo_storage_path/i.test(executablePhotoSql) ||
+              !/pg_policies/i.test(executablePhotoSql) ||
+              !/pg_indexes/i.test(executablePhotoSql) ||
+              /\b(insert\s+into|update\s+\w|delete\s+from|alter\s+table|create\s+(?:table|index|policy)|drop\s+\w|truncate\s+)/i.test(executablePhotoSql)) {
+            throw new Error('Farmer photo schema diagnostic must inspect column types, storage-path alternatives, RLS policies and indexes without writes or DDL.');
+          }
+
+          // Farmer photo processing clears stale previews and enforces bounded input/output.
+          const photoHandler = html.slice(html.indexOf('$("farmerPhoto")'), html.indexOf('$("captureFarmerLocation")'));
+          if (!/delete input\.dataset\.compressedDataUrl/.test(photoHandler) ||
+              !/file\.size>12\*1024\*1024/.test(photoHandler) ||
+              !/bitmap\.width\*bitmap\.height>40000000/.test(photoHandler) ||
+              !/canvas\.getContext\("2d"\)/.test(photoHandler) ||
+              !/data\.length>650000/.test(photoHandler) ||
+              !/finally\{if\(bitmap/.test(photoHandler)) {
+            throw new Error('Farmer photo handler must clear stale data, bound source dimensions and output size, and release decoded bitmap resources.');
+          }
+
+          // A failed GPS recapture must clear any previous coordinates and reject invalid fixes.
+          const gpsHandler = html.slice(html.indexOf('$("captureFarmerLocation")'), html.indexOf('bindForm("branchForm"'));
+          if (!/clearCapturedLocation\(\)/.test(gpsHandler) ||
+              !/!Number\.isFinite\(lat\)/.test(gpsHandler) ||
+              !/!Number\.isFinite\(lon\)/.test(gpsHandler) ||
+              !/!Number\.isFinite\(accuracy\)/.test(gpsHandler) ||
+              !/clearCapturedLocation\(\);status\.textContent=error\.code/.test(gpsHandler)) {
+            throw new Error('Farmer GPS recapture must clear stale coordinates on start/failure and validate returned coordinates.');
+          }
+
+          // If a future TEST-approved farmers unique constraint rejects a concurrent duplicate,
+          // surface a safe farmer-specific message; do not claim the constraint already exists.
+          const farmerInsert = html.slice(html.indexOf('async function insertRow'), html.indexOf('function bindForm'));
+          if (!/tableName==="farmers"\s*&&\s*result\.error\.code==="23505"/.test(farmerInsert) ||
+              !/কোনো রেকর্ড সংরক্ষণ হয়নি/.test(farmerInsert)) {
+            throw new Error('Farmer unique-conflict errors must be handled without claiming a database constraint is already installed.');
+          }
+
+          // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
+          const addressPath = 'data/bangladesh-address.json';
+          if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
+          const addressTree = JSON.parse(fs.readFileSync(addressPath, 'utf8'));
+          const count = (items, getter) => items.reduce((total, item) => total + getter(item), 0);
+          const districtCount = count(addressTree, d => d.districts.length);
+          const upazilaCount = count(addressTree, d => count(d.districts, z => z.upazilas.length));
+          const unionCount = count(addressTree, d => count(d.districts, z => count(z.upazilas, u => u.unions.length)));
+          const pourashavaCount = count(addressTree, d => count(d.districts, z => count(z.upazilas, u => u.pourashavas.length)));
+          if (addressTree.length !== 8 || districtCount !== 64 || upazilaCount !== 495 ||
+              unionCount !== 4540 || pourashavaCount !== 328) {
+            throw new Error('Bangladesh address hierarchy counts do not match the reviewed dataset.');
+          }
+          if (!html.includes('id="farmerDivision"') || !html.includes('id="farmerDistrict"') ||
+              !html.includes('id="farmerUpazila"') || !html.includes('id="farmerUnion"') ||
+              !html.includes('name="registered_at"') || !/registered_at:f\.registered_at\|\|null/.test(html)) {
+            throw new Error('Farmer address cascade or registration timestamp form binding is missing.');
+          }
+          const registrationMigrationPath = 'supabase/migrations/202610310001_farmer_registered_at.sql';
+          if (!fs.existsSync(registrationMigrationPath)) throw new Error('Farmer registration timestamp migration is missing.');
+          const registrationMigration = fs.readFileSync(registrationMigrationPath, 'utf8');
+          if (!/TEST-first/i.test(registrationMigration) ||
+              !/add column if not exists registered_at timestamptz/i.test(registrationMigration) ||
+              !/alter column registered_at set default now\(\)/i.test(registrationMigration) ||
+              !/legacy rows may remain NULL/i.test(registrationMigration)) {
+            throw new Error('Farmer timestamp migration must preserve legacy rows and provide a default for new records.');
+          }
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
-          if (!/const CACHE_NAME = "muhaimin-v4"/.test(sw) ||
+          if (!/const CACHE_NAME = "muhaimin-v5"/.test(sw) ||
               !/const SUPABASE_JS = "https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/.test(sw) ||
               !/cache\.add\(SUPABASE_JS\)/.test(sw) ||
               !/url\.href === SUPABASE_JS/.test(sw)) {
@@ -178,6 +353,9 @@ jobs:
           const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
           if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
           const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
+          if (!shell.includes('./data/bangladesh-address.json')) {
+            throw new Error('Offline PWA shell must pre-cache the Bangladesh address dataset.');
+          }
           const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
           if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
 
