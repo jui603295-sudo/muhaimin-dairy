@@ -214,7 +214,7 @@ jobs:
           if (!fs.existsSync(photoSchemaPath)) throw new Error('Farmer photo schema preflight is missing.');
           const photoSchemaSql = fs.readFileSync(photoSchemaPath, 'utf8');
           const executablePhotoSql = photoSchemaSql.replace(/--.*$/gm, '');
-          if (!/TEST-only, read-only preflight/i.test(executablePhotoSql) ||
+          if (!/TEST-only, read-only preflight/i.test(photoSchemaSql) ||
               !/information_schema\.columns/i.test(executablePhotoSql) ||
               !/photo_data_url/i.test(executablePhotoSql) ||
               !/photo_storage_path/i.test(executablePhotoSql) ||
