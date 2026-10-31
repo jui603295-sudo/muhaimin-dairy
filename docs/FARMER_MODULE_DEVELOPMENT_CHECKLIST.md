@@ -123,3 +123,19 @@ The following checks were added after this register was first created. These are
 - Continue safe repository-side work and deterministic tests only. The next release-gate action is to restore/provision an isolated TEST environment through an approved path, then resume section 4 in order. Do not merge or deploy while the gate is HOLD.
 
 **Updated decision: HOLD.** CI simulation evidence is stronger, but no database/device/recovery gate has been satisfied by these tests.
+
+
+## 8. SQL diagnostic safety suite — 2026-10-31
+
+| Test ID | Test | Result | Evidence | Limitation |
+|---|---|---|---|---|
+| DB-04 | Farmer schema, photo/GPS/Storage, and duplicate-code SQL diagnostics contain only SELECT/read-only CTE statements | PASS — static source validation | PR #71; Actions run #41156709784; job static-checks SUCCESS | Does not execute SQL or prove target DB schema, RLS, Storage configuration, or JWT behavior |
+| C-05 | Full CI workflow including the new SQL diagnostic safety test | PASS | Actions run #41156709784; all nine validation/test steps completed successfully | Simulation/static checks only; no real database/device verification |
+
+- The safety suite strips SQL comments and string literals before checking executable statements.
+- It checks all three diagnostic files and rejects mutation/DDL/permission-changing commands.
+- 21 SQL statements were independently inspected; all 21 began with SELECT or WITH and none matched the mutation-command guard.
+- PR #71 is a Draft stacked on PR #70. It is not merged.
+- No SQL was executed against Supabase. The TEST-only diagnostics must not be run against Production.
+
+**Release decision remains HOLD.** DB-02/DB-03, actual TEST migration/persistence, Android/offline device, regression and recovery evidence remain blocked pending an isolated TEST environment and approved runtime access.
