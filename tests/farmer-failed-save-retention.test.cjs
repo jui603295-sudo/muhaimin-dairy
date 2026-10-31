@@ -591,3 +591,17 @@ test("Farmer TEST schema preflight reports every payload column and constraint v
   assert.match(diagnostic, /con\.convalidated/i);
   assert.match(diagnostic, /NOT VALID constraints still protect new inserts\/updates/i);
 });
+
+
+test("Farmer photo storage preflight inventories Storage schema and object policies without mutation", () => {
+  const diagnostic = fs.readFileSync(
+    "supabase/diagnostics/farmer_photo_schema_preflight.sql",
+    "utf8"
+  );
+  assert.match(diagnostic, /information_schema\\.columns[\\s\\S]*table_schema = 'storage'/i);
+  assert.match(diagnostic, /table_name in \\('buckets', 'objects'\\)/i);
+  assert.match(diagnostic, /pg_policies[\\s\\S]*schemaname = 'storage'[\\s\\S]*tablename = 'objects'/i);
+  assert.match(diagnostic, /does not create a bucket/i);
+  assert.match(diagnostic, /backup\\/restore and orphan-file cleanup/i);
+  assert.match(diagnostic, /keep the current optional compressed data-URL path unchanged/i);
+});
