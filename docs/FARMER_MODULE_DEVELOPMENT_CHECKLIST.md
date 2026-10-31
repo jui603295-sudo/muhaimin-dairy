@@ -126,3 +126,11 @@ Do these once, in order, and record evidence in this file:
 - [ ] After a successful non-empty branch load, enable the selector and preserve a still-valid previous selection.
 - [ ] **C-12:** Static workflow assertion checks the initial disabled markup and both empty/non-empty state transitions.
 - **Runtime status:** browser/Android timing and real Supabase branch-load behavior remain unverified until an approved TEST environment is available.
+
+
+## 8. Farmer failed-save form retention
+
+- [ ] **F-26:** Force a controlled TEST insert failure and verify name, mobile, farmer code, address, branch selection, expected liters, GPS fields, photo preview, and compressed photo data remain available for correction/retry.
+- [ ] **C-13:** Static workflow assertion confirms the insert error branch throws before any form reset and the submit handler reports the error without clearing the form.
+- [ ] **Success contrast:** after a confirmed successful TEST insert, verify the form and photo preview clear exactly once and the new farmer appears after reload.
+- **Source review:** reset/photo cleanup is located after the insert error branch; runtime proof remains BLOCKED until an approved TEST environment and browser/Android session are available.
