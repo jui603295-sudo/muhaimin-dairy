@@ -139,3 +139,21 @@ The following checks were added after this register was first created. These are
 - No SQL was executed against Supabase. The TEST-only diagnostics must not be run against Production.
 
 **Release decision remains HOLD.** DB-02/DB-03, actual TEST migration/persistence, Android/offline device, regression and recovery evidence remain blocked pending an isolated TEST environment and approved runtime access.
+
+
+## 9. Farmer GPS quality and save-time revalidation — 2026-10-31
+
+| Test ID | Acceptance criterion | Source/runtime evidence | Status | Remaining proof |
+|---|---|---|---|---|
+| F-27 | Farmer GPS is requested only after an explicit user tap; no background tracking is introduced | PR #77, `index.html` Farmer GPS handler | Source implemented; selected local runtime harness PASS | GitHub Actions CI and Android permission/location session |
+| F-28 | Reject malformed/out-of-range coordinates, non-finite/negative accuracy, and accuracy worse than 150 m; clear invalid values | PR #77; local runtime checks for valid fix and 151 m rejection | Selected local runtime checks PASS | Full committed test suite in GitHub Actions; real device GPS quality |
+| F-29 | Reject invalid, future-dated, or older-than-10-minute GPS timestamps at capture and revalidate accuracy/freshness immediately before save | PR #77; submit-time validator source and selected stale-fix test | Source implemented; selected local runtime checks PASS | Full CI and Android/browser verification |
+| F-30 | Ignore late callbacks from earlier location requests and recover the capture button after failures | PR #77; committed tests include callback-race and permission-error cases | Committed tests added; CI not yet confirmed | GitHub Actions result |
+| F-31 | Unchanged legacy Farmer coordinates without historical accuracy/timestamp remain editable; changed/new coordinates require complete fresh metadata | PR #77; submit-time validator source and local legacy-edit check | Selected local runtime check PASS | Full CI and actual TEST UPDATE/readback |
+
+- PR #77 changes only the existing Farmer GPS handler, its runtime test, and CI workflow; no database schema or data changes.
+- The selected local checks parse inline scripts and exercise valid capture, poor-accuracy rejection, unchanged legacy GPS edit, and stale submit rejection. They are not a substitute for the complete Node test suite or CI.
+- GitHub Actions run for PR #77 was not yet available at the time this entry was written; do not label CI as passed.
+- Real Supabase TEST UPDATE/JWT/RLS, Android/browser permission behavior, regression/recovery, and release approval remain BLOCKED.
+
+**Release decision: HOLD.** No merge, SQL execution, Production mutation, or deployment is authorized by this checklist update.
