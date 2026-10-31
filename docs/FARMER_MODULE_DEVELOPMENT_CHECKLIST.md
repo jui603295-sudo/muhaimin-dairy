@@ -166,3 +166,13 @@ Do these once, in order, and record evidence in this file:
 - [ ] **F-30 regression:** Confirm Rangpur → Thakurgaon → Thakurgaon Sadar remains present with its expected 21 Union entries and one Pourashava entry.
 - [ ] **C-17:** Static CI checks sibling uniqueness for Division/District/Upazila and checks the Thakurgaon Sadar fixture in the offline dataset.
 - **Source review:** Current dataset scan found no duplicate Division, District or Upazila names; static assertions now guard this invariant. Browser/Android interaction remains BLOCKED until approved runtime testing.
+
+
+## 13. Farmer locality submit-time validation
+
+- [ ] **F-31:** Select Manual locality and submit with the name blank; the form must show a localized validation message and must not attempt a database insert.
+- [ ] **F-31 positive path:** Enter a manual locality with leading/trailing spaces; verify the trimmed value is saved as `union_name`.
+- [ ] **F-31 listed path:** Select a current Union or Pourashava option; verify its type prefix is removed and the selected Bangla name is saved.
+- [ ] **F-31 invalid path:** Submit an empty or malformed locality option; verify it is normalized to NULL only when genuinely unselected, and malformed values are rejected.
+- [ ] **C-18:** Static CI assertion verifies the submit helper rejects blank manual locality, trims manual input, validates typed locality options, and is wired into the farmer insert payload.
+- **Runtime status:** Browser/Android form submission and TEST database readback remain BLOCKED until an approved TEST environment is available.
