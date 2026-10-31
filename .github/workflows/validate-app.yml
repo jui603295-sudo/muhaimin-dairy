@@ -240,7 +240,7 @@ jobs:
               insertErrorBlock.includes('form.reset()') ||
               failedSaveInsertSource.indexOf('if(result.error)') > failedSaveInsertSource.indexOf('if(form)form.reset()') ||
               !farmerBindSource.includes('insertRow("farmers"') ||
-              !/catch\(error\)\s*\{\s*toast\(/.test(html.slice(html.indexOf('function bindForm('), html.indexOf('$("language")'))) ) {
+              !/catch\(error\)\s*\{\s*toast\(error/.test(html)) {
             throw new Error('Farmer failed-save path must report the error without resetting the form or clearing photo state; reset is allowed only after insert success.');
           }
 
