@@ -266,3 +266,72 @@ test("Address cascade rejects an unavailable child option instead of retaining s
   assert.equal(elements.branchUpazila.value,"");
   assert.equal(elements.branchUnion.value,"");
 });
+
+function makeSubmitForm() {
+  const form = {
+    dataset: {}, attrs: {}, listeners: {}, elements: {},
+    addEventListener(type,handler) { this.listeners[type]=handler; },
+    querySelector() { return this.submitButton; },
+    setAttribute(name,value) { this.attrs[name]=value; },
+    removeAttribute(name) { delete this.attrs[name]; },
+    submitButton: { disabled:false }
+  };
+  return form;
+}
+
+test("bindForm ignores rapid duplicate submits while a write is pending", async () => {
+  const form=makeSubmitForm();
+  let calls=0,resolveWrite;
+  const context={
+    $(id){return id==="branchForm"?form:null;},
+    formObj(){return {name:"test"};},
+    toast(){},
+    String
+  };
+  vm.runInNewContext(extractFunction("bindForm"),context);
+  context.bindForm("branchForm",()=>{calls++;return new Promise(resolve=>{resolveWrite=resolve;});});
+  const event={preventDefault(){},submitter:form.submitButton};
+  const first=form.listeners.submit(event);
+  const second=form.listeners.submit(event);
+  await second;
+  assert.equal(calls,1);
+  assert.equal(form.dataset.submitting,"true");
+  assert.equal(form.submitButton.disabled,true);
+  assert.equal(form.attrs["aria-busy"],"true");
+  resolveWrite();
+  await first;
+  assert.equal(form.dataset.submitting,undefined);
+  assert.equal(form.submitButton.disabled,false);
+  assert.equal(form.attrs["aria-busy"],undefined);
+});
+
+test("bindForm re-enables submit after a failed save so the user can correct and retry", async () => {
+  const form=makeSubmitForm();
+  const notices=[];
+  const context={
+    $(id){return id==="farmerForm"?form:null;},
+    formObj(){return {name:"test"};},
+    toast(message){notices.push(message);},
+    String
+  };
+  vm.runInNewContext(extractFunction("bindForm"),context);
+  context.bindForm("farmerForm",async()=>{throw new Error("permission denied");});
+  await form.listeners.submit({preventDefault(){},submitter:form.submitButton});
+  assert.equal(form.dataset.submitting,undefined);
+  assert.equal(form.submitButton.disabled,false);
+  assert.deepEqual(notices,["permission denied"]);
+});
+
+test("bindForm prevents a second submit even when the button is disabled programmatically", async () => {
+  const form=makeSubmitForm();
+  let calls=0,release;
+  const context={$(id){return form;},formObj(){return {};},toast(){},String};
+  vm.runInNewContext(extractFunction("bindForm"),context);
+  context.bindForm("branchForm",()=>{calls++;return new Promise(resolve=>release=resolve);});
+  const event={preventDefault(){},submitter:form.submitButton};
+  const first=form.listeners.submit(event);
+  await form.listeners.submit(event);
+  assert.equal(calls,1);
+  release();
+  await first;
+});
