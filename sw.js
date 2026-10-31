@@ -1,13 +1,19 @@
-const CACHE_NAME = "muhaimin-v5";
+const CACHE_NAME = "muhaimin-v6";
 const SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./muhaimin-logo.png", "./assets/milk-collection-3d.svg", "./data/bangladesh-address.json"];
+const REQUIRED_APP_SHELL = ["./index.html", "./data/bangladesh-address.json"];
+const OPTIONAL_APP_ASSETS = ["./", "./manifest.json", "./muhaimin-logo.png", "./assets/milk-collection-3d.svg"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(async cache => {
-        await cache.addAll(APP_SHELL);
-        try { await cache.add(SUPABASE_JS); } catch (_) { /* CDN may be unavailable during install; do not fail the app shell. */ }
+        // The app document and Farmer address tree are required for a usable offline shell.
+        // Missing optional presentation assets must not prevent the new worker from installing.
+        await cache.addAll(REQUIRED_APP_SHELL);
+        await Promise.all(OPTIONAL_APP_ASSETS.map(async asset => {
+          try { await cache.add(asset); } catch (_) { /* Optional asset; retry on next online request. */ }
+        }));
+        try { await cache.add(SUPABASE_JS); } catch (_) { /* CDN may be unavailable during install. */ }
       })
       .then(() => self.skipWaiting())
   );
@@ -57,6 +63,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
+  // Cache-first for same-origin static assets, including the Farmer address dataset.
   event.respondWith(
     caches.match(request).then(cached => cached || fetch(request).then(response => {
       if (response && response.ok) {
