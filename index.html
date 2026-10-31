@@ -973,6 +973,7 @@ $("captureFarmerLocation")?.addEventListener("click",()=>{const status=$("farmer
 const BD_ADDRESS_DATA_URL = "https://iqbalhasandev.github.io/bangladesh-geo-json/bangladesh-geo.json";
 const BD_ADDRESS_CACHE_KEY = "muhaimin_bd_address_tree_v1";
 let bdAddressTree = null;
+let bdAddressTreeLoadPromise = null;
 function isValidBangladeshAddressTree(data){
   const hasLabel=item=>!!item&&typeof item==="object"&&
     (typeof item.bn_name==="string"&&item.bn_name.trim()!==""||
@@ -986,25 +987,35 @@ function isValidBangladeshAddressTree(data){
         ((upazila.unions||[]).length+(upazila.pourashavas||[]).length)>0&&
         [...(upazila.unions||[]),...(upazila.pourashavas||[])].every(hasLabel))));
 }
-async function loadBangladeshAddressTree(){
-  try {
-    const cached=localStorage.getItem(BD_ADDRESS_CACHE_KEY);
-    if(cached){
-      const parsed=JSON.parse(cached);
-      if(isValidBangladeshAddressTree(parsed))bdAddressTree=parsed;
-      else localStorage.removeItem(BD_ADDRESS_CACHE_KEY);
+function loadBangladeshAddressTree(){
+  if(bdAddressTree)return Promise.resolve(bdAddressTree);
+  if(bdAddressTreeLoadPromise)return bdAddressTreeLoadPromise;
+  bdAddressTreeLoadPromise=(async()=>{
+    try {
+      const cached=localStorage.getItem(BD_ADDRESS_CACHE_KEY);
+      if(cached){
+        const parsed=JSON.parse(cached);
+        if(isValidBangladeshAddressTree(parsed)){
+          bdAddressTree=parsed;
+          return parsed;
+        }
+        localStorage.removeItem(BD_ADDRESS_CACHE_KEY);
+      }
+    } catch(_) {
+      try{localStorage.removeItem(BD_ADDRESS_CACHE_KEY);}catch(__){}
     }
-  } catch(_) {
-    try{localStorage.removeItem(BD_ADDRESS_CACHE_KEY);}catch(__){}
-  }
-  if(bdAddressTree)return bdAddressTree;
-  const response=await fetch(BD_ADDRESS_DATA_URL,{cache:"force-cache"});
-  if(!response.ok)throw new Error("বাংলাদেশের ঠিকানা তালিকা লোড করা যায়নি।");
-  const data=await response.json();
-  if(!isValidBangladeshAddressTree(data))throw new Error("ঠিকানা তালিকার ফরম্যাট সঠিক নয়।");
-  bdAddressTree=data;
-  try{localStorage.setItem(BD_ADDRESS_CACHE_KEY,JSON.stringify(data));}catch(_){}
-  return data;
+    const response=await fetch(BD_ADDRESS_DATA_URL,{cache:"force-cache"});
+    if(!response.ok)throw new Error("বাংলাদেশের ঠিকানা তালিকা লোড করা যায়নি।");
+    const data=await response.json();
+    if(!isValidBangladeshAddressTree(data))throw new Error("ঠিকানা তালিকার ফরম্যাট সঠিক নয়।");
+    bdAddressTree=data;
+    try{localStorage.setItem(BD_ADDRESS_CACHE_KEY,JSON.stringify(data));}catch(_){}
+    return data;
+  })().catch(error=>{
+    bdAddressTreeLoadPromise=null;
+    throw error;
+  });
+  return bdAddressTreeLoadPromise;
 }
 function bdLabel(item){return item?.bn_name||item?.name||"";}
 function fillAddressSelect(select, items, placeholder, keepValue){
