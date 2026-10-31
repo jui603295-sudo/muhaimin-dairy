@@ -117,3 +117,12 @@ Do these once, in order, and record evidence in this file:
 - [ ] Merge/deploy and post-release verification.
 
 **Current decision: HOLD.** Development evidence is useful and several static checks are complete, but runtime/database security evidence is still missing. This register is the source of truth for future test reuse; update individual rows and their evidence instead of restarting the same test suite.
+
+
+## 7. Farmer branch selector loading-state follow-up
+
+- [ ] **F-25:** On first app load, the Farmer collection-branch selector shows a loading placeholder and remains disabled until the branch list is loaded.
+- [ ] If the loaded branch list is empty, show a clear “no collection branches” message and keep the selector disabled.
+- [ ] After a successful non-empty branch load, enable the selector and preserve a still-valid previous selection.
+- [ ] **C-12:** Static workflow assertion checks the initial disabled markup and both empty/non-empty state transitions.
+- **Runtime status:** browser/Android timing and real Supabase branch-load behavior remain unverified until an approved TEST environment is available.
