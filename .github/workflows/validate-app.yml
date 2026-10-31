@@ -244,3 +244,6 @@ jobs:
             pwaShellFiles: shell.length
           }, null, 2));
           NODE
+
+      - name: Test Branch GPS capture and race safety
+        run: node --test scripts/test-branch-gps-runtime.test.cjs
