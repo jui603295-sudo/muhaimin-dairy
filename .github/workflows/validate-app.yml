@@ -358,6 +358,32 @@ jobs:
               unionCount !== 4540 || pourashavaCount !== 328) {
             throw new Error('Bangladesh address hierarchy counts do not match the reviewed dataset.');
           }
+          // Division, district and Upazila are selected by Bangla name; require sibling uniqueness.
+          const assertUniqueAdministrativeNames = (items, level, parent) => {
+            const seen = new Set();
+            for (const item of items || []) {
+              const name = String(item.bn || "").trim().normalize("NFC");
+              if (!name) throw new Error(level + " dataset contains an empty Bangla name under " + parent + ".");
+              if (seen.has(name)) throw new Error(level + " names must be unique under " + parent + ": " + name);
+              seen.add(name);
+            }
+          };
+          assertUniqueAdministrativeNames(addressTree, "Division", "Bangladesh");
+          for (const division of addressTree) {
+            assertUniqueAdministrativeNames(division.districts, "District", division.bn);
+            for (const district of division.districts || []) {
+              assertUniqueAdministrativeNames(district.upazilas, "Upazila", district.bn);
+            }
+          }
+          const thakurgaonDivision = addressTree.find(item => item.bn === "রংপুর");
+          const thakurgaonDistrict = thakurgaonDivision?.districts?.find(item => item.bn === "ঠাকুরগাঁও");
+          const thakurgaonSadar = thakurgaonDistrict?.upazilas?.find(item => item.bn === "ঠাকুরগাঁও সদর");
+          if (!thakurgaonSadar || !Array.isArray(thakurgaonSadar.unions) ||
+              !Array.isArray(thakurgaonSadar.pourashavas) ||
+              thakurgaonSadar.unions.length !== 21 || thakurgaonSadar.pourashavas.length !== 1) {
+            throw new Error("Thakurgaon Sadar address path must remain available in the offline dataset.");
+          }
+
           // Duplicate locality labels must not produce duplicate picker values.
           const localityPickerStart = html.indexOf('$("farmerUpazila")?.addEventListener("change"');
           const localityPickerEnd = html.indexOf('$("farmerUnion")?.addEventListener("change"', localityPickerStart);
