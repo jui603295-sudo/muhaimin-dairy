@@ -157,3 +157,23 @@ The following checks were added after this register was first created. These are
 - Real Supabase TEST UPDATE/JWT/RLS, Android/browser permission behavior, regression/recovery, and release approval remain BLOCKED.
 
 **Release decision: HOLD.** No merge, SQL execution, Production mutation, or deployment is authorized by this checklist update.
+
+
+## 10. CI confirmation — Farmer GPS quality suite — 2026-10-31
+
+| Test ID | Test | Result | Evidence | Limitation / re-run trigger |
+|---|---|---|---|---|
+| F-27 | Explicit-tap GPS capture; no background tracking | PASS — committed CI suite | PR #77, Actions run #41177242209, job #124467223015 | Real Android/browser permission and GPS session remains unverified |
+| F-28 | Coordinate bounds, accuracy finite/non-negative and <=150 m | PASS — committed CI suite | Same run; step “Test Farmer GPS accuracy, freshness, and submit validation” | Real device GPS quality remains unverified |
+| F-29 | Reject invalid/future/stale timestamps and revalidate at submit | PASS — committed CI suite | Same run | Actual TEST save/update/readback remains blocked |
+| F-30 | Ignore late callbacks; recover capture control after errors | PASS — committed CI suite | Same run | Real browser/device callback behavior remains unverified |
+| F-31 | Preserve unchanged legacy coordinates during edit; require fresh metadata for changed/new GPS | PASS — committed CI suite | Same run | Actual TEST UPDATE/readback remains blocked |
+| C-06 | Full PR #77 static/VM-DOM validation workflow | PASS — all job steps completed successfully | Actions run #41177242209, run #295, job #124467223015 | CI simulation does not prove Supabase persistence, Auth/JWT/RLS, Android, or release readiness |
+
+- Commit tested: c6eabd0851dc8ac4f1888c1bddbeb53a885fd493.
+- CI steps included HTML/PWA validation, Branch GPS capture/race safety, Branch/Farmer save-readback mapping tests, Farmer GPS quality/freshness/submit validation, and Branch/Farmer edit/update tests.
+- PR #77 remains open and unmerged. No database schema changes, SQL execution, Production mutation, or deployment occurred.
+- Supabase inventory still reports Production project hhqshslzoznwyprhjzia as ACTIVE_HEALTHY and the separate TEST project fsfhucggzurwulubpagy as COMING_UP. Therefore TEST JWT/RLS, Farmer persistence/readback, Android GPS, offline device behavior, regression/recovery, and release approval remain BLOCKED.
+- Do not run TEST-only diagnostics or synthetic writes against Production. Do not merge or deploy while the release gate is HOLD.
+
+**Updated release decision: HOLD.** CI is now confirmed PASS; the outstanding TEST and device gates are unchanged.
