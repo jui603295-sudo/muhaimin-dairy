@@ -561,7 +561,7 @@ test("Farmer photo and GPS insert payload fields are covered by the TEST-first S
   assert.match(migration, /farmers_photo_data_url_size_check/);
   assert.match(migration, /between -90 and 90/i);
   assert.match(migration, /between -180 and 180/i);
-  assert.match(migration, /length\\(photo_data_url\\) <= 650000/i);
+  assert.match(migration, /length\(photo_data_url\) <= 650000/i);
 });
 
 test("Farmer registered_at insert payload is covered by a nullable timestamp migration with database default", () => {
@@ -569,7 +569,7 @@ test("Farmer registered_at insert payload is covered by a nullable timestamp mig
     "supabase/migrations/202610310001_farmer_registered_at.sql",
     "utf8"
   );
-  assert.match(migration, /add column if not exists\\s+registered_at\\s+timestamptz/i);
-  assert.match(migration, /alter column registered_at set default now\\(\\)/i);
+  assert.match(migration, /add column if not exists\s+registered_at\s+timestamptz/i);
+  assert.match(migration, /alter column registered_at set default now\(\)/i);
   assert.match(migration, /legacy rows may remain NULL/i);
 });
