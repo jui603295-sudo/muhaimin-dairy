@@ -1101,12 +1101,20 @@ async function initFarmerAddressPicker(){
   const locality=$("farmerUnion");if(!locality||!upazila)return;
   locality.replaceChildren();
   const first=document.createElement("option");first.value="";first.textContent="ইউনিয়ন / পৌরসভা নির্বাচন";locality.appendChild(first);
+  const seenUnionNames=new Set();
   for(const item of upazila?.unions||[]){
+   const localityName=String(item.bn||"").trim().normalize("NFC");
+   if(!localityName||seenUnionNames.has(localityName))continue;
+   seenUnionNames.add(localityName);
    const option=document.createElement("option");option.value="union::"+item.bn;
    option.textContent=item.bn+(item.en&&item.en!==item.bn?" / "+item.en:"")+" (ইউনিয়ন)";
    locality.appendChild(option);
   }
+  const seenPourashavaNames=new Set();
   for(const item of upazila?.pourashavas||[]){
+   const localityName=String(item.bn||"").trim().normalize("NFC");
+   if(!localityName||seenPourashavaNames.has(localityName))continue;
+   seenPourashavaNames.add(localityName);
    const option=document.createElement("option");option.value="pourashava::"+item.bn;
    option.textContent=item.bn+(item.en&&item.en!==item.bn?" / "+item.en:"")+" (পৌরসভা)";
    locality.appendChild(option);
