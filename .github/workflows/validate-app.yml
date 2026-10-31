@@ -178,6 +178,20 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // Read-only Farmer photo schema diagnostic must remain SELECT-only and TEST-scoped.
+          const photoSchemaPath = 'supabase/diagnostics/farmer_photo_schema_preflight.sql';
+          if (!fs.existsSync(photoSchemaPath)) throw new Error('Farmer photo schema preflight is missing.');
+          const photoSchemaSql = fs.readFileSync(photoSchemaPath, 'utf8');
+          if (!/TEST-only, read-only preflight/i.test(photoSchemaSql) ||
+              !/information_schema\.columns/i.test(photoSchemaSql) ||
+              !/photo_data_url/i.test(photoSchemaSql) ||
+              !/photo_storage_path/i.test(photoSchemaSql) ||
+              !/pg_policies/i.test(photoSchemaSql) ||
+              !/pg_indexes/i.test(photoSchemaSql) ||
+              /\b(insert\s+into|update\s+\w|delete\s+from|alter\s+table|create\s+(?:table|index|policy)|drop\s+\w|truncate\s+)/i.test(photoSchemaSql)) {
+            throw new Error('Farmer photo schema diagnostic must inspect column types, storage-path alternatives, RLS policies and indexes without writes or DDL.');
+          }
+
           // Farmer photo processing clears stale previews and enforces bounded input/output.
           const photoHandler = html.slice(html.indexOf('$("farmerPhoto")'), html.indexOf('$("captureFarmerLocation")'));
           if (!/delete input\.dataset\.compressedDataUrl/.test(photoHandler) ||
