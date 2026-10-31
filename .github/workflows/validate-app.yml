@@ -2,7 +2,7 @@ name: Validate Muhaimin Dairy
 
 on:
   pull_request:
-    branches: [main, "feature/bangladesh-address-cascade-v1"]
+    branches: [main, "feature/bangladesh-address-cascade-v1", "test/branch-gps-runtime-hardening-2026-10-31"]
   push:
     branches: ["fix/runtime-js-2026-10-16"]
 
@@ -247,3 +247,6 @@ jobs:
 
       - name: Test Branch GPS capture and race safety
         run: node --test scripts/test-branch-gps-runtime.test.cjs
+
+      - name: Test Branch and Farmer GPS save/readback mapping
+        run: node --test scripts/test-gps-save-readback.test.cjs
