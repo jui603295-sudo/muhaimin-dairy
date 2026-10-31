@@ -168,7 +168,7 @@ The following checks were added after this register was first created. These are
 | F-29 | Reject invalid/future/stale timestamps and revalidate at submit | PASS — committed CI suite | Same run | Actual TEST save/update/readback remains blocked |
 | F-30 | Ignore late callbacks; recover capture control after errors | PASS — committed CI suite | Same run | Real browser/device callback behavior remains unverified |
 | F-31 | Preserve unchanged legacy coordinates during edit; require fresh metadata for changed/new GPS | PASS — committed CI suite | Regression rerun #41177533158 includes partial-coordinate legacy bypass rejection | Actual TEST UPDATE/readback remains blocked |
-| C-06 | Full PR #77 static/VM-DOM validation workflow | PASS — all job steps completed successfully | Actions run #41177242209 (run #295) and #41177533158 (run #296), job #124468079191 | CI simulation does not prove Supabase persistence, Auth/JWT/RLS, Android, or release readiness |
+| C-06 | Full PR #77 static/VM-DOM validation workflow | PASS — all job steps completed successfully | Actions run #41177242209 (run #295, job #124467223015) and #41177533158 (run #296, job #124468079191) | CI simulation does not prove Supabase persistence, Auth/JWT/RLS, Android, or release readiness |
 
 - Initial CI commit: c6eabd0851dc8ac4f1888c1bddbeb53a885fd493. Regression-fix commit: c0ec528adf7029527df3e66e4a3d23bc85598eab.
 - CI steps included HTML/PWA validation, Branch GPS capture/race safety, Branch/Farmer save-readback mapping tests, Farmer GPS quality/freshness/submit validation, and Branch/Farmer edit/update tests.
