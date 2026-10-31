@@ -551,7 +551,7 @@ test("Farmer photo and GPS insert payload fields are covered by the TEST-first S
   ]) {
     assert.match(
       migration,
-      new RegExp("add column if not exists\\\\s+" + column + "\\\\s+" + type, "i"),
+      new RegExp("add column if not exists\\s+" + column + "\\s+" + type, "i"),
       column + " must exist in the photo/GPS migration with the expected type"
     );
   }
