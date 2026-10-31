@@ -279,7 +279,7 @@ function farmerMediaHarness(options = {}) {
     ["latitude", "longitude", "location_accuracy", "location_captured_at"].map(name => [name, { value: "" }])
   );
   const form = { elements: fields };
-  const photoInput = { dataset: {}, value: "", files: [] };
+  const photoInput = { dataset: {}, value: "", files: [], addEventListener(type, callback) { listeners["photo:" + type] = callback; } };
   const preview = {
     src: "",
     classes: new Set(["hidden"]),
