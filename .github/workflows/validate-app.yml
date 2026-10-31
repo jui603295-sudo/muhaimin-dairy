@@ -178,6 +178,21 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // Farmer mobile input accepts common Bangladesh formats and normalizes to local 11-digit form.
+          const mobileHelperStart = html.indexOf('function normalizeBanglaDigits');
+          const mobileHelperEnd = html.indexOf('async function assertFarmerCodeAvailable', mobileHelperStart);
+          const mobileHelper = html.slice(mobileHelperStart, mobileHelperEnd);
+          const farmerSubmit = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          if (mobileHelperStart < 0 ||
+              !/replace\\(\/\[০-৯\]\/g/.test(mobileHelper) ||
+              !/\\^01\[3-9\]\\d\{8\}\$/.test(mobileHelper) ||
+              !/\\^\\+8801\[3-9\]\\d\{8\}\$/.test(mobileHelper) ||
+              !/return local/.test(mobileHelper) ||
+              !/f\\.mobile=normalizeFarmerMobile\\(f\\.mobile\\)/.test(farmerSubmit) ||
+              /mobile.*(?:duplicate|unique)|(?:duplicate|unique).*mobile/i.test(mobileHelper)) {
+            throw new Error('Farmer mobile validation must normalize Bangla digits and accepted Bangladesh formats without imposing mobile uniqueness.');
+          }
+
           // Read-only Farmer photo schema diagnostic must remain SELECT-only and TEST-scoped.
           const photoSchemaPath = 'supabase/diagnostics/farmer_photo_schema_preflight.sql';
           if (!fs.existsSync(photoSchemaPath)) throw new Error('Farmer photo schema preflight is missing.');
