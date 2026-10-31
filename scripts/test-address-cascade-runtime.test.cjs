@@ -76,7 +76,7 @@ test("Thakurgaon address cascade populates district, upazila and union/pourashav
   const division = h.elements.branchDivision, district = h.elements.branchDistrict;
   const upazila = h.elements.branchUpazila, union = h.elements.branchUnion;
   division.value = "রংপুর"; division.dispatchEvent(new MockEvent("change"));
-  assert.deepEqual(district.options.map(o => o.value), ["জেলা নির্বাচন করুন", "ঠাকুরগাঁও"]);
+  assert.deepEqual(district.options.map(o => o.value), ["", "ঠাকুরগাঁও"]);
   district.value = "ঠাকুরগাঁও"; district.dispatchEvent(new MockEvent("change"));
   assert.ok(upazila.options.some(o => o.value === "ঠাকুরগাঁও সদর"));
   assert.ok(upazila.options.some(o => o.value === "পীরগঞ্জ"));
@@ -96,7 +96,7 @@ test("changing a parent selection clears dependent selections and stale child va
   un.value = "আকচা";
   d.value = "ঢাকা"; d.dispatchEvent(new MockEvent("change"));
   assert.equal(ds.value, "");
-  assert.deepEqual(ds.options.map(o => o.value), ["জেলা নির্বাচন করুন", "ঢাকা"]);
+  assert.deepEqual(ds.options.map(o => o.value), ["", "ঢাকা"]);
   assert.equal(u.value, "");
   assert.equal(un.value, "");
   assert.equal(u.options.length, 1);
@@ -114,7 +114,7 @@ test("combines unions and pourashavas without duplicate labels", async () => {
   d.value="বিভাগ"; d.dispatchEvent(new MockEvent("change"));
   ds.value="জেলা"; ds.dispatchEvent(new MockEvent("change"));
   u.value="উপজেলা"; u.dispatchEvent(new MockEvent("change"));
-  assert.deepEqual(un.options.map(o=>o.value), ["ইউনিয়ন / পৌরসভা নির্বাচন করুন", "এক", "পৌরসভা"]);
+  assert.deepEqual(un.options.map(o=>o.value), ["", "এক", "পৌরসভা"]);
 });
 
 test("network failure is surfaced instead of silently presenting an empty address list", async () => {
