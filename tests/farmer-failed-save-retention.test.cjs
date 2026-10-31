@@ -453,3 +453,85 @@ test("Farmer GPS handler rejects out-of-range longitude and invalid accuracy", (
   assert.equal(accuracy.fields.longitude.value, "");
   assert.match(accuracy.status.textContent, /GPS তথ্য সঠিক নয়/);
 });
+
+
+test("Farmer submit callback maps photo GPS address and registration fields into the insert payload", async () => {
+  let handler = null;
+  let inserted = null;
+  const photo = "data:image/jpeg;base64,QUJDRA==";
+  const form = { id: "farmerForm" };
+  const photoInput = { dataset: { compressedDataUrl: photo } };
+  const context = {
+    bindForm(id, callback) {
+      assert.equal(id, "farmerForm");
+      handler = callback;
+    },
+    $(id) {
+      if (id === "farmerPhoto") return photoInput;
+      if (id === "farmerForm") return form;
+      return null;
+    },
+    assertFarmerBranchAvailable(value) { return value; },
+    normalizeFarmerMobile(value) { return value; },
+    async assertFarmerCodeAvailable(value) { return value; },
+    normalizeFarmerLocalitySelection(value) {
+      assert.equal(value.farmer_union_name, "union::আকচা");
+      return "আকচা";
+    },
+    n(value) { return Number(value) || 0; },
+    async insertRow(table, payload, actualForm) {
+      inserted = { table, payload, actualForm };
+      return { saved: true };
+    }
+  };
+  const start = html.indexOf('bindForm("farmerForm",async f=>{');
+  const end = html.indexOf('\n$("saveCollectionDraft")', start);
+  assert.ok(start >= 0 && end > start, "actual Farmer submit callback must exist");
+  vm.runInNewContext(html.slice(start, end), context, { filename: "actual-farmer-submit-payload.js" });
+  assert.equal(typeof handler, "function");
+  const formData = {
+    farmer_code: "F-1001",
+    name: "পরীক্ষামূলক কৃষক",
+    mobile: "01700000000",
+    farmer_village_name: "আকচা গ্রাম",
+    village: "",
+    farmer_country: "বাংলাদেশ",
+    farmer_division: "রংপুর",
+    farmer_district: "ঠাকুরগাঁও",
+    farmer_upazila: "ঠাকুরগাঁও সদর",
+    farmer_union_name: "union::আকচা",
+    branch_id: "branch-1",
+    expected_liters: "25",
+    latitude: "26.03",
+    longitude: "88.46",
+    location_accuracy: "12",
+    location_captured_at: "2026-10-31T01:00:00.000Z",
+    registered_at: "2026-10-31T01:00:00.000Z"
+  };
+  await handler(formData, form);
+  assert.equal(inserted.table, "farmers");
+  assert.equal(inserted.actualForm, form);
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(inserted.payload)),
+    {
+      farmer_code: "F-1001",
+      name: "পরীক্ষামূলক কৃষক",
+      mobile: "01700000000",
+      village: "আকচা গ্রাম",
+      country: "বাংলাদেশ",
+      division: "রংপুর",
+      district: "ঠাকুরগাঁও",
+      upazila: "ঠাকুরগাঁও সদর",
+      union_name: "আকচা",
+      village_name: "আকচা গ্রাম",
+      branch_id: "branch-1",
+      expected_liters: 25,
+      photo_data_url: photo,
+      latitude: 26.03,
+      longitude: 88.46,
+      location_accuracy: 12,
+      location_captured_at: "2026-10-31T01:00:00.000Z",
+      registered_at: "2026-10-31T01:00:00.000Z"
+    }
+  );
+});
