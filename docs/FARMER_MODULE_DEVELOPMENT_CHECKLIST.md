@@ -190,10 +190,11 @@ Do these once, in order, and record evidence in this file:
 
 ## 15. Service Worker runtime behavior harness
 
-- [ ] **F-33 required-shell failure:** simulated missing `data/bangladesh-address.json` rejects installation and does not call `skipWaiting()`.
-- [ ] **F-33 optional-asset isolation:** simulated missing manifest/logo/SVG does not block installation; required app HTML and address JSON remain cached.
-- [ ] **F-33 cache upgrade:** activation removes older `muhaimin-*` caches, preserves unrelated caches, and claims clients.
-- [ ] **F-33 cache-first address fetch:** a cached Farmer address dataset is returned without a network request.
-- [ ] **C-20:** Node.js `node:test` harness runs in GitHub Actions against the actual `sw.js` source.
+- [x] **F-33 required-shell failure:** PASS — missing address JSON rejects install and `skipWaiting()` is not called. simulated missing `data/bangladesh-address.json` rejects installation and does not call `skipWaiting()`.
+- [x] **F-33 optional-asset isolation:** PASS — missing manifest/logo/SVG does not block install; required shell is cached. simulated missing manifest/logo/SVG does not block installation; required app HTML and address JSON remain cached.
+- [x] **F-33 cache upgrade:** PASS — old Muhaimin cache removed, unrelated cache preserved, clients claimed. activation removes older `muhaimin-*` caches, preserves unrelated caches, and claims clients.
+- [x] **F-33 cache-first address fetch:** PASS — cached address dataset returned with zero network requests. a cached Farmer address dataset is returned without a network request.
+- [x] **C-20:** PASS — Node.js `node:test` harness runs in GitHub Actions against the actual `sw.js` source.
 - **Scope:** deterministic Service Worker simulation only. This is not a substitute for Chrome/Android install, offline reload, browser Cache Storage inspection, or real network-transition testing.
-- **Runtime status:** GitHub Actions execution pending; real Android/browser OFF-01 remains BLOCKED.
+- **Evidence:** GitHub Actions run `41151190015`, `static-checks` job, including `node --test tests/service-worker.test.cjs` — PASS.
+- **Runtime status:** simulated Service Worker tests PASS; real Android/browser OFF-01 remains BLOCKED.
