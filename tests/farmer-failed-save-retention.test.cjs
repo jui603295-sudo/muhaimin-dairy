@@ -150,6 +150,7 @@ function bindFormHarness() {
     },
     setFarmerRegistrationTime() { registeredAtCalls++; },
     toast(message) { toasts.push(String(message)); },
+    lang() { return "bn"; },
     navigator: { onLine: true },
     setOnline(value) { context.navigator.onLine = value; }
   };
