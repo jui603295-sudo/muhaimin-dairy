@@ -269,3 +269,164 @@ test("Farmer list escapes address labels before inserting them into table markup
     "Rangpur / &lt;img src=x&gt; / Sadar / Union / Village"
   );
 });
+
+
+// Run the actual Farmer photo and GPS event handlers with browser API fakes.
+function farmerMediaHarness(options = {}) {
+  const listeners = {};
+  const toasts = [];
+  const fields = Object.fromEntries(
+    ["latitude", "longitude", "location_accuracy", "location_captured_at"].map(name => [name, { value: "" }])
+  );
+  const form = { elements: fields };
+  const photoInput = { dataset: {}, value: "", files: [] };
+  const preview = {
+    src: "",
+    classes: new Set(["hidden"]),
+    removeAttribute(name) { if (name === "src") this.src = ""; },
+    classList: {
+      add: name => preview.classes.add(name),
+      remove: name => preview.classes.delete(name)
+    }
+  };
+  const status = { textContent: "" };
+  const photoButton = { addEventListener(type, callback) { listeners["photo:" + type] = callback; } };
+  const gpsButton = { addEventListener(type, callback) { listeners["gps:" + type] = callback; } };
+  const canvas = {
+    width: 0, height: 0,
+    getContext() { return { drawImage() {} }; },
+    toDataURL() { return options.dataUrl || "data:image/jpeg;base64,QUJDRA=="; }
+  };
+  const context = {
+    $ (id) {
+      return ({
+        farmerPhoto: photoInput,
+        farmerPhotoPreview: preview,
+        captureFarmerLocation: gpsButton,
+        farmerLocationStatus: status,
+        farmerForm: form
+      })[id] || null;
+    },
+    toast(message) { toasts.push(String(message)); },
+    createImageBitmap: options.createImageBitmap || (async () => ({
+      width: 1200, height: 800, close() { this.closed = true; }
+    })),
+    document: { createElement(tag) { assert.equal(tag, "canvas"); return canvas; } },
+    navigator: options.navigator || { geolocation: {
+      getCurrentPosition(success, failure, config) {
+        context.__geoCallbacks = { success, failure, config };
+        if (options.position) success(options.position);
+        if (options.geoError) failure(options.geoError);
+      }
+    } },
+    Date
+  };
+  const start = html.indexOf('$("farmerPhoto")?.addEventListener("change"');
+  const end = html.indexOf('\n\nbindForm("branchForm"', start);
+  assert.ok(start >= 0 && end > start, "actual Farmer photo and GPS handlers must exist");
+  vm.runInNewContext(html.slice(start, end), context, { filename: "actual-farmer-media-handlers.js" });
+  return {
+    listeners, toasts, fields, form, photoInput, preview, status, canvas, context,
+    async choosePhoto(file) {
+      photoInput.files = file ? [file] : [];
+      await listeners["photo:change"]({ currentTarget: photoInput });
+    },
+    captureGps() { listeners["gps:click"](); }
+  };
+}
+
+test("Farmer photo handler compresses a supported image and retains preview data URL", async () => {
+  const h = farmerMediaHarness();
+  await h.choosePhoto({ type: "image/png", size: 1024 });
+  assert.equal(h.canvas.width, 720);
+  assert.equal(h.canvas.height, 480);
+  assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,QUJDRA==");
+  assert.equal(h.preview.src, "data:image/jpeg;base64,QUJDRA==");
+  assert.equal(h.preview.classes.has("hidden"), false);
+  assert.deepEqual(h.toasts, []);
+});
+
+test("Farmer photo handler rejects unsupported and oversized original files", async () => {
+  const h = farmerMediaHarness();
+  await h.choosePhoto({ type: "text/plain", size: 20 });
+  assert.equal(h.photoInput.value, "");
+  assert.equal(h.photoInput.dataset.compressedDataUrl, undefined);
+  assert.match(h.toasts[0], /সমর্থিত ছবি নির্বাচন করুন/);
+  const second = farmerMediaHarness();
+  await second.choosePhoto({ type: "image/jpeg", size: 12 * 1024 * 1024 + 1 });
+  assert.equal(second.photoInput.value, "");
+  assert.equal(second.photoInput.dataset.compressedDataUrl, undefined);
+  assert.match(second.toasts[0], /১২ MB-এর বেশি/);
+});
+
+test("Farmer photo handler clears file and preview if compression remains above the database limit", async () => {
+  const h = farmerMediaHarness({ dataUrl: "data:image/jpeg;base64," + "A".repeat(650001) });
+  await h.choosePhoto({ type: "image/jpeg", size: 2048 });
+  assert.equal(h.photoInput.value, "");
+  assert.equal(h.photoInput.dataset.compressedDataUrl, undefined);
+  assert.equal(h.preview.src, "");
+  assert.equal(h.preview.classes.has("hidden"), true);
+  assert.match(h.toasts[0], /কমপ্রেস করার পরও ছবিটি বড়/);
+});
+
+test("Farmer photo handler fails safely when image decoding is unavailable", async () => {
+  const h = farmerMediaHarness({ createImageBitmap: async () => { throw new Error("decode failed"); } });
+  await h.choosePhoto({ type: "image/jpeg", size: 1024 });
+  assert.equal(h.photoInput.dataset.compressedDataUrl, undefined);
+  assert.equal(h.preview.src, "");
+  assert.equal(h.preview.classes.has("hidden"), true);
+  assert.equal(h.photoInput.value, "");
+  assert.deepEqual(h.toasts, ["decode failed"]);
+});
+
+test("Farmer GPS handler saves valid coordinates and capture timestamp", () => {
+  const position = {
+    coords: { latitude: 26.03, longitude: 88.46, accuracy: 12.4 },
+    timestamp: Date.parse("2026-10-31T01:00:00.000Z")
+  };
+  const h = farmerMediaHarness({ position });
+  h.fields.latitude.value = "old";
+  h.captureGps();
+  assert.equal(h.fields.latitude.value, "26.03");
+  assert.equal(h.fields.longitude.value, "88.46");
+  assert.equal(h.fields.location_accuracy.value, "12");
+  assert.equal(h.fields.location_captured_at.value, "2026-10-31T01:00:00.000Z");
+  assert.match(h.status.textContent, /লোকেশন নেওয়া হয়েছে/);
+  assert.deepEqual(h.context.__geoCallbacks.config, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+});
+
+test("Farmer GPS handler clears stale coordinates when permission is denied", () => {
+  const h = farmerMediaHarness({ geoError: { code: 1 } });
+  h.fields.latitude.value = "26.03";
+  h.fields.longitude.value = "88.46";
+  h.fields.location_accuracy.value = "10";
+  h.fields.location_captured_at.value = "2026-10-30T00:00:00.000Z";
+  h.captureGps();
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(h.fields).map(([key, field]) => [key, field.value])),
+    { latitude: "", longitude: "", location_accuracy: "", location_captured_at: "" }
+  );
+  assert.match(h.status.textContent, /অনুমতি দেওয়া হয়নি/);
+});
+
+test("Farmer GPS handler rejects invalid coordinate results and clears stale values", () => {
+  const h = farmerMediaHarness({ position: {
+    coords: { latitude: 120, longitude: 88.46, accuracy: 10 },
+    timestamp: Date.parse("2026-10-31T01:00:00.000Z")
+  } });
+  h.fields.latitude.value = "old";
+  h.captureGps();
+  assert.equal(h.fields.latitude.value, "");
+  assert.equal(h.fields.longitude.value, "");
+  assert.match(h.status.textContent, /GPS তথ্য সঠিক নয়/);
+});
+
+test("Farmer GPS handler reports unsupported browser without retaining old location", () => {
+  const h = farmerMediaHarness({ navigator: {} });
+  h.fields.latitude.value = "old";
+  h.fields.longitude.value = "old";
+  h.captureGps();
+  assert.equal(h.fields.latitude.value, "");
+  assert.equal(h.fields.longitude.value, "");
+  assert.match(h.status.textContent, /GPS সমর্থিত নয়/);
+});
