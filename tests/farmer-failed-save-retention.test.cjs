@@ -83,6 +83,22 @@ test("failed non-Farmer insert also avoids success-only reset and side effects",
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
 });
 
+
+test("duplicate Farmer code conflict shows a safe validation error and preserves form/photo state", async () => {
+  const h = harness({ error: { code: "23505", message: "duplicate key value violates unique constraint" } });
+  await assert.rejects(
+    h.insert("farmers", { name: "পরীক্ষামূলক কৃষক", farmer_code: "F00001" }),
+    error => error && error.message.includes("ইউনিক নিয়মের সঙ্গে সংঘর্ষ")
+  );
+  assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
+  assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");
+  assert.equal(h.farmerMobile.value, "01700000000");
+  assert.equal(h.photoInput.value, "farmer-photo.jpg");
+  assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
+  assert.equal(h.photoPreview.src, "data:image/jpeg;base64,ZmFrZQ==");
+  assert.equal(h.photoPreview.classNames.has("hidden"), false);
+});
+
 test("network rejection preserves Farmer form and photo state without success side effects", async () => {
   const h = harness({ reject: new Error("network unavailable") });
   await assert.rejects(
