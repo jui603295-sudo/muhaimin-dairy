@@ -142,3 +142,11 @@ Do these once, in order, and record evidence in this file:
 - [ ] **F-27 negative path:** Clear the selected Upazila and confirm the Union/Pouroshava selector remains disabled until a valid Upazila is selected again.
 - [ ] **C-14:** Static workflow assertion verifies parent changes clear manual locality and village values, reset the locality selector, and prevent locality selection without an Upazila.
 - **Source review:** Added reset behavior to the shared child-reset helper and Upazila change handler. Browser/Android runtime interaction remains BLOCKED pending an approved TEST preview session.
+
+
+## 10. Farmer manual locality stale-value and form-data protection
+
+- [ ] **F-28:** Select the Manual locality option, enter a locality, then switch to a listed Union/Pouroshava. Confirm the manual field is cleared, hidden, and disabled; submit only the selected listed locality.
+- [ ] **F-28 negative path:** Select Manual again and confirm the field becomes visible/enabled and its new text is the only locality value submitted.
+- [ ] **C-15:** Static workflow assertion verifies the manual field starts disabled, is disabled/cleared on parent reset, is disabled/cleared after Upazila refresh, and is enabled only for the Manual option.
+- **Source review:** Hidden manual locality text can no longer be included in FormData; actual browser/Android form serialization and TEST insert/readback remain BLOCKED pending an approved TEST environment.
