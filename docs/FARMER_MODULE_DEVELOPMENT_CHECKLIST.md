@@ -26,10 +26,11 @@
 | F-03 | Dataset covers all divisions and expected hierarchy counts | PASS — data audit | 8 divisions, 64 districts, 495 upazilas, 4,540 unions, 328 pourashavas |
 | F-04 | Thakurgaon Sadar path exists | PASS — data audit | Rangpur → Thakurgaon → Thakurgaon Sadar; 21 unions and Thakurgaon Pourashava |
 | F-05 | Missing locality can be entered manually | PASS — source review | Manual locality fallback present |
-| F-06 | Farmer photo can be selected/captured and previewed | PARTIAL — source review only | Browser/device file permission and upload/save still unverified |
+| F-06 | Farmer photo can be selected/captured and previewed | PARTIAL — safer source handler added; browser/device and database persistence unverified | JPEG/PNG/WebP/HEIC/HEIF/GIF/BMP allowlist, 12 MB source cap, 40 MP decode cap, 720 px resize, 650 KB output cap, stale preview cleared, bitmap released |
 | F-07 | GPS is explicitly user-triggered; no background tracking | PASS — source review | Capture button and status text; no continuous tracking flow |
 | F-08 | GPS coordinates preserve valid zero values | PASS — source review | Empty string is mapped to NULL; numeric zero remains zero |
 | F-19 | Failed GPS recapture cannot submit stale coordinates from an earlier capture | PARTIAL — source-level guard added; browser/device behavior not run | GPS fields clear before each attempt and on unsupported/error/invalid fixes; C-06 tracks source assertion |
+| F-20 | Invalid, oversized, unsupported, or failed photo processing cannot leave an old preview/data payload ready for submission | PARTIAL — source-level guard added; device and persistence tests blocked | Photo handler clears dataset/preview before processing and on failure; C-07 tracks static assertion |
 | F-09 | Registration time is captured at submission and stored | PARTIAL — code + migration review | Payload and migration present; DB insert not verified |
 | F-10 | Farmer list displays photo/address/GPS/registration date | PASS — source review | Rendering functions present; live data display unverified |
 | F-11 | Address dataset is available in the PWA shell/offline | PASS — source review | sw.js v5 precaches the JSON; real offline device test pending |
@@ -51,6 +52,7 @@
 | C-04 | Farmer duplicate-code guard is wired before insert and fails closed on lookup errors | PASS — source-level validation, not GitHub Actions | Commit `b0c46431b18d973d3a82fd759aadf9c225b2321d`: 2 inline scripts parsed; loaded-list check, case-insensitive database lookup, fail-closed error path, pre-insert order, and the workflow assertion were executed against exact branch contents | Farmer duplicate guard, farmer submit handler, or its CI assertion changes |
 | C-05 | Farmer insert handles PostgreSQL unique-violation code 23505 with a localized no-save message | PARTIAL — source and workflow assertion authored; CI not run | New branch source check; no TEST constraint or concurrent insert test | Farmer insert/error handling or its CI assertion changes |
 | C-06 | GPS recapture clears stale coordinates and validates latitude, longitude, accuracy, and timestamp | PARTIAL — workflow assertion authored; CI/runtime not yet run | Farmer GPS handler source assertion; no real browser GPS permission/device test | GPS capture handler or its workflow assertion changes |
+| C-07 | Farmer photo processing enforces input/decode/output bounds, clears stale data, and releases bitmap | PARTIAL — workflow assertion authored; CI/runtime not run | Photo handler source assertion; no real-device file picker or DB persistence test | Photo processing or its workflow assertion changes |
 | D-01 | Address JSON parses and hierarchy counts match | PASS | PR #47 CI validation | Address JSON changes |
 | D-02 | Thakurgaon Sadar sample hierarchy exists | PASS | Data audit recorded in PR #47 development evidence | Address JSON changes |
 | D-03 | Farmer cascade selector wiring exists | PASS | PR #47 CI/source review | Address form or cascade JS changes |
@@ -83,7 +85,7 @@ Do these once, in order, and record evidence in this file:
 | data/bangladesh-address.json | D-01, D-02, D-03, OFF-01 |
 | Farmer address HTML/JS | C-01, C-02, D-03, UI-01, relevant REG-01 |
 | Farmer insert error handling | C-01, C-02, C-05, UI-01, DB-04 when TEST constraint is available |
-| Photo compression/preview/save code | C-01, C-02, F-06, DB-02, DB-03, persistence test, UI-01 |
+| Photo compression/preview/save code | C-01, C-02, C-07, F-06, F-20, DB-02, DB-03, persistence test, UI-01 |
 | GPS capture or serialization | C-01, C-02, C-06, F-07, F-08, F-19, DB-02, persistence test, UI-01 |
 | Registration timestamp code/migration | C-01, C-02, DB-01, DB-02, persistence test |
 | RLS/policy/auth code | DB-03 and relevant integration/regression tests |
