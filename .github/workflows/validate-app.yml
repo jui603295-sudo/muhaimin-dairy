@@ -2,7 +2,7 @@ name: Validate Muhaimin Dairy
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "feature/bangladesh-address-cascade-v1"]
   push:
     branches: ["fix/runtime-js-2026-10-16"]
 
@@ -244,3 +244,6 @@ jobs:
             pwaShellFiles: shell.length
           }, null, 2));
           NODE
+
+      - name: Test Bangladesh address cascade runtime
+        run: node --test scripts/test-address-cascade-runtime.test.cjs
