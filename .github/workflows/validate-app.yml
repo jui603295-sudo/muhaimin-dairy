@@ -2,9 +2,9 @@ name: Validate Muhaimin Dairy
 
 on:
   pull_request:
-    branches: [main, "test/farmer-address-picker-runtime-2026-10-31"]
+    branches: [main, "test/farmer-address-picker-runtime-2026-10-31", "test/farmer-failed-save-retention-runtime-2026-10-31", "test/farmer-readonly-sql-diagnostics-2026-10-31"]
   push:
-    branches: ["fix/runtime-js-2026-10-16", "test/farmer-address-picker-runtime-2026-10-31", "test/farmer-failed-save-retention-runtime-2026-10-31"]
+    branches: ["fix/runtime-js-2026-10-16", "test/farmer-address-picker-runtime-2026-10-31", "test/farmer-failed-save-retention-runtime-2026-10-31", "test/farmer-readonly-sql-diagnostics-2026-10-31"]
 
 permissions:
   contents: read
@@ -553,3 +553,5 @@ jobs:
         run: node --test tests/bangladesh-address-data.test.cjs
       - name: Test Farmer failed-save retention runtime behavior
         run: node --test tests/farmer-failed-save-retention.test.cjs
+      - name: Verify Farmer SQL diagnostics are read-only
+        run: node --test tests/farmer-readonly-sql-diagnostics.test.cjs
