@@ -158,3 +158,11 @@ Do these once, in order, and record evidence in this file:
 - [ ] **F-29 data integrity:** Do not silently delete or rewrite source administrative records based only on duplicate labels; confirm authoritative source data before any dataset correction.
 - [ ] **C-16:** Static workflow checks for empty Bangla locality names, detects duplicate names within each locality type and verifies the picker deduplicates those names.
 - **Source review:** The UI now deduplicates repeated names independently for Union and Pourashava while retaining the original offline dataset. Browser/Android rendering and TEST persistence remain BLOCKED pending approved runtime access.
+
+
+## 12. Farmer administrative selector uniqueness and local path regression
+
+- [ ] **F-30:** Verify Division, District and Upazila Bangla names are unique within their parent list, because the cascading picker resolves each selected level by Bangla name.
+- [ ] **F-30 regression:** Confirm Rangpur → Thakurgaon → Thakurgaon Sadar remains present with its expected 21 Union entries and one Pourashava entry.
+- [ ] **C-17:** Static CI checks sibling uniqueness for Division/District/Upazila and checks the Thakurgaon Sadar fixture in the offline dataset.
+- **Source review:** Current dataset scan found no duplicate Division, District or Upazila names; static assertions now guard this invariant. Browser/Android interaction remains BLOCKED until approved runtime testing.
