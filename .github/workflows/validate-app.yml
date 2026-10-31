@@ -467,20 +467,20 @@ jobs:
           }
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
-          if (!/const CACHE_NAME = "muhaimin-v5"/.test(sw) ||
+          if (!/const CACHE_NAME = "muhaimin-v6"/.test(sw) ||
               !/const SUPABASE_JS = "https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/.test(sw) ||
-              !/cache\.add\(SUPABASE_JS\)/.test(sw) ||
+              !/try \{ await cache\.add\(SUPABASE_JS\); \} catch/.test(sw) ||
               !/url\.href === SUPABASE_JS/.test(sw)) {
-            throw new Error('PWA service worker must cache the Supabase client needed for offline app startup.');
+            throw new Error('PWA service worker must keep Supabase CDN caching optional and use the current cache version.');
           }
-          const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
-          if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
+          const shellMatch = sw.match(/REQUIRED_APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
+          if (!shellMatch) throw new Error('Could not find REQUIRED_APP_SHELL in sw.js.');
           const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
-          if (!shell.includes('./data/bangladesh-address.json')) {
-            throw new Error('Offline PWA shell must pre-cache the Bangladesh address dataset.');
+          if (!shell.includes('./index.html') || !shell.includes('./data/bangladesh-address.json')) {
+            throw new Error('Offline PWA shell must require both the app document and Bangladesh address dataset.');
           }
           const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
-          if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
+          if (missingShellFiles.length) throw new Error('Required PWA shell files missing: ' + missingShellFiles.join(', '));
 
           // Keep the TEST execution runbook and read-only SQL preflight available and safety-scoped.
           const runbookPath = 'docs/MILK_COLLECTION_V3_TEST_RUNBOOK.md';
