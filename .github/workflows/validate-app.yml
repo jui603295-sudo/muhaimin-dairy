@@ -182,15 +182,15 @@ jobs:
           const branchHelperStart = html.indexOf('function assertFarmerBranchAvailable');
           const branchHelperEnd = html.indexOf('function normalizeBanglaDigits', branchHelperStart);
           const branchHelper = html.slice(branchHelperStart, branchHelperEnd);
-          const farmerSubmitStart = html.indexOf('bindForm("farmerForm"');
-          const farmerSubmitEnd = html.indexOf('$("saveCollectionDraft")', farmerSubmitStart);
-          const farmerSubmit = html.slice(farmerSubmitStart, farmerSubmitEnd);
+          const branchSubmitStart = html.indexOf('bindForm("farmerForm"');
+          const branchSubmitEnd = html.indexOf('$("saveCollectionDraft")', branchSubmitStart);
+          const branchSubmit = html.slice(branchSubmitStart, branchSubmitEnd);
           if (branchHelperStart < 0 ||
               !branchHelper.includes('state.branches.find(') ||
               !branchHelper.includes('if(!selectedId)') ||
               !branchHelper.includes('if(!branch)') ||
-              !farmerSubmit.includes('f.branch_id=assertFarmerBranchAvailable(f.branch_id)') ||
-              farmerSubmit.indexOf('assertFarmerBranchAvailable') > farmerSubmit.indexOf('insertRow("farmers"')) {
+              !branchSubmit.includes('f.branch_id=assertFarmerBranchAvailable(f.branch_id)') ||
+              branchSubmit.indexOf('assertFarmerBranchAvailable') > branchSubmit.indexOf('insertRow("farmers"')) {
             throw new Error('Farmer insert must fail closed unless branch_id references a loaded branch.');
           }
 
