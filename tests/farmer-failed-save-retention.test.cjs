@@ -602,6 +602,6 @@ test("Farmer photo storage preflight inventories Storage schema and object polic
   assert.match(diagnostic, /table_name in \\('buckets', 'objects'\\)/i);
   assert.match(diagnostic, /pg_policies[\\s\\S]*schemaname = 'storage'[\\s\\S]*tablename = 'objects'/i);
   assert.match(diagnostic, /does not create a bucket/i);
-  assert.match(diagnostic, /backup\\/restore and orphan-file cleanup/i);
+  assert.ok(diagnostic.includes("backup/restore and orphan-file cleanup"));
   assert.match(diagnostic, /keep the current optional compressed data-URL path unchanged/i);
 });
