@@ -9,7 +9,7 @@ const pickerStart = html.indexOf("// Offline cascading Bangladesh address picker
 const pickerEnd = html.indexOf("initFarmerAddressPicker().catch", pickerStart);
 assert.ok(pickerStart >= 0 && pickerEnd > pickerStart, "Farmer address picker source must be present");
 const pickerSource = html.slice(pickerStart, pickerEnd) +
-  "\nglobalThis.__pickerReady = initFarmerAddressPicker();";
+  "\nglobalThis.__initPicker = initFarmerAddressPicker;";
 
 class FakeElement {
   constructor(tag = "select") {
@@ -68,7 +68,7 @@ function makePicker() {
     $(id) { return elements[id] || null; }
   };
   vm.runInNewContext(pickerSource, context, { filename: "farmer-address-picker.js" });
-  return context.__pickerReady.then(() => ({
+  return context.__initPicker().then(() => ({
     elements,
     select(id, value) {
       const element = elements[id];
