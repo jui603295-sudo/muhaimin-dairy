@@ -98,3 +98,28 @@ Do these once, in order, and record evidence in this file:
 - [ ] Merge/deploy and post-release verification.
 
 **Current decision: HOLD.** Development evidence is useful and several static checks are complete, but runtime/database security evidence is still missing. This register is the source of truth for future test reuse; update individual rows and their evidence instead of restarting the same test suite.
+
+
+## 7. Latest evidence update — 2026-10-31
+
+The following checks were added after this register was first created. These are deterministic Node.js/VM/DOM simulations of the actual application source; they are not real Android/browser sessions or database persistence tests.
+
+| Test ID | Test | Result | Evidence | Limitation / re-run trigger |
+|---|---|---|---|---|
+| F-17 | Farmer failed insert preserves form values and compressed photo/preview state | PASS — 38/38 Farmer save/photo/GPS/offline suite | PR #70; Actions run #41155835086, static-checks job | Mocked database response; real TEST insert/readback remains DB-blocked |
+| F-18 | Successful Farmer insert clears photo/form state only after successful database response | PASS — included in F-17 suite | Same run | Re-run if insert/reset ordering changes |
+| F-19 | Farmer photo validation, compression and rendering boundaries | PASS — included in F-17 suite | Same run; MIME allowlist, malformed Base64, size cap and selection-race regressions covered | Real device camera/gallery permission and persisted photo retrieval remain unverified |
+| F-20 | GPS permission/error/range handling and stale-request race protection | PASS — included in F-17 suite | Same run; out-of-order callbacks and invalid coordinate ranges covered | Real Android browser permission and location accuracy remain unverified |
+| F-21 | Offline Farmer snapshot is user-scoped and restores photo/GPS metadata safely | PASS — included in F-17 suite | Same run; wrong-user restore, missing snapshot and quota failure covered | Local snapshot is not a write queue; real device storage behavior remains unverified |
+| F-22 | Offline Farmer submit blocks network write and preserves form for reconnect retry | PASS — included in F-17 suite | Same run; offline submit and reconnect retry covered | No automatic replay queue; real online/offline transition remains unverified |
+| C-04 | Full static workflow: HTML/PWA, Service Worker, address picker, dataset and Farmer runtime suites | PASS | Actions run #41155835086; job static-checks completed successfully, all steps passed | Does not establish TEST database, real browser/device, or release readiness |
+
+### Current environment evidence and next action
+
+- Supabase project inventory currently returns only hhqshslzoznwyprhjzia (Jui Akter, ap-northeast-1, ACTIVE_HEALTHY). This is the Production project already identified for this application; no separate usable TEST project is currently available in the account inventory.
+- Therefore DB-02, DB-03, UI-01, OFF-01, REG-01 and the TEST migration/persistence/recovery steps remain BLOCKED, not PASS.
+- Do not run the TEST-only diagnostic from PR #48 against the Production project. Do not apply migrations, execute test inserts, change RLS, create storage buckets, or use Production as a substitute TEST environment.
+- Vercel Preview for the latest code remains unconfirmed because the Free plan daily deployment limit was reached. A previously Ready deployment does not prove the latest head.
+- Continue safe repository-side work and deterministic tests only. The next release-gate action is to restore/provision an isolated TEST environment through an approved path, then resume section 4 in order. Do not merge or deploy while the gate is HOLD.
+
+**Updated decision: HOLD.** CI simulation evidence is stronger, but no database/device/recovery gate has been satisfied by these tests.
