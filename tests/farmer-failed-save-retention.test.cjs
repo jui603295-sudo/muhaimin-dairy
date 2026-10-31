@@ -24,7 +24,16 @@ function harness(result) {
     removeAttribute(name) { if (name === "src") this.src = ""; },
     classList: { add: name => photoPreview.classNames.add(name) }
   };
-  const form = { reset() { resetCount++; } };
+  const farmerName = { value: "পরীক্ষামূলক কৃষক" };
+  const farmerMobile = { value: "01700000000" };
+  const form = {
+    elements: { farmer_name: farmerName, farmer_mobile: farmerMobile },
+    reset() {
+      resetCount++;
+      farmerName.value = "";
+      farmerMobile.value = "";
+    }
+  };
   const context = {
     sb: { from(table) { return { insert: async payload => ({ ...result, table, payload }) }; } },
     lang: () => "bn",
@@ -36,7 +45,7 @@ function harness(result) {
   vm.runInNewContext(source, context, { filename: "actual-insert-row.js" });
   return {
     insert: (table, payload) => context.__insertRow(table, payload, form),
-    form, photoInput, photoPreview,
+    form, farmerName, farmerMobile, photoInput, photoPreview,
     counts: () => ({ resetCount, activityCount, toastCount, loadCount })
   };
 }
@@ -48,7 +57,7 @@ test("failed Farmer insert preserves form values and compressed photo state", as
     /row-level security policy denied/
   );
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
-  assert.equal(h.photoInput.value, "farmer-photo.jpg");
+  assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");\n  assert.equal(h.farmerMobile.value, "01700000000");\n  assert.equal(h.photoInput.value, "farmer-photo.jpg");
   assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
   assert.equal(h.photoPreview.src, "data:image/jpeg;base64,ZmFrZQ==");
   assert.equal(h.photoPreview.classNames.has("hidden"), false);
@@ -58,7 +67,7 @@ test("successful Farmer insert resets the form and clears photo state exactly af
   const h = harness({ error: null, data: [{ id: "farmer-1" }] });
   await h.insert("farmers", { name: "পরীক্ষামূলক কৃষক" });
   assert.deepEqual(h.counts(), { resetCount: 1, activityCount: 1, toastCount: 1, loadCount: 1 });
-  assert.equal(h.photoInput.value, "");
+  assert.equal(h.farmerName.value, "");\n  assert.equal(h.farmerMobile.value, "");\n  assert.equal(h.photoInput.value, "");
   assert.equal(Object.hasOwn(h.photoInput.dataset, "compressedDataUrl"), false);
   assert.equal(h.photoPreview.src, "");
   assert.equal(h.photoPreview.classNames.has("hidden"), true);
@@ -66,6 +75,6 @@ test("successful Farmer insert resets the form and clears photo state exactly af
 
 test("failed non-Farmer insert also avoids success-only reset and side effects", async () => {
   const h = harness({ error: { code: "42501", message: "permission denied" } });
-  await assert.rejects(h.insert("branches", { name: "পরীক্ষা কেন্দ্র" }), /permission denied/);
+  await assert.rejects(h.insert("branches", { name: "পরীক্ষা কেন্দ্র" }), error => error && error.message === "permission denied");
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
 });
