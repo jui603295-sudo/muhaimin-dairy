@@ -333,6 +333,18 @@ jobs:
             throw new Error('Farmer address cascade must clear stale lower-level values and keep locality disabled without a selected upazila.');
           }
 
+          // Ensure the hidden manual locality field cannot leak stale text into FormData.
+          const farmerUnionChangeStart = html.indexOf('$("farmerUnion")?.addEventListener("change"');
+          const farmerUnionChangeEnd = html.indexOf('\n});', farmerUnionChangeStart);
+          const farmerUnionChangeSource = html.slice(farmerUnionChangeStart, farmerUnionChangeEnd);
+          if (!/id="farmerLocalityManual" class="hidden" disabled/.test(html) ||
+              !/manual\.disabled=true/.test(addressResetSource) ||
+              !/manualInput\.disabled=true/.test(upazilaChangeSource) ||
+              !farmerUnionChangeSource.includes('manualInput.disabled=!manual') ||
+              !farmerUnionChangeSource.includes('if(!manual)manualInput.value=""')) {
+            throw new Error('Farmer manual locality input must be disabled when hidden and cleared when a listed union/pouroshava is selected.');
+          }
+
           // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
           const addressPath = 'data/bangladesh-address.json';
           if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
