@@ -141,8 +141,8 @@ test("address dataset network failure rejects initialization instead of enabling
     fetch: async () => ({ ok: false, status: 503 }),
     $() { return new FakeElement(); }
   };
-  vm.runInNewContext(pickerSource, context, { filename: "farmer-address-picker-network-failure.js" });
-  await assert.rejects(context.__pickerReady, /বাংলাদেশের ঠিকানার ডেটা লোড করা যায়নি/);
+  vm.runInNewContext(pickerSource.replace("\\nglobalThis.__pickerReady = initFarmerAddressPicker();", ""), context, { filename: "farmer-address-picker-network-failure.js" });
+  await assert.rejects(context.initFarmerAddressPicker(), /বাংলাদেশের ঠিকানার ডেটা লোড করা যায়নি/);
 });
 
 test("malformed root address dataset is rejected before exposing division choices", async () => {
@@ -152,6 +152,6 @@ test("malformed root address dataset is rejected before exposing division choice
     fetch: async () => ({ ok: true, json: async () => [{ bn: "শুধু একটি বিভাগ", districts: [] }] }),
     $() { return new FakeElement(); }
   };
-  vm.runInNewContext(pickerSource, context, { filename: "farmer-address-picker-invalid-data.js" });
-  await assert.rejects(context.__pickerReady, /ঠিকানার ডেটা যাচাই করা যায়নি/);
+  vm.runInNewContext(pickerSource.replace("\\nglobalThis.__pickerReady = initFarmerAddressPicker();", ""), context, { filename: "farmer-address-picker-invalid-data.js" });
+  await assert.rejects(context.initFarmerAddressPicker(), /ঠিকানার ডেটা যাচাই করা যায়নি/);
 });
