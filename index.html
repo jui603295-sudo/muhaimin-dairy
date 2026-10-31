@@ -949,7 +949,8 @@ async function insertRow(tableName,data,form) {
   }
   logActivity("Insert "+tableName);
   toast(lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে");
-  await loadAll();
+  try { await loadAll(); }
+  catch(error) { toast("রেকর্ড সংরক্ষিত হয়েছে, তবে তালিকা রিফ্রেশ হয়নি। সংযোগ পরীক্ষা করে পেজ রিফ্রেশ করুন।"); }
 }
 async function updateRow(tableName,id,data,form){
  if(!id)throw new Error("সম্পাদনার রেকর্ড আইডি পাওয়া যায়নি।");
@@ -959,7 +960,8 @@ async function updateRow(tableName,id,data,form){
  if(form)clearEditState(tableName==="branches"?"branch":"farmer");
  logActivity("Update "+tableName);
  toast(lang()==="en"?"Updated successfully":"সফলভাবে আপডেট হয়েছে");
- await loadAll();
+ try { await loadAll(); }
+ catch(error) { toast("রেকর্ড আপডেট হয়েছে, তবে তালিকা রিফ্রেশ হয়নি। সংযোগ পরীক্ষা করে পেজ রিফ্রেশ করুন।"); }
 }
 function setFormValue(form,name,value){
  const field=form.elements.namedItem(name);
@@ -1039,7 +1041,12 @@ function bindForm(id,handler) {
     try {
       await handler(formObj(form),form);
     } catch(error) {
-      toast(error && error.message ? error.message : String(error));
+      const message=error && error.message ? error.message : String(error);
+      const uncertainWrite=(id==="branchForm"||id==="farmerForm")&&
+        /failed to fetch|networkerror|network request failed|load failed|fetch failed|connection (?:lost|reset)|timed? ?out|gateway timeout/i.test(message);
+      toast(uncertainWrite
+        ?"সংরক্ষণের ফল নিশ্চিত নয়—নেটওয়ার্ক বিচ্ছিন্ন হতে পারে। তালিকা রিফ্রেশ করে আগে রেকর্ডটি খুঁজে দেখুন; না দেখে আবার সংরক্ষণ করবেন না।"
+        :message);
     } finally {
       delete form.dataset.submitting;
       form.removeAttribute("aria-busy");
