@@ -106,10 +106,10 @@ test("Branch Edit click handler pre-fills the selected record and restores its a
   assert.equal(x.form.fields.record_id.value, "branch-42");
   assert.equal(x.form.fields.name.value, "পরীক্ষা কেন্দ্র");
   assert.equal(x.form.fields.branch_latitude.value, "26.03");
-  assert.deepEqual(x.restored, [{prefix:"branch",record:{
+  assert.equal(JSON.stringify(x.restored), JSON.stringify([{prefix:"branch",record:{
     division:"রংপুর",district:"ঠাকুরগাঁও",upazila:"ঠাকুরগাঁও সদর",
     union_name:"আকচা",village_name:"আকচা বাজার"
-  }}]);
+  }}]));
   assert.equal(x.ids.branchSubmitButton.textContent, "পরিবর্তন সংরক্ষণ");
   assert.equal(x.ids.branchEditStatus.classes.has("hidden"), false);
   assert.ok(x.form.scrolled);
