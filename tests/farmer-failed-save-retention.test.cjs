@@ -210,3 +210,62 @@ test("successful Farmer bindForm submission does not show an error toast", async
   assert.deepEqual(h.toasts, []);
   assert.deepEqual(h.counts(), { registeredAtCalls: 1, handlerCalls: 1 });
 });
+
+
+// Exercise the actual Farmer list rendering helpers from index.html.
+function farmerRenderingHarness() {
+  const start = html.indexOf("  const farmerPhotoCell=");
+  const end = html.indexOf('  $("farmerTable").innerHTML=', start);
+  assert.ok(start >= 0 && end > start, "actual Farmer rendering helpers must exist");
+  const source = html.slice(start, end) + "\nglobalThis.__farmerPhotoCell = farmerPhotoCell; globalThis.__farmerGpsLabel = farmerGpsLabel; globalThis.__farmerRegisteredLabel = farmerRegisteredLabel; globalThis.__farmerAddressLabel = farmerAddressLabel;";
+  const context = {
+    esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+  };
+  vm.runInNewContext(source, context, { filename: "actual-farmer-render-helpers.js" });
+  return context;
+}
+
+test("Farmer list renders a valid compressed JPEG data URL as a photo", () => {
+  const h = farmerRenderingHarness();
+  const photo = "data:image/jpeg;base64,QUJDRA==";
+  const htmlCell = h.__farmerPhotoCell({ photo_data_url: photo });
+  assert.match(htmlCell, /<img /);
+  assert.ok(htmlCell.includes(photo));
+});
+
+test("Farmer list rejects oversized, malformed, and SVG photo data", () => {
+  const h = farmerRenderingHarness();
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64," + "A".repeat(650001) }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/svg+xml;base64,PHN2Zz4=" }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "javascript:alert(1)" }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64,not valid!" }), "—");
+});
+
+test("Farmer list shows GPS only when both coordinates exist and escapes accuracy text", () => {
+  const h = farmerRenderingHarness();
+  assert.equal(h.__farmerGpsLabel({ latitude: 26.03, longitude: 88.46, location_accuracy: 12 }), "সংরক্ষিত • ±12m");
+  assert.equal(h.__farmerGpsLabel({ latitude: 26.03, longitude: null }), "নেই");
+  assert.equal(h.__farmerGpsLabel({ latitude: null, longitude: 88.46 }), "নেই");
+  assert.equal(h.__farmerGpsLabel({ latitude: 26.03, longitude: 88.46, location_accuracy: "<script>" }), "সংরক্ষিত • ±&lt;script&gt;m");
+});
+
+test("Farmer list uses registered_at first and created_at as legacy fallback", () => {
+  const h = farmerRenderingHarness();
+  const registered = h.__farmerRegisteredLabel({ registered_at: "2026-10-31T01:00:00.000Z", created_at: "2020-01-01T00:00:00.000Z" });
+  assert.equal(registered, "31/10/2026, 07:00");
+  assert.equal(h.__farmerRegisteredLabel({ created_at: "2020-01-01T00:00:00.000Z" }), "01/01/2020, 06:00");
+  assert.equal(h.__farmerRegisteredLabel({}), "পুরোনো রেকর্ড");
+  assert.equal(h.__farmerRegisteredLabel({ registered_at: "not-a-date" }), "—");
+});
+
+test("Farmer list escapes address labels before inserting them into table markup", () => {
+  const h = farmerRenderingHarness();
+  assert.equal(
+    h.__farmerAddressLabel({ division: "Rangpur", district: "<img src=x>", upazila: "Sadar", union_name: "Union", village_name: "Village" }),
+    "Rangpur / &lt;img src=x&gt; / Sadar / Union / Village"
+  );
+});
