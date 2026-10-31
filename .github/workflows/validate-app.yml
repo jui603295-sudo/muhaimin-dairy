@@ -551,3 +551,5 @@ jobs:
         run: node --test tests/farmer-address-picker.test.cjs
       - name: Validate Bangladesh address dataset integrity
         run: node --test tests/bangladesh-address-data.test.cjs
+      - name: Test Farmer failed-save retention runtime behavior
+        run: node --test tests/farmer-failed-save-retention.test.cjs
