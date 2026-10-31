@@ -436,6 +436,38 @@ test("Farmer photo handler fails safely when image decoding is unavailable", asy
   assert.deepEqual(h.toasts, ["decode failed"]);
 });
 
+
+test("Farmer GPS handler ignores an older location result after a newer request", () => {
+  const requests = [];
+  const h = farmerMediaHarness({ navigator: { geolocation: {
+    getCurrentPosition(success, failure, config) { requests.push({ success, failure, config }); }
+  } } });
+  h.captureGps();
+  h.captureGps();
+  const newer = { coords: { latitude: 26.04, longitude: 88.47, accuracy: 8 }, timestamp: Date.parse("2026-10-31T02:00:00.000Z") };
+  requests[1].success(newer);
+  requests[0].success({ coords: { latitude: 26.03, longitude: 88.46, accuracy: 30 }, timestamp: Date.parse("2026-10-31T01:00:00.000Z") });
+  assert.equal(h.fields.latitude.value, "26.04");
+  assert.equal(h.fields.longitude.value, "88.47");
+  assert.equal(h.fields.location_accuracy.value, "8");
+  assert.equal(h.fields.location_captured_at.value, "2026-10-31T02:00:00.000Z");
+  assert.match(h.status.textContent, /লোকেশন নেওয়া হয়েছে/);
+});
+
+test("Farmer GPS handler ignores a stale permission error after a newer request succeeds", () => {
+  const requests = [];
+  const h = farmerMediaHarness({ navigator: { geolocation: {
+    getCurrentPosition(success, failure, config) { requests.push({ success, failure, config }); }
+  } } });
+  h.captureGps();
+  h.captureGps();
+  requests[1].success({ coords: { latitude: 26.05, longitude: 88.48, accuracy: 9 }, timestamp: Date.parse("2026-10-31T03:00:00.000Z") });
+  requests[0].failure({ code: 1 });
+  assert.equal(h.fields.latitude.value, "26.05");
+  assert.equal(h.fields.longitude.value, "88.48");
+  assert.match(h.status.textContent, /লোকেশন নেওয়া হয়েছে/);
+});
+
 test("Farmer GPS handler saves valid coordinates and capture timestamp", () => {
   const position = {
     coords: { latitude: 26.03, longitude: 88.46, accuracy: 12.4 },
