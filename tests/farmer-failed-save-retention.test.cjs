@@ -154,7 +154,7 @@ function bindFormHarness() {
   const start = html.indexOf("function bindForm");
   const end = html.indexOf('$("language").value=lang();', start);
   assert.ok(start >= 0 && end > start, "actual bindForm implementation must exist");
-  const source = html.slice(start, end) + "\\nglobalThis.__bindForm = bindForm;";
+  const source = html.slice(start, end) + "\nglobalThis.__bindForm = bindForm;";
   vm.runInNewContext(source, context, { filename: "actual-bind-form.js" });
   return {
     bind(handler) {
