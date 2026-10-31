@@ -108,6 +108,7 @@ test("submit-time validator rejects stale or inaccurate GPS and allows no-GPS re
   validate({latitude:"",longitude:"",location_accuracy:"",location_captured_at:""});
   const fresh={latitude:"26",longitude:"88",location_accuracy:"20",location_captured_at:new Date().toISOString()};
   validate(fresh);
+  validate({latitude:"26",longitude:"88",location_accuracy:"",location_captured_at:""},{latitude:26,longitude:88}); // unchanged legacy GPS remains editable
   assert.throws(()=>validate({...fresh,location_captured_at:new Date(Date.now()-11*60*1000).toISOString()}),/GPS/);
   assert.throws(()=>validate({...fresh,location_accuracy:"151"}),/GPS/);
   assert.throws(()=>validate({...fresh,location_captured_at:new Date(Date.now()+60*1000).toISOString()}),/GPS/);
