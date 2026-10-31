@@ -259,6 +259,7 @@ test("Address cascade rejects an unavailable child option instead of retaining s
     async loadBangladeshAddressTree(){return data;},Array,Set,String,addressCascadeReady:{},addressCascadeControllers:{}};
   const a=html.indexOf("function bdLabel(item)"),b=html.indexOf('initAddressCascade("branch");',a);
   vm.runInNewContext(html.slice(a,b),context);
+  vm.runInNewContext(extractFunction("restoreAddressFields"),context);
   vm.runInNewContext('initAddressCascade("branch")',context);
   await vm.runInNewContext('restoreAddressFields("branch",{division:"রংপুর",district:"ভুল জেলা",upazila:"ঠাকুরগাঁও সদর",union_name:"আকচা",village_name:"গ্রাম"})',context);
   assert.equal(elements.branchDistrict.value,"");
