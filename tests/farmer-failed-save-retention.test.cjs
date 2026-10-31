@@ -243,6 +243,10 @@ test("Farmer list rejects oversized, malformed, and SVG photo data", () => {
   assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/svg+xml;base64,PHN2Zz4=" }), "—");
   assert.equal(h.__farmerPhotoCell({ photo_data_url: "javascript:alert(1)" }), "—");
   assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64,not valid!" }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64,A===" }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64,AAAAA" }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64,QUJDRA=" }), "—");
+  assert.equal(h.__farmerPhotoCell({ photo_data_url: "data:image/jpeg;base64,QUJD RA==" }), "—");
 });
 
 test("Farmer list shows GPS only when both coordinates exist and escapes accuracy text", () => {
@@ -359,13 +363,13 @@ test("Farmer photo handler rejects unsupported and oversized original files", as
   assert.match(second.toasts[0], /১২ MB-এর বেশি/);
 });
 
-test("Farmer photo handler accepts the exact database data-URL size limit", async () => {
+test("Farmer photo handler accepts the largest valid base64 data URL within the database limit", async () => {
   const prefix = "data:image/jpeg;base64,";
-  const exactLimitDataUrl = prefix + "A".repeat(650000 - prefix.length);
-  const h = farmerMediaHarness({ dataUrl: exactLimitDataUrl });
+  const largestValidDataUrl = prefix + "A".repeat(649976);
+  const h = farmerMediaHarness({ dataUrl: largestValidDataUrl });
   await h.choosePhoto({ type: "image/jpeg", size: 2048 });
-  assert.equal(h.photoInput.dataset.compressedDataUrl.length, 650000);
-  assert.equal(h.preview.src.length, 650000);
+  assert.equal(h.photoInput.dataset.compressedDataUrl.length, 649999);
+  assert.equal(h.preview.src.length, 649999);
   assert.equal(h.preview.classes.has("hidden"), false);
   assert.deepEqual(h.toasts, []);
 });
