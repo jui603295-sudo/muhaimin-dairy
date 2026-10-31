@@ -129,3 +129,38 @@ where con.conrelid = to_regclass('public.farmers')
     'farmers_photo_data_url_size_check'
   )
 order by con.conname;
+
+
+-- 7) Read-only inventory of Supabase Storage schema availability and policy coverage.
+-- This intentionally does not create a bucket, change public/private visibility, or
+-- read photo objects. Inspect metadata before designing a private photo-path migration.
+select
+  table_name,
+  column_name,
+  data_type,
+  is_nullable
+from information_schema.columns
+where table_schema = 'storage'
+  and table_name in ('buckets', 'objects')
+order by table_name, ordinal_position;
+
+select
+  schemaname,
+  tablename,
+  policyname,
+  permissive,
+  roles,
+  cmd,
+  qual,
+  with_check
+from pg_policies
+where schemaname = 'storage'
+  and tablename = 'objects'
+order by policyname;
+
+-- Storage decision gate:
+-- * Confirm storage.buckets and storage.objects exist.
+-- * Review existing bucket visibility, file-size and MIME restrictions in the TEST project.
+-- * Review object policies against the app's actual authenticated role/RLS model.
+-- * Confirm backup/restore and orphan-file cleanup before replacing photo_data_url.
+-- Until all checks pass, keep the current optional compressed data-URL path unchanged.
