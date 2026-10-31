@@ -178,6 +178,22 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // Farmer records must reference a currently loaded branch before insert.
+          const branchHelperStart = html.indexOf('function assertFarmerBranchAvailable');
+          const branchHelperEnd = html.indexOf('function normalizeBanglaDigits', branchHelperStart);
+          const branchHelper = html.slice(branchHelperStart, branchHelperEnd);
+          const farmerSubmitStart = html.indexOf('bindForm("farmerForm"');
+          const farmerSubmitEnd = html.indexOf('$("saveCollectionDraft")', farmerSubmitStart);
+          const farmerSubmit = html.slice(farmerSubmitStart, farmerSubmitEnd);
+          if (branchHelperStart < 0 ||
+              !/state\\.branches\\.find/.test(branchHelper) ||
+              !/if\\(!selectedId\\)/.test(branchHelper) ||
+              !/if\\(!branch\\)/.test(branchHelper) ||
+              !/f\\.branch_id=assertFarmerBranchAvailable\\(f\\.branch_id\\)/.test(farmerSubmit) ||
+              farmerSubmit.indexOf('assertFarmerBranchAvailable') > farmerSubmit.indexOf('insertRow("farmers"')) {
+            throw new Error('Farmer insert must fail closed unless branch_id references a loaded branch.');
+          }
+
           // Farmer mobile input accepts common Bangladesh formats and normalizes to local 11-digit form.
           const mobileHelperStart = html.indexOf('function normalizeBanglaDigits');
           const mobileHelperEnd = html.indexOf('async function assertFarmerCodeAvailable', mobileHelperStart);
