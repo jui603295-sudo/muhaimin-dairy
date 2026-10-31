@@ -545,3 +545,5 @@ jobs:
             pwaShellFiles: shell.length
           }, null, 2));
           NODE
+      - name: Test Service Worker runtime behavior
+        run: node --test tests/service-worker.test.cjs
