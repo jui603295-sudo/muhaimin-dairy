@@ -187,10 +187,18 @@ test("all administrative parent-child options stay connected to the source datas
 
       for (const upazila of district.upazilas) {
         h.select("farmerUpazila", upazila.bn);
-        const unique = items => [...new Set(items.map(x => String(x.bn || "").trim().normalize("NFC")).filter(Boolean))];
+        const unique = items => {
+          const seen = new Set();
+          return items.filter(item => {
+            const key = String(item.bn || "").trim().normalize("NFC");
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        };
         const expected = [
-          ...unique(upazila.unions || []).map(x => "union::" + x),
-          ...unique(upazila.pourashavas || []).map(x => "pourashava::" + x),
+          ...unique(upazila.unions || []).map(x => "union::" + x.bn),
+          ...unique(upazila.pourashavas || []).map(x => "pourashava::" + x.bn),
           "manual"
         ];
         assert.deepEqual(
