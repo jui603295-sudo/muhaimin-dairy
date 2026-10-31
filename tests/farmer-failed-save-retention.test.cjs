@@ -697,3 +697,81 @@ test("Farmer photo storage preflight inventories Storage schema and object polic
   assert.ok(diagnostic.includes("backup/restore and orphan-file cleanup"));
   assert.ok(diagnostic.includes("keep the current optional compressed data-URL path unchanged"));
 });
+
+
+// Exercise the real per-user offline snapshot helpers with synthetic Farmer data.
+function offlineFarmerSnapshotHarness() {
+  const start = html.indexOf("const OFFLINE_CACHE_PREFIX");
+  const end = html.indexOf("const bdParts", start);
+  assert.ok(start >= 0 && end > start, "actual offline snapshot helpers must exist");
+  const storage = new Map();
+  const state = {
+    settings: null, milkCollectionSettings: null,
+    branches: [], farmers: [], collections: [], payments: [],
+    feedProducts: [], feedPurchases: [], feedSales: [],
+    vetCompanies: [], vetProducts: [], vetPurchases: [], vetSales: [],
+    agroProducts: [], agroPurchases: [], agroSales: []
+  };
+  let renderCount = 0;
+  let statusText = "";
+  const context = {
+    state,
+    localStorage: {
+      getItem(key) { return storage.has(key) ? storage.get(key) : null; },
+      setItem(key, value) { storage.set(key, String(value)); }
+    },
+    navigator: { onLine: false },
+    $: id => id === "offlineModeStatus" ? { set textContent(value) { statusText = value; } } : null,
+    render() { renderCount++; },
+    dateTimeBD(value) { return String(value); },
+    console: { warn() {} },
+    Date
+  };
+  vm.runInNewContext(html.slice(start, end) + "\nglobalThis.__offline = { offlineSnapshotForUser, saveOfflineSnapshot, restoreOfflineSnapshot };", context, { filename: "actual-offline-snapshot.js" });
+  return { context, storage, state, status: () => statusText, renders: () => renderCount, api: context.__offline };
+}
+
+test("Farmer photo and GPS metadata survive the actual user-scoped offline snapshot", () => {
+  const h = offlineFarmerSnapshotHarness();
+  h.state.farmers = [{
+    id: "farmer-test-1",
+    name: "নমুনা কৃষক",
+    photo_data_url: "data:image/jpeg;base64,QUJDRA==",
+    latitude: 26.03,
+    longitude: 88.46,
+    location_accuracy: 12,
+    location_captured_at: "2026-10-31T01:00:00.000Z"
+  }];
+  assert.equal(h.api.saveOfflineSnapshot("user-test-1"), true);
+  const raw = h.storage.get("muhaimin-offline-cache-v1:user-test-1");
+  assert.ok(raw);
+  const parsed = JSON.parse(raw);
+  assert.equal(parsed.user_id, "user-test-1");
+  assert.equal(parsed.data.farmers[0].photo_data_url, "data:image/jpeg;base64,QUJDRA==");
+  assert.equal(parsed.data.farmers[0].latitude, 26.03);
+  assert.equal(parsed.data.farmers[0].longitude, 88.46);
+  assert.equal(parsed.data.farmers[0].location_accuracy, 12);
+  assert.equal(parsed.data.farmers[0].location_captured_at, "2026-10-31T01:00:00.000Z");
+});
+
+test("offline snapshot refuses another user's Farmer records and restores only the matching user", () => {
+  const h = offlineFarmerSnapshotHarness();
+  h.state.farmers = [{ id: "farmer-user-a", name: "A", photo_data_url: null }];
+  assert.equal(h.api.saveOfflineSnapshot("user-a"), true);
+  h.state.farmers = [{ id: "farmer-user-b", name: "B", photo_data_url: null }];
+  assert.equal(h.api.saveOfflineSnapshot("user-b"), true);
+  h.state.farmers = [];
+  assert.equal(h.api.restoreOfflineSnapshot("user-a"), true);
+  assert.equal(h.state.farmers[0].id, "farmer-user-a");
+  assert.equal(h.api.offlineSnapshotForUser("user-b").data.farmers[0].id, "farmer-user-b");
+  assert.equal(h.api.offlineSnapshotForUser("user-c"), null);
+  assert.equal(h.renders(), 1);
+});
+
+test("offline snapshot reports storage quota failure without claiming a successful cache", () => {
+  const h = offlineFarmerSnapshotHarness();
+  h.state.farmers = [{ id: "farmer-test-1", photo_data_url: "data:image/jpeg;base64,QUJDRA==" }];
+  h.context.localStorage.setItem = () => { throw new Error("quota exceeded"); };
+  assert.equal(h.api.saveOfflineSnapshot("user-test-1"), false);
+  assert.equal(h.storage.size, 0);
+});
