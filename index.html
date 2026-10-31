@@ -528,14 +528,14 @@ function optionalLocationNumber(value,min,max,label){
  if(!Number.isFinite(number)||number<min||number>max)throw new Error(label+" তথ্য সঠিক নয়।");
  return number;
 }
-function locationPayloadFromForm(form,fields){
+function locationPayloadFromForm(form,fields,allowLegacyIncomplete=false){
  const latitude=optionalLocationNumber(form[fields.latitude],-90,90,"অক্ষাংশ");
  const longitude=optionalLocationNumber(form[fields.longitude],-180,180,"দ্রাঘিমাংশ");
  const accuracy=optionalLocationNumber(form[fields.accuracy],0,Number.MAX_VALUE,"GPS নির্ভুলতা");
  const capturedAt=String(form[fields.capturedAt]||"").trim()||null;
  if((latitude===null)!==(longitude===null))throw new Error("GPS-এর অক্ষাংশ ও দ্রাঘিমাংশ দুটিই দিতে হবে।");
  if(latitude===null&&(accuracy!==null||capturedAt))throw new Error("স্থানাঙ্ক ছাড়া GPS-এর নির্ভুলতা বা সময় সংরক্ষণ করা যাবে না।");
- if(latitude!==null&&(accuracy===null||!capturedAt))throw new Error("GPS স্থানাঙ্কের সঙ্গে নির্ভুলতা ও নেওয়ার সময় আবশ্যক।");
+ if(latitude!==null&&(accuracy===null||!capturedAt)&&!allowLegacyIncomplete)throw new Error("GPS স্থানাঙ্কের সঙ্গে নির্ভুলতা ও নেওয়ার সময় আবশ্যক।");
  if(capturedAt&&!Number.isFinite(Date.parse(capturedAt)))throw new Error("GPS নেওয়ার সময় সঠিক নয়।");
  return {latitude,longitude,[fields.accuracyColumn]:accuracy,location_captured_at:capturedAt};
 }
@@ -550,23 +550,28 @@ function locationSummary(record,accuracyColumn){
  const captured=record.location_captured_at?' · '+esc(record.location_captured_at):'';
  return '<span>'+esc(latitude)+', '+esc(longitude)+'</span><small class="small">'+accuracyLabel+captured+'</small>';
 }
-function branchPayloadFromForm(f){
+function branchPayloadFromForm(f,existing){
+ const sameCoordinates=!!existing&&existing.latitude!==null&&existing.latitude!==undefined&&
+  Number(f.branch_latitude)===Number(existing.latitude)&&Number(f.branch_longitude)===Number(existing.longitude);
  return {code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes,
   country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,
   upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null,
   ...locationPayloadFromForm(f,{latitude:"branch_latitude",longitude:"branch_longitude",
-   accuracy:"branch_location_accuracy_m",capturedAt:"branch_location_captured_at",accuracyColumn:"location_accuracy_m"})};
+   accuracy:"branch_location_accuracy_m",capturedAt:"branch_location_captured_at",accuracyColumn:"location_accuracy_m"},sameCoordinates)};
 }
 function farmerPayloadFromForm(f,existing){
  const photoInput=$("farmerPhoto");
  const photoData=photoInput?.dataset?.compressedDataUrl||existing?.photo_data_url||null;
- return {farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,
-  village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,
+ const villageParts=[f.farmer_village_name,f.village].filter(Boolean);
+ const village=[...new Set(villageParts)].join(" / ")||null;
+ const sameCoordinates=!!existing&&existing.latitude!==null&&existing.latitude!==undefined&&
+  Number(f.latitude)===Number(existing.latitude)&&Number(f.longitude)===Number(existing.longitude);
+ return {farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village,
   country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,
   upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,
   branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,
   ...locationPayloadFromForm(f,{latitude:"latitude",longitude:"longitude",accuracy:"location_accuracy",
-   capturedAt:"location_captured_at",accuracyColumn:"location_accuracy"})};
+   capturedAt:"location_captured_at",accuracyColumn:"location_accuracy"},sameCoordinates)};
 }
 function render() {
   if(!state.settings)return;
@@ -1227,7 +1232,9 @@ $("clearBranchLocation")?.addEventListener("click",()=>{
 });
 
 bindForm("branchForm",async f=>{
- const payload=branchPayloadFromForm(f),form=$("branchForm"),id=f.record_id;
+ const form=$("branchForm"),id=f.record_id,existing=id?state.branches.find(item=>String(item.id)===String(id)):null;
+ if(id&&!existing)throw new Error("সম্পাদনার কেন্দ্র রেকর্ড তালিকায় নেই। আবার লোড করুন।");
+ const payload=branchPayloadFromForm(f,existing);
  return id?updateRow("branches",id,payload,form):insertRow("branches",payload,form);
 });
 bindForm("farmerForm",async f=>{
