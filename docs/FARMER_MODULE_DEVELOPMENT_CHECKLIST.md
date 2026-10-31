@@ -186,3 +186,15 @@ Do these once, in order, and record evidence in this file:
 - [ ] **F-32 upgrade:** Verify activation removes older `muhaimin-*` caches only after the new required shell has installed.
 - [ ] **C-19:** Static CI checks the cache version, required offline address dataset, optional-asset failure isolation, old-cache cleanup, and cache-first static asset path.
 - **Runtime status:** Browser/Android offline reload, install-failure simulation and cache inspection remain BLOCKED until an approved preview test session is available.
+
+
+## 15. Service Worker runtime behavior harness
+
+- [x] **F-33 required-shell failure:** PASS — missing address JSON rejects install and `skipWaiting()` is not called. simulated missing `data/bangladesh-address.json` rejects installation and does not call `skipWaiting()`.
+- [x] **F-33 optional-asset isolation:** PASS — missing manifest/logo/SVG does not block install; required shell is cached. simulated missing manifest/logo/SVG does not block installation; required app HTML and address JSON remain cached.
+- [x] **F-33 cache upgrade:** PASS — old Muhaimin cache removed, unrelated cache preserved, clients claimed. activation removes older `muhaimin-*` caches, preserves unrelated caches, and claims clients.
+- [x] **F-33 cache-first address fetch:** PASS — cached address dataset returned with zero network requests. a cached Farmer address dataset is returned without a network request.
+- [x] **C-20:** PASS — Node.js `node:test` harness runs in GitHub Actions against the actual `sw.js` source.
+- **Scope:** deterministic Service Worker simulation only. This is not a substitute for Chrome/Android install, offline reload, browser Cache Storage inspection, or real network-transition testing.
+- **Evidence:** GitHub Actions run `41151190015`, `static-checks` job, including `node --test tests/service-worker.test.cjs` — PASS.
+- **Runtime status:** simulated Service Worker tests PASS; real Android/browser OFF-01 remains BLOCKED.
