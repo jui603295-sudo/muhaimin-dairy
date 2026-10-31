@@ -253,3 +253,6 @@ jobs:
 
       - name: Test Branch and Farmer edit/update mapping
         run: node --test scripts/test-record-edit-update.test.cjs
+
+      - name: Test Branch and Farmer edit/update interactions
+        run: node --test scripts/test-record-edit-interactions.test.cjs
