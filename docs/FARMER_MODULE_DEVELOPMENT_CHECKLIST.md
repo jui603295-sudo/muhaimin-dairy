@@ -22,6 +22,7 @@
 | ID | Acceptance requirement | Current assessment | Evidence / notes |
 |---|---|---|---|
 | F-01 | Preserve existing modules and add only missing farmer features | PASS — source diff review | PR #47; no module replacement |
+| F-23 | After a successful farmer save, photo file/data URL/preview are cleared before the next registration | PARTIAL — source/static checks only; device workflow blocked | `insertRow` clears farmer photo state only after successful insert; failed inserts preserve the current form/photo for retry | Farmer save/reset/photo handler changes |
 | F-22 | Farmer record cannot save without a selected branch that exists in the loaded branch list | PARTIAL — source/static checks only; TEST foreign-key and UI checks blocked | `assertFarmerBranchAvailable` runs before farmer-code lookup and insert; missing/stale selection fails closed | Branch loading/selection or farmer submit changes |
 | F-21 | Bangladesh mobile numbers accept Bangla/English digits and common local/international formats, then store normalized local form | PARTIAL — source/static checks only; no device or TEST insert/readback | `normalizeFarmerMobile`; no duplicate-number rejection | Browser/mobile and TEST persistence tests become available |
 | F-02 | Bangladesh address cascade: division → district → upazila → union/pourashava | PASS — source/data structural review | data/bangladesh-address.json; dependent selectors in index.html |
@@ -55,6 +56,7 @@
 | C-05 | Farmer insert handles PostgreSQL unique-violation code 23505 with a localized no-save message | PARTIAL — source and workflow assertion authored; CI not run | New branch source check; no TEST constraint or concurrent insert test | Farmer insert/error handling or its CI assertion changes |
 | C-06 | GPS recapture clears stale coordinates and validates latitude, longitude, accuracy, and timestamp | PARTIAL — workflow assertion authored; CI/runtime not yet run | Farmer GPS handler source assertion; no real browser GPS permission/device test | GPS capture handler or its workflow assertion changes |
 | C-07 | Farmer photo processing enforces input/decode/output bounds, clears stale data, and releases bitmap | PARTIAL — workflow assertion authored; CI/runtime not run | Photo handler source assertion; no real-device file picker or DB persistence test | Photo processing or its workflow assertion changes |
+| C-10 | Successful farmer insert clears photo state; failed insert retains form state | PARTIAL — workflow assertion authored; runtime not confirmed | Source order: reset and photo cleanup happen only after successful database response | Farmer insert/reset/error handling changes |
 | C-09 | Farmer branch reference validation blocks empty/stale branch IDs before insert | PARTIAL — workflow assertion authored; CI/runtime not confirmed | Source helper and submit ordering assertion; no TEST foreign-key check | Branch selector, branch loading, or farmer submit changes |
 | C-08 | Farmer mobile normalization accepts supported formats, rejects invalid prefixes/length, and does not enforce uniqueness | PARTIAL — workflow assertion authored; CI not run | Source helper and submit wiring assertion; no runtime/DB persistence evidence | Farmer mobile helper or submit workflow changes |
 | D-01 | Address JSON parses and hierarchy counts match | PASS | PR #47 CI validation | Address JSON changes |
@@ -89,7 +91,7 @@ Do these once, in order, and record evidence in this file:
 |---|---|
 | data/bangladesh-address.json | D-01, D-02, D-03, OFF-01 |
 | Farmer address HTML/JS | C-01, C-02, D-03, UI-01, relevant REG-01 |
-| Farmer insert error handling | C-01, C-02, C-05, C-08, C-09, F-21, F-22, UI-01, DB-04 when TEST constraint is available |
+| Farmer insert error handling | C-01, C-02, C-05, C-08, C-09, C-10, F-21, F-22, F-23, UI-01, DB-04 when TEST constraint is available |
 | Photo compression/preview/save code | C-01, C-02, C-07, F-06, F-20, DB-02, DB-03, DB-06, persistence test, UI-01 |
 | GPS capture or serialization | C-01, C-02, C-06, F-07, F-08, F-19, DB-02, persistence test, UI-01 |
 | Registration timestamp code/migration | C-01, C-02, DB-01, DB-02, persistence test |
