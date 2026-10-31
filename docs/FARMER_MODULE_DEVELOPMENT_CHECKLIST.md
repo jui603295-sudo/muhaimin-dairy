@@ -149,7 +149,7 @@ The following checks were added after this register was first created. These are
 | F-28 | Reject malformed/out-of-range coordinates, non-finite/negative accuracy, and accuracy worse than 150 m; clear invalid values | PR #77; local runtime checks for valid fix and 151 m rejection | Selected local runtime checks PASS | Full committed test suite in GitHub Actions; real device GPS quality |
 | F-29 | Reject invalid, future-dated, or older-than-10-minute GPS timestamps at capture and revalidate accuracy/freshness immediately before save | PR #77; submit-time validator source and selected stale-fix test | Source implemented; selected local runtime checks PASS | Full CI and Android/browser verification |
 | F-30 | Ignore late callbacks from earlier location requests and recover the capture button after failures | PR #77; committed tests include callback-race and permission-error cases | Committed tests added; CI not yet confirmed | GitHub Actions result |
-| F-31 | Unchanged legacy Farmer coordinates without historical accuracy/timestamp remain editable; changed/new coordinates require complete fresh metadata | PR #77; submit-time validator source and local legacy-edit check | Selected local runtime check PASS | Full CI and actual TEST UPDATE/readback |
+| F-31 | Unchanged legacy Farmer coordinates without historical accuracy/timestamp remain editable; changed/new coordinates require complete fresh metadata | PR #77; submit-time validator and regression case for partial coordinates with legacy data | CI PASS on run #296 | Actual TEST UPDATE/readback |
 
 - PR #77 changes only the existing Farmer GPS handler, its runtime test, and CI workflow; no database schema or data changes.
 - The selected local checks parse inline scripts and exercise valid capture, poor-accuracy rejection, unchanged legacy GPS edit, and stale submit rejection. They are not a substitute for the complete Node test suite or CI.
@@ -163,15 +163,16 @@ The following checks were added after this register was first created. These are
 
 | Test ID | Test | Result | Evidence | Limitation / re-run trigger |
 |---|---|---|---|---|
-| F-27 | Explicit-tap GPS capture; no background tracking | PASS — committed CI suite | PR #77, Actions run #41177242209, job #124467223015 | Real Android/browser permission and GPS session remains unverified |
-| F-28 | Coordinate bounds, accuracy finite/non-negative and <=150 m | PASS — committed CI suite | Same run; step “Test Farmer GPS accuracy, freshness, and submit validation” | Real device GPS quality remains unverified |
+| F-27 | Explicit-tap GPS capture; no background tracking | PASS — committed CI suite | PR #77, Actions run #41177242209 (initial suite) and #41177533158 (regression rerun), job #124468079191 | Real Android/browser permission and GPS session remains unverified |
+| F-28 | Coordinate bounds, accuracy finite/non-negative and <=150 m | PASS — committed CI suite | Run #41177242209 and regression rerun #41177533158; step “Test Farmer GPS accuracy, freshness, and submit validation” | Real device GPS quality remains unverified |
 | F-29 | Reject invalid/future/stale timestamps and revalidate at submit | PASS — committed CI suite | Same run | Actual TEST save/update/readback remains blocked |
 | F-30 | Ignore late callbacks; recover capture control after errors | PASS — committed CI suite | Same run | Real browser/device callback behavior remains unverified |
-| F-31 | Preserve unchanged legacy coordinates during edit; require fresh metadata for changed/new GPS | PASS — committed CI suite | Same run | Actual TEST UPDATE/readback remains blocked |
-| C-06 | Full PR #77 static/VM-DOM validation workflow | PASS — all job steps completed successfully | Actions run #41177242209, run #295, job #124467223015 | CI simulation does not prove Supabase persistence, Auth/JWT/RLS, Android, or release readiness |
+| F-31 | Preserve unchanged legacy coordinates during edit; require fresh metadata for changed/new GPS | PASS — committed CI suite | Regression rerun #41177533158 includes partial-coordinate legacy bypass rejection | Actual TEST UPDATE/readback remains blocked |
+| C-06 | Full PR #77 static/VM-DOM validation workflow | PASS — all job steps completed successfully | Actions run #41177242209 (run #295) and #41177533158 (run #296), job #124468079191 | CI simulation does not prove Supabase persistence, Auth/JWT/RLS, Android, or release readiness |
 
-- Commit tested: c6eabd0851dc8ac4f1888c1bddbeb53a885fd493.
+- Initial CI commit: c6eabd0851dc8ac4f1888c1bddbeb53a885fd493. Regression-fix commit: c0ec528adf7029527df3e66e4a3d23bc85598eab.
 - CI steps included HTML/PWA validation, Branch GPS capture/race safety, Branch/Farmer save-readback mapping tests, Farmer GPS quality/freshness/submit validation, and Branch/Farmer edit/update tests.
+- Regression follow-up: tightened unchanged-legacy-coordinate bypass so both coordinates must be complete, numeric, and in range before bypassing fresh metadata; added a committed test for partial coordinates. CI run #296 passed all 9 job steps.
 - PR #77 remains open and unmerged. No database schema changes, SQL execution, Production mutation, or deployment occurred.
 - Supabase inventory still reports Production project hhqshslzoznwyprhjzia as ACTIVE_HEALTHY and the separate TEST project fsfhucggzurwulubpagy as COMING_UP. Therefore TEST JWT/RLS, Farmer persistence/readback, Android GPS, offline device behavior, regression/recovery, and release approval remain BLOCKED.
 - Do not run TEST-only diagnostics or synthetic writes against Production. Do not merge or deploy while the release gate is HOLD.
