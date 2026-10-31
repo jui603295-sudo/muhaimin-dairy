@@ -880,11 +880,11 @@ function normalizeBanglaDigits(value) {
 }
 function normalizeFarmerMobile(value) {
   const raw=normalizeBanglaDigits(value).trim();
-  const compact=raw.replace(/[\\s()-]/g,"");
+  const compact=raw.replace(/[\s()-]/g,"");
   let local=compact;
-  if(/^\\+8801[3-9]\\d{8}$/.test(compact))local="0"+compact.slice(4);
-  else if(/^8801[3-9]\\d{8}$/.test(compact))local="0"+compact.slice(3);
-  if(!/^01[3-9]\\d{8}$/.test(local)) {
+  if(/^\+8801[3-9]\d{8}$/.test(compact))local="0"+compact.slice(4);
+  else if(/^8801[3-9]\d{8}$/.test(compact))local="0"+compact.slice(3);
+  if(!/^01[3-9]\d{8}$/.test(local)) {
     throw new Error(lang()==="en"
       ? "Enter a valid Bangladesh mobile number (01XXXXXXXXX or +8801XXXXXXXXX)."
       : "সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন (01XXXXXXXXX অথবা +8801XXXXXXXXX)।");
