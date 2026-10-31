@@ -335,3 +335,31 @@ test("bindForm prevents a second submit even when the button is disabled program
   release();
   await first;
 });
+
+test("Branch network failure warns that write outcome is uncertain and prevents blind retry", async () => {
+  const form=makeSubmitForm(),notices=[];
+  const context={$(id){return id==="branchForm"?form:null;},formObj(){return {};},
+    toast(message){notices.push(message);},String};
+  vm.runInNewContext(extractFunction("bindForm"),context);
+  context.bindForm("branchForm",async()=>{throw new Error("Failed to fetch");});
+  await form.listeners.submit({preventDefault(){},submitter:form.submitButton});
+  assert.match(notices[0],/সংরক্ষণের ফল নিশ্চিত নয়/);
+  assert.match(notices[0],/আবার সংরক্ষণ করবেন না/);
+  assert.equal(form.dataset.submitting,undefined);
+  assert.equal(form.submitButton.disabled,false);
+});
+
+test("Confirmed update stays successful when the follow-up list refresh fails", async () => {
+  const notices=[];
+  const context={
+    sb:{from(){return {update(){return {eq(){return {select(){return {
+      async maybeSingle(){return {data:{id:"branch-42"},error:null};}
+    };}};}};}};}},
+    clearEditState(){},logActivity(){},toast(message){notices.push(message);},
+    lang(){return "bn";},async loadAll(){throw new Error("offline");},Error,String
+  };
+  vm.runInNewContext(extractFunction("updateRow"),context);
+  await vm.runInNewContext("updateRow('branches','branch-42',{name:'পরিবর্তিত'}, {})",context);
+  assert.match(notices[0],/সফলভাবে আপডেট হয়েছে/);
+  assert.match(notices[1],/রেকর্ড আপডেট হয়েছে, তবে তালিকা রিফ্রেশ হয়নি/);
+});
