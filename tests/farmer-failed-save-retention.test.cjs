@@ -100,11 +100,11 @@ test("duplicate Farmer code conflict shows a safe validation error and preserves
 });
 
 
-test("missing time-column schema error gives a clear recovery message and preserves Farmer form/photo state", async () => {
-  const h = harness({ error: { code: "PGRST204", message: "column registered_time does not exist in schema cache" } });
+test("missing registered_at timestamp-column schema error gives a clear recovery message and preserves Farmer form/photo state", async () => {
+  const h = harness({ error: { code: "PGRST204", message: "column registered_at does not exist in schema cache" } });
   await assert.rejects(
-    h.insert("farmers", { name: "পরীক্ষামূলক কৃষক", registered_time: "2026-10-31T01:00:00.000Z" }),
-    error => error && error.message.includes("সময়ের কলাম খুঁজে পাওয়া যায়নি")
+    h.insert("farmers", { name: "পরীক্ষামূলক কৃষক", registered_at: "2026-10-31T01:00:00.000Z" }),
+    error => error && error.message.includes("তারিখ/সময়ের প্রয়োজনীয় কলাম খুঁজে পাওয়া যায়নি")
   );
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
   assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");
