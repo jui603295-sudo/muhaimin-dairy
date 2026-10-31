@@ -102,3 +102,47 @@ test("Cancel controls clear edit mode without issuing a database delete", () => 
   assert.match(html, /clearEditState\("farmer"\)/);
   assert.doesNotMatch(html, /\.from\(["'](?:branches|farmers)["']\)\.delete\(/);
 });
+
+test("Branch edit can preserve an existing legacy GPS fix with missing metadata", () => {
+  const existing = { latitude: 26.0337, longitude: 88.4617, location_accuracy_m: null, location_captured_at: null };
+  const payload = branchPayloadFromForm({
+    code: "B006", name: "কেন্দ্র সংশোধন", target_liters: "500", status: "Active",
+    branch_latitude: "26.0337", branch_longitude: "88.4617",
+    branch_location_accuracy_m: "", branch_location_captured_at: ""
+  }, existing);
+  assert.equal(payload.latitude, 26.0337);
+  assert.equal(payload.longitude, 88.4617);
+  assert.equal(payload.location_accuracy_m, null);
+  assert.equal(payload.location_captured_at, null);
+});
+
+test("Farmer edit can preserve an existing legacy GPS fix with missing metadata", () => {
+  photoInput = { dataset: {} };
+  const existing = { latitude: 26.0337, longitude: 88.4617, location_accuracy: null,
+    location_captured_at: null, photo_data_url: "data:image/jpeg;base64,EXISTING" };
+  const payload = farmerPayloadFromForm({
+    farmer_code: "F00001", name: "পরীক্ষা কৃষক", mobile: "01700000000",
+    farmer_village_name: "আকচা", village: "আকচা", branch_id: "branch-1",
+    latitude: "26.0337", longitude: "88.4617", location_accuracy: "", location_captured_at: ""
+  }, existing);
+  assert.equal(payload.latitude, 26.0337);
+  assert.equal(payload.location_accuracy, null);
+  assert.equal(payload.location_captured_at, null);
+});
+
+test("Farmer address text does not duplicate the same village on edit", () => {
+  photoInput = { dataset: {} };
+  const payload = farmerPayloadFromForm({
+    farmer_code: "F00001", name: "পরীক্ষা কৃষক", mobile: "01700000000",
+    farmer_village_name: "আকচা", village: "আকচা", branch_id: "branch-1"
+  }, null);
+  assert.equal(payload.village, "আকচা");
+});
+
+test("New or changed GPS still requires a complete valid capture", () => {
+  assert.throws(() => branchPayloadFromForm({
+    code: "B007", name: "নতুন কেন্দ্র", target_liters: "500", status: "Active",
+    branch_latitude: "26.0337", branch_longitude: "88.4617",
+    branch_location_accuracy_m: "", branch_location_captured_at: ""
+  }), /নির্ভুলতা ও নেওয়ার সময় আবশ্যক/);
+});
