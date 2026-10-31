@@ -598,10 +598,13 @@ test("Farmer photo storage preflight inventories Storage schema and object polic
     "supabase/diagnostics/farmer_photo_schema_preflight.sql",
     "utf8"
   );
-  assert.match(diagnostic, /information_schema\\.columns[\\s\\S]*table_schema = 'storage'/i);
-  assert.match(diagnostic, /table_name in \\('buckets', 'objects'\\)/i);
-  assert.match(diagnostic, /pg_policies[\\s\\S]*schemaname = 'storage'[\\s\\S]*tablename = 'objects'/i);
-  assert.match(diagnostic, /does not create a bucket/i);
+  assert.ok(diagnostic.includes("from information_schema.columns"));
+  assert.ok(diagnostic.includes("where table_schema = 'storage'"));
+  assert.ok(diagnostic.includes("table_name in ('buckets', 'objects')"));
+  assert.ok(diagnostic.includes("from pg_policies"));
+  assert.ok(diagnostic.includes("where schemaname = 'storage'"));
+  assert.ok(diagnostic.includes("and tablename = 'objects'"));
+  assert.ok(diagnostic.includes("does not create a bucket"));
   assert.ok(diagnostic.includes("backup/restore and orphan-file cleanup"));
-  assert.match(diagnostic, /keep the current optional compressed data-URL path unchanged/i);
+  assert.ok(diagnostic.includes("keep the current optional compressed data-URL path unchanged"));
 });
