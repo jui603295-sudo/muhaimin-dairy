@@ -53,6 +53,7 @@ function makeElement(value = "") {
 function makeForm(names) {
   const fields = Object.fromEntries(names.map(name => [name, makeElement()]));
   return {
+    dataset: {},
     elements: {
       namedItem(name) { return fields[name] || null; },
       record_id: fields.record_id
