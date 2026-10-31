@@ -549,3 +549,5 @@ jobs:
         run: node --test tests/service-worker.test.cjs
       - name: Test Farmer address picker runtime behavior
         run: node --test tests/farmer-address-picker.test.cjs
+      - name: Validate Bangladesh address dataset integrity
+        run: node --test tests/bangladesh-address-data.test.cjs
