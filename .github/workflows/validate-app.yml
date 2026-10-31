@@ -178,6 +178,22 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // Farmer branch selector should show its recorded administrative address without blocking legitimate cross-area registrations.
+          const branchAddressStart = html.indexOf('function branchAddressLabel');
+          const branchAddressEnd = html.indexOf('function farmerName', branchAddressStart);
+          const branchAddressSource = html.slice(branchAddressStart, branchAddressEnd);
+          if (branchAddressStart < 0 ||
+              !branchAddressSource.includes('branch.division') ||
+              !branchAddressSource.includes('branch.district') ||
+              !branchAddressSource.includes('branch.upazila') ||
+              !branchAddressSource.includes('branch.union_name') ||
+              !branchAddressSource.includes('branch.village_name') ||
+              !branchAddressSource.includes('fillFarmerBranchSelect') ||
+              !branchAddressSource.includes('state.branches.some(') ||
+              !html.includes('fillFarmerBranchSelect();')) {
+            throw new Error('Farmer branch selector must show branch address context and preserve a still-valid selection.');
+          }
+
           // A successful farmer save must clear the in-memory photo so it cannot leak to the next farmer.
           const insertRowStart = html.indexOf('async function insertRow');
           const insertRowEnd = html.indexOf('function bindForm', insertRowStart);
