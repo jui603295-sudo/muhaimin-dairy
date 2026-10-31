@@ -384,6 +384,48 @@ test("Farmer photo handler clears file and preview if compression remains above 
   assert.match(h.toasts[0], /কমপ্রেস করার পরও ছবিটি বড়/);
 });
 
+
+test("Farmer photo handler ignores an older decode that finishes after a newer photo selection", async () => {
+  let resolveFirst;
+  const firstDecode = new Promise(resolve => { resolveFirst = resolve; });
+  let calls = 0;
+  const h = farmerMediaHarness({
+    createImageBitmap: async () => {
+      calls++;
+      if (calls === 1) return firstDecode;
+      return { width: 640, height: 480, close() { this.closed = true; } };
+    },
+    dataUrl: "data:image/jpeg;base64,TkVX"
+  });
+  const first = h.choosePhoto({ type: "image/jpeg", size: 1000, name: "old.jpg" });
+  await Promise.resolve();
+  const secondFile = { type: "image/png", size: 1000, name: "new.png" };
+  await h.choosePhoto(secondFile);
+  assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,TkVX");
+  const staleBitmap = { width: 1200, height: 800, closed: false, close() { this.closed = true; } };
+  resolveFirst(staleBitmap);
+  await first;
+  assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,TkVX");
+  assert.equal(h.preview.src, "data:image/jpeg;base64,TkVX");
+  assert.equal(staleBitmap.closed, true);
+  assert.deepEqual(h.toasts, []);
+});
+
+test("Farmer photo handler does not restore a photo after the user clears the file while decoding", async () => {
+  let resolveDecode;
+  const pending = new Promise(resolve => { resolveDecode = resolve; });
+  const h = farmerMediaHarness({ createImageBitmap: async () => pending });
+  const first = h.choosePhoto({ type: "image/jpeg", size: 1000, name: "pending.jpg" });
+  await Promise.resolve();
+  await h.choosePhoto(null);
+  resolveDecode({ width: 800, height: 600, close() { this.closed = true; } });
+  await first;
+  assert.equal(h.photoInput.dataset.compressedDataUrl, undefined);
+  assert.equal(h.preview.src, "");
+  assert.equal(h.preview.classes.has("hidden"), true);
+  assert.deepEqual(h.toasts, []);
+});
+
 test("Farmer photo handler fails safely when image decoding is unavailable", async () => {
   const h = farmerMediaHarness({ createImageBitmap: async () => { throw new Error("decode failed"); } });
   await h.choosePhoto({ type: "image/jpeg", size: 1024 });
