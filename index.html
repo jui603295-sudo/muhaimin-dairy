@@ -988,6 +988,12 @@ function bindForm(id,handler) {
   const form=$(id); if(!form)return;
   form.addEventListener("submit",async event=>{
     event.preventDefault();
+    if(id==="farmerForm" && !navigator.onLine) {
+      toast(lang()==="en"
+        ? "You are offline. Farmer data has not been saved. Keep this form open and retry after the connection returns."
+        : "ইন্টারনেট সংযোগ নেই। কৃষকের তথ্য এখনো সংরক্ষণ হয়নি। ফর্মটি খোলা রাখুন; সংযোগ ফিরে এলে আবার সংরক্ষণ করুন।");
+      return;
+    }
     try { if(id==="farmerForm")setFarmerRegistrationTime(); await handler(formObj(form),form); }
     catch(error) { toast(error && error.message ? error.message : String(error)); }
   });
