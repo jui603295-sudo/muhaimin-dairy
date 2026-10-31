@@ -88,8 +88,9 @@ function setup(kind) {
       if (field && field.type !== "file") field.value = value == null ? "" : String(value);
     },
     async restoreAddressFields(prefix,record) { restored.push({prefix,record}); },
-    String, Object, Error
+    String, Object, Error, toast() {}
   };
+  vm.runInNewContext(extractFunction("recordFormWritePending"),context);
   return { form, ids, restored, context };
 }
 
@@ -398,12 +399,6 @@ test("Branch and Farmer Edit handlers leave the selected form untouched while a 
   for (const kind of ["branch","farmer"]) {
     const x=setup(kind);
     x.form.dataset={submitting:"true"};
-    x.context.recordFormWritePending=function(recordKind){
-      const form=this.$(recordKind+"Form");
-      if(form?.dataset?.submitting!=="true")return false;
-      this.toast("সংরক্ষণ চলছে");
-      return true;
-    };
     const row=kind==="branch"?{id:"branch-42",name:"কেন্দ্র"}:{id:"farmer-9",name:"কৃষক"};
     x.context.state[kind==="branch"?"branches":"farmers"].push(row);
     vm.runInNewContext(extractFunction(kind==="branch"?"editBranchRecord":"editFarmerRecord"),x.context);
