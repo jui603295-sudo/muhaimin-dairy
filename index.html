@@ -937,7 +937,11 @@ async function insertRow(tableName,data,form) {
     }
     throw result.error;
   }
-  if(form)form.reset();
+  if(form){
+    form.reset();
+    if(form.id==="branchForm")clearEditState("branch");
+    if(form.id==="farmerForm")clearEditState("farmer");
+  }
   logActivity("Insert "+tableName);
   toast(lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে");
   await loadAll();
@@ -947,18 +951,14 @@ async function updateRow(tableName,id,data,form){
  const result=await sb.from(tableName).update(data).eq("id",id).select("id").maybeSingle();
  if(result.error)throw result.error;
  if(!result.data?.id)throw new Error("রেকর্ডটি আপডেট হয়েছে কি না নিশ্চিত করা যায়নি। অনুমতি বা রেকর্ডের অস্তিত্ব যাচাই করুন।");
- if(form)form.reset();
- if(tableName==="farmers"){
-  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoDataUrl;photo.value="";}
-  $("farmerPhotoPreview")?.classList.add("hidden");
- }
+ if(form)clearEditState(tableName==="branches"?"branch":"farmer");
  logActivity("Update "+tableName);
  toast(lang()==="en"?"Updated successfully":"সফলভাবে আপডেট হয়েছে");
  await loadAll();
 }
 function setFormValue(form,name,value){
  const field=form.elements.namedItem(name);
- if(field&&!("files" in field))field.value=value===null||value===undefined?"":String(value);
+ if(field&&field.type!=="file")field.value=value===null||value===undefined?"":String(value);
 }
 async function restoreAddressFields(prefix,record){
  await addressCascadeReady[prefix];
