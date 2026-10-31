@@ -946,6 +946,17 @@ async function insertRow(tableName,data,form) {
     throw result.error;
   }
   if(form)form.reset();
+  if(tableName==="farmers") {
+    const photoInput=$("farmerPhoto"),photoPreview=$("farmerPhotoPreview");
+    if(photoInput) {
+      delete photoInput.dataset.compressedDataUrl;
+      photoInput.value="";
+    }
+    if(photoPreview) {
+      photoPreview.removeAttribute("src");
+      photoPreview.classList.add("hidden");
+    }
+  }
   logActivity("Insert "+tableName);
   toast(lang()==="en"?"Saved successfully":"সফলভাবে সংরক্ষণ হয়েছে");
   await loadAll();
