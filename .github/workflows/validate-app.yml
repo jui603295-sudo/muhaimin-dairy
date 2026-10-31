@@ -186,10 +186,10 @@ jobs:
           const farmerSubmitEnd = html.indexOf('$("saveCollectionDraft")', farmerSubmitStart);
           const farmerSubmit = html.slice(farmerSubmitStart, farmerSubmitEnd);
           if (branchHelperStart < 0 ||
-              !/state\\.branches\\.find/.test(branchHelper) ||
-              !/if\\(!selectedId\\)/.test(branchHelper) ||
-              !/if\\(!branch\\)/.test(branchHelper) ||
-              !/f\\.branch_id=assertFarmerBranchAvailable\\(f\\.branch_id\\)/.test(farmerSubmit) ||
+              !branchHelper.includes('state.branches.find(') ||
+              !branchHelper.includes('if(!selectedId)') ||
+              !branchHelper.includes('if(!branch)') ||
+              !farmerSubmit.includes('f.branch_id=assertFarmerBranchAvailable(f.branch_id)') ||
               farmerSubmit.indexOf('assertFarmerBranchAvailable') > farmerSubmit.indexOf('insertRow("farmers"')) {
             throw new Error('Farmer insert must fail closed unless branch_id references a loaded branch.');
           }
@@ -198,13 +198,13 @@ jobs:
           const mobileHelperStart = html.indexOf('function normalizeBanglaDigits');
           const mobileHelperEnd = html.indexOf('async function assertFarmerCodeAvailable', mobileHelperStart);
           const mobileHelper = html.slice(mobileHelperStart, mobileHelperEnd);
-          const farmerSubmit = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          const farmerMobileSubmit = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
           if (mobileHelperStart < 0 ||
-              !/replace\\(\/\[০-৯\]\/g/.test(mobileHelper) ||
-              !/\\^01\[3-9\]\\d\{8\}\$/.test(mobileHelper) ||
-              !/\\^\\+8801\[3-9\]\\d\{8\}\$/.test(mobileHelper) ||
-              !/return local/.test(mobileHelper) ||
-              !/f\\.mobile=normalizeFarmerMobile\\(f\\.mobile\\)/.test(farmerSubmit) ||
+              !mobileHelper.includes('replace(/[০-৯]/g') ||
+              !mobileHelper.includes('/^01[3-9]\\d{8}$/') ||
+              !mobileHelper.includes('/^\\+8801[3-9]\\d{8}$/') ||
+              !mobileHelper.includes('return local') ||
+              !farmerMobileSubmit.includes('f.mobile=normalizeFarmerMobile(f.mobile)') ||
               /mobile.*(?:duplicate|unique)|(?:duplicate|unique).*mobile/i.test(mobileHelper)) {
             throw new Error('Farmer mobile validation must normalize Bangla digits and accepted Bangladesh formats without imposing mobile uniqueness.');
           }
