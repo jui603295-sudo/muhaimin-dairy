@@ -85,3 +85,47 @@ order by indexname;
 -- If present as text, confirm actual row insert/readback and practical row-size behavior in TEST.
 -- Do not add a column or storage bucket until the TEST schema, existing storage setup,
 -- RLS policies, backup/restore plan, and migration history have been reviewed.
+
+
+-- 5) Compare every photo/GPS/registration payload column with the live TEST schema.
+-- Missing columns and type/default mismatches are reported; this query is read-only.
+with expected(column_name, expected_data_type) as (
+  values
+    ('photo_data_url', 'text'),
+    ('latitude', 'double precision'),
+    ('longitude', 'double precision'),
+    ('location_accuracy', 'double precision'),
+    ('location_captured_at', 'timestamp with time zone'),
+    ('registered_at', 'timestamp with time zone')
+)
+select
+  expected.column_name,
+  expected.expected_data_type,
+  actual.data_type as actual_data_type,
+  actual.is_nullable,
+  actual.column_default,
+  (actual.column_name is not null) as column_exists,
+  (actual.data_type = expected.expected_data_type) as type_matches
+from expected
+left join information_schema.columns actual
+  on actual.table_schema = 'public'
+ and actual.table_name = 'farmers'
+ and actual.column_name = expected.column_name
+order by expected.column_name;
+
+-- 6) Show whether each Farmer profile constraint is validated for existing rows.
+-- NOT VALID constraints still protect new inserts/updates; convalidated=false means
+-- historical rows have not been scanned by PostgreSQL for that constraint.
+select
+  con.conname,
+  con.convalidated,
+  pg_get_constraintdef(con.oid) as definition
+from pg_constraint con
+where con.conrelid = to_regclass('public.farmers')
+  and con.conname in (
+    'farmers_latitude_range_check',
+    'farmers_longitude_range_check',
+    'farmers_location_pair_check',
+    'farmers_photo_data_url_size_check'
+  )
+order by con.conname;
