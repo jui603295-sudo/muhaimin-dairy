@@ -176,3 +176,13 @@ Do these once, in order, and record evidence in this file:
 - [ ] **F-31 invalid path:** Submit an empty or malformed locality option; verify it is normalized to NULL only when genuinely unselected, and malformed values are rejected.
 - [ ] **C-18:** Static CI assertion verifies the submit helper rejects blank manual locality, trims manual input, validates typed locality options, and is wired into the farmer insert payload.
 - **Runtime status:** Browser/Android form submission and TEST database readback remain BLOCKED until an approved TEST environment is available.
+
+
+## 14. Farmer address dataset offline cache reliability
+
+- [ ] **F-32 required shell:** Install the Service Worker with the app HTML and `data/bangladesh-address.json` available; verify both are cached in the new version.
+- [ ] **F-32 failure isolation:** Make an optional logo/manifest asset unavailable during install; verify the Service Worker still installs because optional presentation assets do not block the required app/address shell.
+- [ ] **F-32 offline reload:** After one successful online load, disable network and reload; verify the app shell and Farmer Division → District → Upazila → Union/Pouroshava data remain available from cache.
+- [ ] **F-32 upgrade:** Verify activation removes older `muhaimin-*` caches only after the new required shell has installed.
+- [ ] **C-19:** Static CI checks the cache version, required offline address dataset, optional-asset failure isolation, old-cache cleanup, and cache-first static asset path.
+- **Runtime status:** Browser/Android offline reload, install-failure simulation and cache inspection remain BLOCKED until an approved preview test session is available.
