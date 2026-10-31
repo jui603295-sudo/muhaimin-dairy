@@ -573,3 +573,21 @@ test("Farmer registered_at insert payload is covered by a nullable timestamp mig
   assert.match(migration, /alter column registered_at set default now\(\)/i);
   assert.match(migration, /legacy rows may remain NULL/i);
 });
+
+
+test("Farmer TEST schema preflight reports every payload column and constraint validation state", () => {
+  const diagnostic = fs.readFileSync(
+    "supabase/diagnostics/farmer_photo_schema_preflight.sql",
+    "utf8"
+  );
+  for (const column of [
+    "photo_data_url", "latitude", "longitude", "location_accuracy",
+    "location_captured_at", "registered_at"
+  ]) {
+    assert.ok(diagnostic.includes("'" + column + "'"), column + " must be included in TEST preflight");
+  }
+  assert.match(diagnostic, /actual\.data_type\s+as actual_data_type/i);
+  assert.match(diagnostic, /actual\.column_default/i);
+  assert.match(diagnostic, /con\.convalidated/i);
+  assert.match(diagnostic, /NOT VALID constraints still protect new inserts\/updates/i);
+});
