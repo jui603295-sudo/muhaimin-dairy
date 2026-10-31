@@ -359,6 +359,17 @@ test("Farmer photo handler rejects unsupported and oversized original files", as
   assert.match(second.toasts[0], /১২ MB-এর বেশি/);
 });
 
+test("Farmer photo handler accepts the exact database data-URL size limit", async () => {
+  const prefix = "data:image/jpeg;base64,";
+  const exactLimitDataUrl = prefix + "A".repeat(650000 - prefix.length);
+  const h = farmerMediaHarness({ dataUrl: exactLimitDataUrl });
+  await h.choosePhoto({ type: "image/jpeg", size: 2048 });
+  assert.equal(h.photoInput.dataset.compressedDataUrl.length, 650000);
+  assert.equal(h.preview.src.length, 650000);
+  assert.equal(h.preview.classes.has("hidden"), false);
+  assert.deepEqual(h.toasts, []);
+});
+
 test("Farmer photo handler clears file and preview if compression remains above the database limit", async () => {
   const h = farmerMediaHarness({ dataUrl: "data:image/jpeg;base64," + "A".repeat(650001) });
   await h.choosePhoto({ type: "image/jpeg", size: 2048 });
