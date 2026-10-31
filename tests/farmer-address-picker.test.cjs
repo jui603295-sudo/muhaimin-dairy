@@ -155,3 +155,58 @@ test("malformed root address dataset is rejected before exposing division choice
   vm.runInNewContext(pickerSource.replace("\\nglobalThis.__pickerReady = initFarmerAddressPicker();", ""), context, { filename: "farmer-address-picker-invalid-data.js" });
   await assert.rejects(context.initFarmerAddressPicker(), /ঠিকানার ডেটা যাচাই করা যায়নি/);
 });
+
+test("all administrative parent-child options stay connected to the source dataset", async () => {
+  const h = await makePicker();
+  assert.deepEqual(
+    h.elements.farmerDivision.options.slice(1).map(x => x.value),
+    addressTree.map(x => x.bn)
+  );
+  let districtTotal = 0;
+  let upazilaTotal = 0;
+  let unionTotal = 0;
+  let pourashavaTotal = 0;
+
+  for (const division of addressTree) {
+    h.select("farmerDivision", division.bn);
+    assert.deepEqual(
+      h.elements.farmerDistrict.options.slice(1).map(x => x.value),
+      division.districts.map(x => x.bn),
+      "district choices must match division " + division.bn
+    );
+    districtTotal += division.districts.length;
+
+    for (const district of division.districts) {
+      h.select("farmerDistrict", district.bn);
+      assert.deepEqual(
+        h.elements.farmerUpazila.options.slice(1).map(x => x.value),
+        district.upazilas.map(x => x.bn),
+        "Upazila choices must match district " + district.bn
+      );
+      upazilaTotal += district.upazilas.length;
+
+      for (const upazila of district.upazilas) {
+        h.select("farmerUpazila", upazila.bn);
+        const unique = items => [...new Set(items.map(x => String(x.bn || "").trim().normalize("NFC")).filter(Boolean))];
+        const expected = [
+          ...unique(upazila.unions || []).map(x => "union::" + x),
+          ...unique(upazila.pourashavas || []).map(x => "pourashava::" + x),
+          "manual"
+        ];
+        assert.deepEqual(
+          h.elements.farmerUnion.options.slice(1).map(x => x.value),
+          expected,
+          "locality choices must match Upazila " + upazila.bn + " / " + district.bn
+        );
+        unionTotal += (upazila.unions || []).length;
+        pourashavaTotal += (upazila.pourashavas || []).length;
+      }
+    }
+  }
+
+  assert.equal(addressTree.length, 8);
+  assert.equal(districtTotal, 64);
+  assert.equal(upazilaTotal, 495);
+  assert.equal(unionTotal, 4540);
+  assert.equal(pourashavaTotal, 328);
+});
