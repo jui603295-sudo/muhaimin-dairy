@@ -164,3 +164,25 @@ order by policyname;
 -- * Review object policies against the app's actual authenticated role/RLS model.
 -- * Confirm backup/restore and orphan-file cleanup before replacing photo_data_url.
 -- Until all checks pass, keep the current optional compressed data-URL path unchanged.
+
+
+-- 8) Inventory bucket configuration fields without exposing or reading photo objects.
+-- These metadata columns determine whether a private farmer-photo bucket can enforce
+-- file-size and MIME restrictions. This remains safe if Storage is not installed.
+select
+  column_name,
+  data_type,
+  is_nullable,
+  column_default
+from information_schema.columns
+where table_schema = 'storage'
+  and table_name = 'buckets'
+  and column_name in (
+    'id', 'name', 'public', 'file_size_limit', 'allowed_mime_types'
+  )
+order by column_name;
+
+-- Expected review: public should be false for private farmer photos; file_size_limit
+-- should be no larger than the compressed upload contract; allowed_mime_types should
+-- restrict uploads to image/jpeg (or explicitly approved formats).
+-- Do not create or modify a bucket from this diagnostic.
