@@ -127,3 +127,86 @@ test("network rejection preserves Farmer form and photo state without success si
   assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
   assert.equal(h.photoPreview.src, "data:image/jpeg;base64,ZmFrZQ==");
 });
+
+
+function bindFormHarness() {
+  const toasts = [];
+  let registeredAtCalls = 0;
+  let handlerCalls = 0;
+  let submittedPayload = null;
+  let submittedForm = null;
+  let listener = null;
+  const form = {
+    addEventListener(type, callback) {
+      assert.equal(type, "submit");
+      listener = callback;
+    }
+  };
+  const context = {
+    $(id) { return id === "farmerForm" ? form : null; },
+    formObj(actualForm) {
+      assert.equal(actualForm, form);
+      return { name: "পরীক্ষামূলক কৃষক", mobile: "01700000000" };
+    },
+    setFarmerRegistrationTime() { registeredAtCalls++; },
+    toast(message) { toasts.push(String(message)); }
+  };
+  const start = html.indexOf("function bindForm");
+  const end = html.indexOf('$("language").value=lang();', start);
+  assert.ok(start >= 0 && end > start, "actual bindForm implementation must exist");
+  const source = html.slice(start, end) + "\\nglobalThis.__bindForm = bindForm;";
+  vm.runInNewContext(source, context, { filename: "actual-bind-form.js" });
+  return {
+    bind(handler) {
+      context.__bindForm("farmerForm", async (payload, actualForm) => {
+        handlerCalls++;
+        submittedPayload = payload;
+        submittedForm = actualForm;
+        return handler(payload, actualForm);
+      });
+    },
+    async submit() {
+      assert.equal(typeof listener, "function", "submit listener must be registered");
+      let prevented = false;
+      await listener({ preventDefault() { prevented = true; } });
+      return { prevented };
+    },
+    toasts,
+    counts: () => ({ registeredAtCalls, handlerCalls }),
+    form,
+    submitted: () => ({ payload: submittedPayload, form: submittedForm })
+  };
+}
+
+test("Farmer bindForm displays Bengali insert errors and keeps submit state intact", async () => {
+  const h = bindFormHarness();
+  h.bind(async () => {
+    throw new Error("এই কৃষক রেকর্ডটি ডেটাবেসের বিদ্যমান ইউনিক নিয়মের সঙ্গে সংঘর্ষ করেছে।");
+  });
+  const result = await h.submit();
+  assert.equal(result.prevented, true);
+  assert.deepEqual(h.toasts, ["এই কৃষক রেকর্ডটি ডেটাবেসের বিদ্যমান ইউনিক নিয়মের সঙ্গে সংঘর্ষ করেছে।"]);
+  assert.deepEqual(h.counts(), { registeredAtCalls: 1, handlerCalls: 1 });
+  assert.equal(h.submitted().form, h.form);
+  assert.equal(h.submitted().payload.name, "পরীক্ষামূলক কৃষক");
+});
+
+test("Farmer bindForm surfaces schema-cache recovery guidance without swallowing the submit error silently", async () => {
+  const h = bindFormHarness();
+  h.bind(async () => {
+    throw new Error("Supabase-এ তারিখ/সময়ের প্রয়োজনীয় কলাম খুঁজে পাওয়া যায়নি।");
+  });
+  await h.submit();
+  assert.equal(h.toasts.length, 1);
+  assert.match(h.toasts[0], /তারিখ\/সময়ের প্রয়োজনীয় কলাম/);
+  assert.deepEqual(h.counts(), { registeredAtCalls: 1, handlerCalls: 1 });
+});
+
+test("successful Farmer bindForm submission does not show an error toast", async () => {
+  const h = bindFormHarness();
+  h.bind(async () => ({ saved: true }));
+  const result = await h.submit();
+  assert.equal(result.prevented, true);
+  assert.deepEqual(h.toasts, []);
+  assert.deepEqual(h.counts(), { registeredAtCalls: 1, handlerCalls: 1 });
+});
