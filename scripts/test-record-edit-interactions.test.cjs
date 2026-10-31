@@ -198,3 +198,70 @@ test("Update errors preserve edit state for correction and retry", async () => {
   await assert.rejects(vm.runInNewContext("updateRow('branches','branch-42',{}, {})", context), error => error && error.message === "permission denied");
   assert.deepEqual(calls, []);
 });
+
+test("Actual Bangladesh address cascade restores division, district, upazila, union and village", async () => {
+  class FakeOption { constructor(text,value) { this.text=text; this.value=value; } }
+  class FakeSelect {
+    constructor() { this.options=[]; this.listeners={}; this._value=""; this.value=""; }
+    set value(value) {
+      const candidate=String(value ?? "");
+      this._value=this.options.some(option=>option.value===candidate)?candidate:"";
+    }
+    get value() { return this._value; }
+    addEventListener(type,handler) { this.listeners[type]=handler; }
+    dispatchEvent() { this.listeners.change?.(); return true; }
+    replaceChildren(option) { this.options=[option]; this._value=option.value; }
+    add(option) { this.options.push(option); }
+  }
+  const labels={
+    division:new FakeSelect(),district:new FakeSelect(),upazila:new FakeSelect(),
+    union:new FakeSelect(),status:makeElement(),village:makeElement()
+  };
+  const data=[{bn_name:"রংপুর",districts:[{bn_name:"ঠাকুরগাঁও",upazilas:[{
+    bn_name:"ঠাকুরগাঁও সদর",unions:[{bn_name:"আকচা"},{bn_name:"রুহিয়া"}],pourashavas:[{bn_name:"ঠাকুরগাঁও পৌরসভ"}]
+  }]}]}];
+  const context={
+    Option:FakeOption,Event:class {constructor(type){this.type=type;}},
+    document:{getElementById(id){return labels[id.replace("branch","").toLowerCase()]||null;}},
+    async loadBangladeshAddressTree(){return data;},
+    Array,Set,String,
+    addressCascadeReady:{},addressCascadeControllers:{}
+  };
+  const cascadeStart=html.indexOf("function bdLabel(item)");
+  const initCall=html.indexOf('initAddressCascade("branch");',cascadeStart);
+  const restoreStart=html.indexOf("async function restoreAddressFields");
+  const restoreEnd=html.indexOf("function clearEditState",restoreStart);
+  if(cascadeStart<0||initCall<0||restoreStart<0||restoreEnd<0)throw new Error("Address cascade functions not found");
+  vm.runInNewContext(html.slice(cascadeStart,initCall)+html.slice(restoreStart,restoreEnd),context,{timeout:1000});
+  vm.runInNewContext('initAddressCascade("branch")',context);
+  await vm.runInNewContext('restoreAddressFields("branch",{division:"রংপুর",district:"ঠাকুরগাঁও",upazila:"ঠাকুরগাঁও সদর",union_name:"আকচা",village_name:"আকচা বাজার"})',context);
+  assert.deepEqual(
+    [labels.division.value,labels.district.value,labels.upazila.value,labels.union.value,labels.village.value],
+    ["রংপুর","ঠাকুরগাঁও","ঠাকুরগাঁও সদর","আকচা","আকচা বাজার"]
+  );
+});
+
+test("Address cascade rejects an unavailable child option instead of retaining stale selection", async () => {
+  class FakeOption { constructor(text,value) { this.text=text; this.value=value; } }
+  class FakeSelect {
+    constructor() { this.options=[]; this.listeners={}; this._value=""; }
+    set value(value) { const candidate=String(value??"");this._value=this.options.some(o=>o.value===candidate)?candidate:""; }
+    get value() { return this._value; }
+    addEventListener(type,handler) { this.listeners[type]=handler; }
+    dispatchEvent() { this.listeners.change?.(); }
+    replaceChildren(option) { this.options=[option];this._value=option.value; }
+    add(option) { this.options.push(option); }
+  }
+  const elements={};
+  ["branchDivision","branchDistrict","branchUpazila","branchUnion","branchAddressStatus","branchVillage"].forEach(id=>elements[id]=new FakeSelect());
+  const data=[{bn_name:"রংপুর",districts:[{bn_name:"ঠাকুরগাঁও",upazilas:[{bn_name:"ঠাকুরগাঁও সদর",unions:[{bn_name:"আকচা"}]}]}]}];
+  const context={Option:FakeOption,Event:class{},document:{getElementById:id=>elements[id]||null},
+    async loadBangladeshAddressTree(){return data;},Array,Set,String,addressCascadeReady:{},addressCascadeControllers:{}};
+  const a=html.indexOf("function bdLabel(item)"),b=html.indexOf('initAddressCascade("branch");',a);
+  vm.runInNewContext(html.slice(a,b),context);
+  vm.runInNewContext('initAddressCascade("branch")',context);
+  await vm.runInNewContext('restoreAddressFields("branch",{division:"রংপুর",district:"ভুল জেলা",upazila:"ঠাকুরগাঁও সদর",union_name:"আকচা",village_name:"গ্রাম"})',context);
+  assert.equal(elements.branchDistrict.value,"");
+  assert.equal(elements.branchUpazila.value,"");
+  assert.equal(elements.branchUnion.value,"");
+});
