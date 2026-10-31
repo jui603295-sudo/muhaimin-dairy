@@ -1032,24 +1032,60 @@ initAddressCascade("farmer");
 
 // Branch GPS: capture only after an explicit tap; no background tracking.
 const branchLocationStatus=$("branchLocationStatus");
+let branchLocationRequestId=0;
+const clearBranchLocationFields=()=>{
+  ["branchLatitude","branchLongitude","branchLocationAccuracy","branchLocationCapturedAt"].forEach(id=>$(id).value="");
+};
 $("captureBranchLocation")?.addEventListener("click",()=>{
-  if(!navigator.geolocation){branchLocationStatus.textContent="এই ব্রাউজারে GPS সমর্থিত নয়।";return;}
-  $("captureBranchLocation").disabled=true;
+  const requestId=++branchLocationRequestId;
+  const captureButton=$("captureBranchLocation");
+  if(!navigator.geolocation){
+    branchLocationStatus.textContent="এই ব্রাউজারে GPS সমর্থিত নয়।";
+    return;
+  }
+  captureButton.disabled=true;
   branchLocationStatus.textContent="লোকেশন নেওয়া হচ্ছে…";
-  navigator.geolocation.getCurrentPosition(position=>{
-    $("branchLatitude").value=String(position.coords.latitude);
-    $("branchLongitude").value=String(position.coords.longitude);
-    $("branchLocationAccuracy").value=String(Math.round(position.coords.accuracy));
-    $("branchLocationCapturedAt").value=new Date(position.timestamp||Date.now()).toISOString();
-    branchLocationStatus.textContent="লোকেশন নেওয়া হয়েছে; কেন্দ্র সংরক্ষণ করলে স্থানাঙ্কও সংরক্ষিত হবে.";
-    $("captureBranchLocation").disabled=false;
-  },error=>{
-    branchLocationStatus.textContent=error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি।":error.code===2?"লোকেশন পাওয়া যায়নি।":"লোকেশন নিতে সময় শেষ হয়েছে।";
-    $("captureBranchLocation").disabled=false;
-  },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+  const failCurrentCapture=message=>{
+    if(requestId!==branchLocationRequestId)return;
+    clearBranchLocationFields();
+    branchLocationStatus.textContent=message;
+    captureButton.disabled=false;
+  };
+  try{
+    navigator.geolocation.getCurrentPosition(position=>{
+      if(requestId!==branchLocationRequestId)return;
+      const latitude=Number(position?.coords?.latitude);
+      const longitude=Number(position?.coords?.longitude);
+      const accuracy=Number(position?.coords?.accuracy);
+      if(!Number.isFinite(latitude)||latitude < -90||latitude > 90||
+         !Number.isFinite(longitude)||longitude < -180||longitude > 180||
+         !Number.isFinite(accuracy)||accuracy < 0){
+        failCurrentCapture("GPS তথ্য সঠিক নয়। আবার লোকেশন নিন।");
+        return;
+      }
+      const rawTimestamp=Number(position.timestamp);
+      const capturedAt=new Date(Number.isFinite(rawTimestamp)&&rawTimestamp>0?rawTimestamp:Date.now());
+      if(Number.isNaN(capturedAt.getTime())){
+        failCurrentCapture("লোকেশন নেওয়ার সময় সঠিক নয়। আবার চেষ্টা করুন।");
+        return;
+      }
+      $("branchLatitude").value=String(latitude);
+      $("branchLongitude").value=String(longitude);
+      $("branchLocationAccuracy").value=String(Math.round(accuracy));
+      $("branchLocationCapturedAt").value=capturedAt.toISOString();
+      branchLocationStatus.textContent="লোকেশন নেওয়া হয়েছে; কেন্দ্র সংরক্ষণ করলে স্থানাঙ্কও সংরক্ষিত হবে.";
+      captureButton.disabled=false;
+    },error=>{
+      failCurrentCapture(error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি।":error.code===2?"লোকেশন পাওয়া যায়নি।":"লোকেশন নিতে সময় শেষ হয়েছে।");
+    },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+  }catch(error){
+    failCurrentCapture("লোকেশন নিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+  }
 });
 $("clearBranchLocation")?.addEventListener("click",()=>{
-  ["branchLatitude","branchLongitude","branchLocationAccuracy","branchLocationCapturedAt"].forEach(id=>$(id).value="");
+  branchLocationRequestId++;
+  clearBranchLocationFields();
+  $("captureBranchLocation").disabled=false;
   branchLocationStatus.textContent="লোকেশন মুছে দেওয়া হয়েছে।";
 });
 
