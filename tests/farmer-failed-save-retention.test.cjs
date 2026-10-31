@@ -99,6 +99,21 @@ test("duplicate Farmer code conflict shows a safe validation error and preserves
   assert.equal(h.photoPreview.classNames.has("hidden"), false);
 });
 
+
+test("missing time-column schema error gives a clear recovery message and preserves Farmer form/photo state", async () => {
+  const h = harness({ error: { code: "PGRST204", message: "column registered_time does not exist in schema cache" } });
+  await assert.rejects(
+    h.insert("farmers", { name: "পরীক্ষামূলক কৃষক", registered_time: "2026-10-31T01:00:00.000Z" }),
+    error => error && error.message.includes("সময়ের কলাম খুঁজে পাওয়া যায়নি")
+  );
+  assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
+  assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");
+  assert.equal(h.farmerMobile.value, "01700000000");
+  assert.equal(h.photoInput.value, "farmer-photo.jpg");
+  assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
+  assert.equal(h.photoPreview.src, "data:image/jpeg;base64,ZmFrZQ==");
+});
+
 test("network rejection preserves Farmer form and photo state without success side effects", async () => {
   const h = harness({ reject: new Error("network unavailable") });
   await assert.rejects(
