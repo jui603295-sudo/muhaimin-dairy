@@ -36,17 +36,18 @@ function extractFunction(name) {
 }
 
 function makeElement(value = "") {
-  return {
+  const element = {
     value, textContent: "", src: "", dataset: {}, type: "text", classes: new Set(),
     classList: {
-      add(name) { this.owner.classes.add(name); },
-      remove(name) { this.owner.classes.delete(name); }
+      add(name) { element.classes.add(name); },
+      remove(name) { element.classes.delete(name); }
     },
     scrollIntoView(options) { this.scrolled = options; },
     reset() { this.wasReset = true; },
     get options() { return this._options || []; },
     set options(value) { this._options = value; }
   };
+  return element;
 }
 
 function makeForm(names) {
@@ -194,6 +195,6 @@ test("Update errors preserve edit state for correction and retry", async () => {
     async loadAll() { calls.push("load"); }, Error
   };
   vm.runInNewContext(extractFunction("updateRow"), context);
-  await assert.rejects(vm.runInNewContext("updateRow('branches','branch-42',{}, {})", context), /permission denied/);
+  await assert.rejects(vm.runInNewContext("updateRow('branches','branch-42',{}, {})", context), error => error && error.message === "permission denied");
   assert.deepEqual(calls, []);
 });
