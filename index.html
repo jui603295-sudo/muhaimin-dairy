@@ -378,6 +378,23 @@ function fill(id, items, label) {
   if(items.some(item=>String(item.id)===String(previous)))select.value=previous;
 }
 function branchName(id) { const item=state.branches.find(x=>String(x.id)===String(id)); return item ? item.name : ""; }
+function branchAddressLabel(branch) {
+  return [branch.division,branch.district,branch.upazila,branch.union_name,branch.village_name]
+    .filter(Boolean).join(" / ");
+}
+function fillFarmerBranchSelect() {
+  const select=$("farmerBranch");
+  if(!select)return;
+  const previous=select.value;
+  select.innerHTML='<option value="">'+(lang()==="en"?"-- Select collection branch --":"-- দুধ সংগ্রহ কেন্দ্র নির্বাচন --")+'</option>'+
+    state.branches.map(branch=>{
+      const address=branchAddressLabel(branch);
+      const label=[branch.name,address].filter(Boolean).join(" · ");
+      return '<option value="'+esc(branch.id)+'">'+esc(label)+'</option>';
+    }).join("");
+  if(state.branches.some(branch=>String(branch.id)===String(previous)))select.value=previous;
+}
+
 function farmerName(id) { const item=state.farmers.find(x=>String(x.id)===String(id)); return item ? item.name : ""; }
 function phoneHref(value) {
   let phone=String(value || "").trim().replace(/[^0-9+]/g,"");
@@ -532,7 +549,7 @@ function render() {
   }).join("") || '<p class="small">'+(lang()==="en"?"No branches yet":"কোনো কেন্দ্র নেই")+'</p>';
   $("branchTable").innerHTML=table(["Code",lang()==="en"?"Branch":"কেন্দ্র",lang()==="en"?"Target":"লক্ষ্য",lang()==="en"?"Status":"অবস্থা"],
     state.branches.map(b=>[esc(b.code),esc(b.name),n(b.target_liters)+" L",esc(b.status||"")]));
-  fill("farmerBranch",state.branches,"name"); fill("collectionBranch",state.branches,"name");
+  fillFarmerBranchSelect(); fill("collectionBranch",state.branches,"name");
   fill("paymentFarmer",state.farmers,"name"); fill("ledgerFarmer",state.farmers,"name");
   updateFarmerSelect();
   renderMilkSmartInsights();
