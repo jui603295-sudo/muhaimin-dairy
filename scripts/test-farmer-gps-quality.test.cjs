@@ -7,7 +7,7 @@ const vm = require("node:vm");
 const html = fs.readFileSync("index.html", "utf8");
 const marker = "// Farmer GPS: explicit tap, validated fix, race protection, and no background tracking.";
 const start = html.indexOf(marker);
-const end = html.indexOf('bindForm("farmerForm"', start);
+const end = html.indexOf("// Bangladesh address cascade.", start);
 if (start < 0 || end < 0) throw new Error("Could not locate the actual Farmer GPS handler.");
 const handlerSource = html.slice(start, end);
 
@@ -102,7 +102,7 @@ test("ignores a late callback from an earlier request", () => {
 });
 
 test("submit-time validator rejects stale or inaccurate GPS and allows no-GPS records", () => {
-  const match=html.match(/function validateFreshFarmerLocation\(form\)\{[\s\S]*?\n\}/);
+  const match=html.match(/function validateFreshFarmerLocation\(form,existing\)\{[\s\S]*?\n\}/);
   assert.ok(match,"submit-time GPS validator is missing");
   const validate=vm.runInNewContext("("+match[0].replace(/^function /,"function ")+")", {Date,Number,String});
   validate({latitude:"",longitude:"",location_accuracy:"",location_captured_at:""});
