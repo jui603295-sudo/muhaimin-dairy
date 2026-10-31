@@ -89,8 +89,8 @@ test("only the three previously audited Union source duplicates remain", () => {
     .map(item => item.district + "/" + item.upazila + ":" + item.names.join(","))
     .sort();
   assert.deepEqual(normalized, [
-    "ভোলা/চরফ্যাশন:আওয়াজপুর",
     "পঞ্চগড়/তেতুলিয়া:ভজনপুর",
+    "ভোলা/চরফ্যাশন:আওয়াজপুর",
     "মৌলভীবাজার/বড়লেখা:তালিমপুর"
   ]);
 });
