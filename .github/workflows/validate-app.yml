@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: ["fix/runtime-js-2026-10-16", "test/farmer-address-picker-runtime-2026-10-31"]
+    branches: ["fix/runtime-js-2026-10-16", "test/farmer-address-picker-runtime-2026-10-31", "test/farmer-failed-save-retention-runtime-2026-10-31"]
 
 permissions:
   contents: read
