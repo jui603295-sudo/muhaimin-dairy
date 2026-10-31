@@ -346,3 +346,76 @@ test("farmer save payload stores absent photo and GPS values as null, not stale 
   assert.equal(saved.location_captured_at, null);
   assert.equal(saved.union_name, null);
 });
+
+
+function makeLocationCaptureHarness(geolocation) {
+  const form = new FakeElement("form");
+  form.elements = {
+    latitude: { value: "stale-lat" },
+    longitude: { value: "stale-lon" },
+    location_accuracy: { value: "stale-accuracy" },
+    location_captured_at: { value: "stale-time" }
+  };
+  const status = { textContent: "" };
+  const sourceStart = html.indexOf('$("captureFarmerLocation")?.addEventListener("click",()=>{');
+  const sourceEnd = html.indexOf('\nbindForm("branchForm"', sourceStart);
+  assert.ok(sourceStart >= 0 && sourceEnd > sourceStart, "GPS capture handler must exist");
+  const marker = '$("captureFarmerLocation")?.addEventListener("click",()=>{';
+  const body = html.slice(sourceStart + marker.length, sourceEnd).replace(/\}\);\s*$/, "");
+  const context = {
+    $: id => id === "farmerForm" ? form : id === "farmerLocationStatus" ? status : null,
+    navigator: { geolocation }
+  };
+  const click = vm.runInNewContext("(() => {" + body + "\n})", context);
+  return { form, status, click };
+}
+
+test("GPS capture stores fresh valid coordinates, accuracy and capture timestamp", () => {
+  let options;
+  const harness = makeLocationCaptureHarness({
+    getCurrentPosition(success, failure, suppliedOptions) {
+      options = suppliedOptions;
+      success({
+        coords: { latitude: 26.0337, longitude: 88.4617, accuracy: 17.6 },
+        timestamp: Date.parse("2026-10-31T00:30:00.000Z")
+      });
+    }
+  });
+  harness.click();
+  assert.equal(harness.form.elements.latitude.value, "26.0337");
+  assert.equal(harness.form.elements.longitude.value, "88.4617");
+  assert.equal(harness.form.elements.location_accuracy.value, "18");
+  assert.equal(harness.form.elements.location_captured_at.value, "2026-10-31T00:30:00.000Z");
+  assert.equal(options.enableHighAccuracy, true);
+  assert.equal(options.maximumAge, 0);
+  assert.match(harness.status.textContent, /নির্ভুলতা প্রায় 18 মিটার/);
+});
+
+test("GPS permission failure clears all previously captured coordinates and metadata", () => {
+  const harness = makeLocationCaptureHarness({
+    getCurrentPosition(success, failure) { failure({ code: 1 }); }
+  });
+  harness.click();
+  assert.equal(harness.form.elements.latitude.value, "");
+  assert.equal(harness.form.elements.longitude.value, "");
+  assert.equal(harness.form.elements.location_accuracy.value, "");
+  assert.equal(harness.form.elements.location_captured_at.value, "");
+  assert.match(harness.status.textContent, /অনুমতি দেওয়া হয়নি/);
+});
+
+test("GPS capture rejects invalid coordinates and never retains stale location", () => {
+  const harness = makeLocationCaptureHarness({
+    getCurrentPosition(success) {
+      success({
+        coords: { latitude: Number.NaN, longitude: 88.4, accuracy: 12 },
+        timestamp: Date.parse("2026-10-31T00:30:00.000Z")
+      });
+    }
+  });
+  harness.click();
+  assert.equal(harness.form.elements.latitude.value, "");
+  assert.equal(harness.form.elements.longitude.value, "");
+  assert.equal(harness.form.elements.location_accuracy.value, "");
+  assert.equal(harness.form.elements.location_captured_at.value, "");
+  assert.match(harness.status.textContent, /GPS তথ্য সঠিক নয়/);
+});
