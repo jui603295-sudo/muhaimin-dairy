@@ -218,3 +218,45 @@ test("all administrative parent-child options stay connected to the source datas
   assert.equal(unionTotal, 4540);
   assert.equal(pourashavaTotal, 328);
 });
+
+test("farmer locality submit normalization accepts listed types and trims manual entries", () => {
+  const start = html.indexOf("function normalizeFarmerLocalitySelection");
+  const end = html.indexOf("function setFarmerRegistrationTime", start);
+  assert.ok(start >= 0 && end > start, "locality normalization helper must exist");
+  const source = html.slice(start, end) +
+    "\nglobalThis.__normalizeLocality = normalizeFarmerLocalitySelection;";
+  const context = { lang: () => "bn" };
+  vm.runInNewContext(source, context, { filename: "farmer-locality-submit.js" });
+
+  assert.equal(
+    context.__normalizeLocality({ farmer_union_name: "manual", farmer_locality_manual: "  নতুন গ্রাম  " }),
+    "নতুন গ্রাম"
+  );
+  assert.equal(
+    context.__normalizeLocality({ farmer_union_name: "union::আকচা" }),
+    "আকচা"
+  );
+  assert.equal(
+    context.__normalizeLocality({ farmer_union_name: "pourashava::ঠাকুরগাঁও" }),
+    "ঠাকুরগাঁও"
+  );
+  assert.equal(context.__normalizeLocality({ farmer_union_name: "" }), null);
+});
+
+test("farmer locality submit rejects blank manual names and malformed locality values", () => {
+  const start = html.indexOf("function normalizeFarmerLocalitySelection");
+  const end = html.indexOf("function setFarmerRegistrationTime", start);
+  const source = html.slice(start, end) +
+    "\nglobalThis.__normalizeLocality = normalizeFarmerLocalitySelection;";
+  const context = { lang: () => "bn" };
+  vm.runInNewContext(source, context, { filename: "farmer-locality-submit-validation.js" });
+
+  assert.throws(
+    () => context.__normalizeLocality({ farmer_union_name: "manual", farmer_locality_manual: "   " }),
+    /ইউনিয়ন বা পৌরসভার নাম লিখুন/
+  );
+  assert.throws(
+    () => context.__normalizeLocality({ farmer_union_name: "পুরোনো-অবৈধ-মান" }),
+    /সঠিক ইউনিয়ন বা পৌরসভা নির্বাচন করুন/
+  );
+});
