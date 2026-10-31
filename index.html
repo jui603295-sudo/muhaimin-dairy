@@ -875,6 +875,22 @@ function renderLedger() {
   const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),esc(x.time),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
   result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
 }
+function normalizeBanglaDigits(value) {
+  return String(value||"").replace(/[০-৯]/g,d=>String("০১২৩৪৫৬৭৮৯".indexOf(d)));
+}
+function normalizeFarmerMobile(value) {
+  const raw=normalizeBanglaDigits(value).trim();
+  const compact=raw.replace(/[\\s()-]/g,"");
+  let local=compact;
+  if(/^\\+8801[3-9]\\d{8}$/.test(compact))local="0"+compact.slice(4);
+  else if(/^8801[3-9]\\d{8}$/.test(compact))local="0"+compact.slice(3);
+  if(!/^01[3-9]\\d{8}$/.test(local)) {
+    throw new Error(lang()==="en"
+      ? "Enter a valid Bangladesh mobile number (01XXXXXXXXX or +8801XXXXXXXXX)."
+      : "সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন (01XXXXXXXXX অথবা +8801XXXXXXXXX)।");
+  }
+  return local;
+}
 async function assertFarmerCodeAvailable(value) {
   const farmerCode=String(value||"").trim().toUpperCase();
   if(!/^[A-Z0-9-]{1,32}$/.test(farmerCode)) {
@@ -1066,7 +1082,7 @@ $("farmerPhoto")?.addEventListener("change",async event=>{const input=event.curr
 $("captureFarmerLocation")?.addEventListener("click",()=>{const status=$("farmerLocationStatus"),form=$("farmerForm");if(!form||!status)return;const clearCapturedLocation=()=>{form.elements.latitude.value="";form.elements.longitude.value="";form.elements.location_accuracy.value="";form.elements.location_captured_at.value="";};clearCapturedLocation();if(!navigator.geolocation){status.textContent="এই ব্রাউজারে GPS সমর্থিত নয়; কোনো পুরোনো লোকেশন সংরক্ষণ করা হবে না।";return;}status.textContent="লোকেশন নেওয়া হচ্ছে…";navigator.geolocation.getCurrentPosition(position=>{const coords=position.coords,lat=Number(coords.latitude),lon=Number(coords.longitude),accuracy=Number(coords.accuracy),capturedAt=new Date(position.timestamp);if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(accuracy)||accuracy<0||!Number.isFinite(capturedAt.getTime())){clearCapturedLocation();status.textContent="GPS তথ্য সঠিক নয়; আবার চেষ্টা করুন।";return;}form.elements.latitude.value=String(lat);form.elements.longitude.value=String(lon);form.elements.location_accuracy.value=String(Math.round(accuracy));form.elements.location_captured_at.value=capturedAt.toISOString();status.textContent="লোকেশন নেওয়া হয়েছে • নির্ভুলতা প্রায় "+Math.round(accuracy)+" মিটার";},error=>{clearCapturedLocation();status.textContent=error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি; পুরোনো লোকেশন মুছে রাখা হয়েছে।":error.code===2?"লোকেশন পাওয়া যায়নি; পুরোনো লোকেশন মুছে রাখা হয়েছে।":"লোকেশন নিতে সময় শেষ হয়েছে; পুরোনো লোকেশন মুছে রাখা হয়েছে।";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});});
 
 bindForm("branchForm",async f=>insertRow("branches",{code:f.code,name:f.name,target_liters:n(f.target_liters||500),status:f.status,notes:f.notes,country:f.branch_country||"বাংলাদেশ",division:f.branch_division||null,district:f.branch_district||null,upazila:f.branch_upazila||null,union_name:f.branch_union_name||null,village_name:f.branch_village_name||null},$("branchForm")));
-bindForm("farmerForm",async f=>{f.farmer_code=await assertFarmerCodeAvailable(f.farmer_code);const photoInput=$("farmerPhoto");const photoData=photoInput?.dataset?.compressedDataUrl||null;return insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:(f.farmer_union_name==="manual"?f.farmer_locality_manual:(f.farmer_union_name||"").replace(/^(union|pourashava)::/,""))||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,latitude:f.latitude!==""?Number(f.latitude):null,longitude:f.longitude!==""?Number(f.longitude):null,location_accuracy:f.location_accuracy!==""?Number(f.location_accuracy):null,location_captured_at:f.location_captured_at||null,registered_at:f.registered_at||null},$("farmerForm"));});
+bindForm("farmerForm",async f=>{f.mobile=normalizeFarmerMobile(f.mobile);f.farmer_code=await assertFarmerCodeAvailable(f.farmer_code);const photoInput=$("farmerPhoto");const photoData=photoInput?.dataset?.compressedDataUrl||null;return insertRow("farmers",{farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village:[f.farmer_village_name,f.village].filter(Boolean).join(" / ")||null,country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,upazila:f.farmer_upazila||null,union_name:(f.farmer_union_name==="manual"?f.farmer_locality_manual:(f.farmer_union_name||"").replace(/^(union|pourashava)::/,""))||null,village_name:f.farmer_village_name||null,branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,latitude:f.latitude!==""?Number(f.latitude):null,longitude:f.longitude!==""?Number(f.longitude):null,location_accuracy:f.location_accuracy!==""?Number(f.location_accuracy):null,location_captured_at:f.location_captured_at||null,registered_at:f.registered_at||null},$("farmerForm"));});
 $("saveCollectionDraft").addEventListener("click",async()=>{try{await saveCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("restoreCollectionDraft").addEventListener("click",async()=>{try{await restoreCollectionDraft();}catch(error){toast(error.message||String(error));}});
 $("clearCollectionDraft").addEventListener("click",async()=>{try{await clearCollectionDraft();}catch(error){toast(error.message||String(error));}});
