@@ -1028,8 +1028,23 @@ function bindForm(id,handler) {
   const form=$(id); if(!form)return;
   form.addEventListener("submit",async event=>{
     event.preventDefault();
-    try { await handler(formObj(form),form); }
-    catch(error) { toast(error && error.message ? error.message : String(error)); }
+    // A form may have only one in-flight write. Ignore rapid repeat submits
+    // until the first request has a definitive success or failure response.
+    if(form.dataset.submitting==="true")return;
+    form.dataset.submitting="true";
+    const submitter=event.submitter||form.querySelector('button[type="submit"],button:not([type]),input[type="submit"]');
+    const wasDisabled=!!submitter?.disabled;
+    if(submitter)submitter.disabled=true;
+    form.setAttribute("aria-busy","true");
+    try {
+      await handler(formObj(form),form);
+    } catch(error) {
+      toast(error && error.message ? error.message : String(error));
+    } finally {
+      delete form.dataset.submitting;
+      form.removeAttribute("aria-busy");
+      if(submitter)submitter.disabled=wasDisabled;
+    }
   });
 }
 $("language").value=lang();
