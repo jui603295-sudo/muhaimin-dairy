@@ -2,9 +2,9 @@ name: Validate Muhaimin Dairy
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "test/farmer-address-picker-runtime-2026-10-31"]
   push:
-    branches: ["fix/runtime-js-2026-10-16"]
+    branches: ["fix/runtime-js-2026-10-16", "test/farmer-address-picker-runtime-2026-10-31"]
 
 permissions:
   contents: read
@@ -547,3 +547,7 @@ jobs:
           NODE
       - name: Test Service Worker runtime behavior
         run: node --test tests/service-worker.test.cjs
+      - name: Test Farmer address picker runtime behavior
+        run: node --test tests/farmer-address-picker.test.cjs
+      - name: Validate Bangladesh address dataset integrity
+        run: node --test tests/bangladesh-address-data.test.cjs
