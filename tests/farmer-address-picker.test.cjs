@@ -356,7 +356,7 @@ function makeLocationCaptureHarness(geolocation) {
     location_accuracy: { value: "stale-accuracy" },
     location_captured_at: { value: "stale-time" }
   };
-  const status = { textContent: "" };
+  const status = { textContent: "", dataset: {} };
   const sourceStart = html.indexOf('$("captureFarmerLocation")?.addEventListener("click",()=>{');
   const sourceEnd = html.indexOf('\nbindForm("branchForm"', sourceStart);
   assert.ok(sourceStart >= 0 && sourceEnd > sourceStart, "GPS capture handler must exist");
