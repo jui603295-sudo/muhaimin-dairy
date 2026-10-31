@@ -293,7 +293,7 @@ function farmerMediaHarness(options = {}) {
       remove: name => preview.classes.delete(name)
     }
   };
-  const status = { textContent: "" };
+  const status = { textContent: "", dataset: {} };
   const photoButton = { addEventListener(type, callback) { listeners["photo:" + type] = callback; } };
   const gpsButton = { addEventListener(type, callback) { listeners["gps:" + type] = callback; } };
   const canvas = {
