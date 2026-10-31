@@ -392,7 +392,9 @@ test("Farmer GPS handler saves valid coordinates and capture timestamp", () => {
   assert.equal(h.fields.location_accuracy.value, "12");
   assert.equal(h.fields.location_captured_at.value, "2026-10-31T01:00:00.000Z");
   assert.match(h.status.textContent, /লোকেশন নেওয়া হয়েছে/);
-  assert.deepEqual(h.context.__geoCallbacks.config, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  assert.equal(h.context.__geoCallbacks.config.enableHighAccuracy, true);
+  assert.equal(h.context.__geoCallbacks.config.timeout, 15000);
+  assert.equal(h.context.__geoCallbacks.config.maximumAge, 0);
 });
 
 test("Farmer GPS handler clears stale coordinates when permission is denied", () => {
@@ -429,4 +431,25 @@ test("Farmer GPS handler reports unsupported browser without retaining old locat
   assert.equal(h.fields.latitude.value, "");
   assert.equal(h.fields.longitude.value, "");
   assert.match(h.status.textContent, /GPS সমর্থিত নয়/);
+});
+
+
+test("Farmer GPS handler rejects out-of-range longitude and invalid accuracy", () => {
+  const longitude = farmerMediaHarness({ position: {
+    coords: { latitude: 26.03, longitude: -181, accuracy: 10 },
+    timestamp: Date.parse("2026-10-31T01:00:00.000Z")
+  } });
+  longitude.captureGps();
+  assert.equal(longitude.fields.latitude.value, "");
+  assert.equal(longitude.fields.longitude.value, "");
+  assert.match(longitude.status.textContent, /GPS তথ্য সঠিক নয়/);
+
+  const accuracy = farmerMediaHarness({ position: {
+    coords: { latitude: 26.03, longitude: 88.46, accuracy: Number.NaN },
+    timestamp: Date.parse("2026-10-31T01:00:00.000Z")
+  } });
+  accuracy.captureGps();
+  assert.equal(accuracy.fields.latitude.value, "");
+  assert.equal(accuracy.fields.longitude.value, "");
+  assert.match(accuracy.status.textContent, /GPS তথ্য সঠিক নয়/);
 });
