@@ -178,6 +178,20 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // A successful farmer save must clear the in-memory photo so it cannot leak to the next farmer.
+          const insertRowStart = html.indexOf('async function insertRow');
+          const insertRowEnd = html.indexOf('function bindForm', insertRowStart);
+          const insertRowSource = html.slice(insertRowStart, insertRowEnd);
+          const resetAt = insertRowSource.indexOf('if(form)form.reset()');
+          const farmerPhotoCleanupAt = insertRowSource.indexOf('if(tableName==="farmers")');
+          if (resetAt < 0 || farmerPhotoCleanupAt < resetAt ||
+              !insertRowSource.includes('delete photoInput.dataset.compressedDataUrl') ||
+              !insertRowSource.includes('photoInput.value=""') ||
+              !insertRowSource.includes('photoPreview.removeAttribute("src")') ||
+              !insertRowSource.includes('photoPreview.classList.add("hidden")')) {
+            throw new Error('Successful farmer save must clear the selected photo, compressed data and preview.');
+          }
+
           // Farmer records must reference a currently loaded branch before insert.
           const branchHelperStart = html.indexOf('function assertFarmerBranchAvailable');
           const branchHelperEnd = html.indexOf('function normalizeBanglaDigits', branchHelperStart);
