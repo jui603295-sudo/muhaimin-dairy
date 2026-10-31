@@ -178,6 +178,17 @@ jobs:
             throw new Error('Farmer duplicate-code preflight must check loaded and current database records and fail closed before insert.');
           }
 
+          // Farmer photo processing clears stale previews and enforces bounded input/output.
+          const photoHandler = html.slice(html.indexOf('$("farmerPhoto")'), html.indexOf('$("captureFarmerLocation")'));
+          if (!/delete input\.dataset\.compressedDataUrl/.test(photoHandler) ||
+              !/file\.size>12\*1024\*1024/.test(photoHandler) ||
+              !/bitmap\.width\*bitmap\.height>40000000/.test(photoHandler) ||
+              !/canvas\.getContext\("2d"\)/.test(photoHandler) ||
+              !/data\.length>650000/.test(photoHandler) ||
+              !/finally\{if\(bitmap/.test(photoHandler)) {
+            throw new Error('Farmer photo handler must clear stale data, bound source dimensions and output size, and release decoded bitmap resources.');
+          }
+
           // A failed GPS recapture must clear any previous coordinates and reject invalid fixes.
           const gpsHandler = html.slice(html.indexOf('$("captureFarmerLocation")'), html.indexOf('bindForm("branchForm"'));
           if (!/clearCapturedLocation\(\)/.test(gpsHandler) ||
