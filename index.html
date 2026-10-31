@@ -952,7 +952,7 @@ async function assertFarmerCodeAvailable(value) {
   return farmerCode;
 }
 async function insertRow(tableName,data,form) {
-  const timeKeys=Object.keys(data).filter(key=>/_time$/.test(key));
+  const timeKeys=Object.keys(data).filter(key=>/(_time|_at)$/.test(key));
   const result=await sb.from(tableName).insert(data);
   if(result.error) {
     const message=String(result.error.message||"");
@@ -963,8 +963,8 @@ async function insertRow(tableName,data,form) {
     }
     if(timeKeys.length && /column .* does not exist|schema cache|could not find .*column/i.test(message)) {
       throw new Error(lang()==="en"
-        ? "Time could not be saved because Supabase cannot find the time column. No record was saved. Verify the table has the required *_time column, then run NOTIFY pgrst, 'reload schema'; in the Supabase SQL Editor and try again."
-        : "Supabase-এ সময়ের কলাম খুঁজে পাওয়া যায়নি, তাই রেকর্ড সংরক্ষণ হয়নি। সংশ্লিষ্ট টেবিলে *_time কলাম আছে কি না যাচাই করুন; তারপর Supabase SQL Editor-এ NOTIFY pgrst, 'reload schema'; চালিয়ে আবার চেষ্টা করুন।");
+        ? "Date/time could not be saved because Supabase cannot find a required timestamp column. No record was saved. Verify the required *_time or *_at column exists, then run NOTIFY pgrst, 'reload schema'; in the Supabase SQL Editor and try again."
+        : "Supabase-এ তারিখ/সময়ের প্রয়োজনীয় কলাম খুঁজে পাওয়া যায়নি, তাই রেকর্ড সংরক্ষণ হয়নি। সংশ্লিষ্ট টেবিলে *_time বা *_at কলাম আছে কি না যাচাই করুন; তারপর Supabase SQL Editor-এ NOTIFY pgrst, 'reload schema'; চালিয়ে আবার চেষ্টা করুন।");
     }
     throw result.error;
   }
