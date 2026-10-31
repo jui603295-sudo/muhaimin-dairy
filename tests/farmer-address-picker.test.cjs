@@ -133,3 +133,25 @@ test("changing a parent selection clears stale lower-level locality and village 
   assert.equal(h.elements.farmerLocalityManual.disabled, true);
   assert.equal(h.elements.farmerForm.elements.farmer_village_name.value, "");
 });
+
+test("address dataset network failure rejects initialization instead of enabling an empty picker", async () => {
+  const context = {
+    console,
+    document: { createElement: tag => new FakeElement(tag) },
+    fetch: async () => ({ ok: false, status: 503 }),
+    $() { return new FakeElement(); }
+  };
+  vm.runInNewContext(pickerSource, context, { filename: "farmer-address-picker-network-failure.js" });
+  await assert.rejects(context.initFarmerAddressPicker(), /বাংলাদেশের ঠিকানার ডেটা লোড করা যায়নি/);
+});
+
+test("malformed root address dataset is rejected before exposing division choices", async () => {
+  const context = {
+    console,
+    document: { createElement: tag => new FakeElement(tag) },
+    fetch: async () => ({ ok: true, json: async () => [{ bn: "শুধু একটি বিভাগ", districts: [] }] }),
+    $() { return new FakeElement(); }
+  };
+  vm.runInNewContext(pickerSource, context, { filename: "farmer-address-picker-invalid-data.js" });
+  await assert.rejects(context.initFarmerAddressPicker(), /ঠিকানার ডেটা যাচাই করা যায়নি/);
+});
