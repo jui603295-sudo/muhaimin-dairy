@@ -358,6 +358,45 @@ jobs:
               unionCount !== 4540 || pourashavaCount !== 328) {
             throw new Error('Bangladesh address hierarchy counts do not match the reviewed dataset.');
           }
+          // Duplicate locality labels must not produce duplicate picker values.
+          const localityPickerStart = html.indexOf('$("farmerUpazila")?.addEventListener("change"');
+          const localityPickerEnd = html.indexOf('$("farmerUnion")?.addEventListener("change"', localityPickerStart);
+          const localityPickerSource = html.slice(localityPickerStart, localityPickerEnd);
+          let duplicateUnionEntries = 0;
+          let duplicatePourashavaEntries = 0;
+          for (const division of addressTree) {
+            for (const district of division.districts || []) {
+              for (const upazila of district.upazilas || []) {
+                for (const list of [
+                  { items: upazila.unions || [], kind: "union" },
+                  { items: upazila.pourashavas || [], kind: "pourashava" }
+                ]) {
+                  const seen = new Set();
+                  for (const item of list.items) {
+                    const name = String(item.bn || "").trim().normalize("NFC");
+                    if (!name) throw new Error("Farmer locality dataset contains an empty Bangla name.");
+                    if (seen.has(name)) {
+                      if (list.kind === "union") duplicateUnionEntries++;
+                      else duplicatePourashavaEntries++;
+                    }
+                    seen.add(name);
+                  }
+                }
+              }
+            }
+          }
+          if (duplicateUnionEntries > 0 &&
+              (!localityPickerSource.includes('seenUnionNames.has(localityName)') ||
+               !localityPickerSource.includes('seenUnionNames.add(localityName)'))) {
+            throw new Error('Duplicate Union names must be deduplicated in the Farmer locality picker.');
+          }
+          if (duplicatePourashavaEntries > 0 &&
+              (!localityPickerSource.includes('seenPourashavaNames.has(localityName)') ||
+               !localityPickerSource.includes('seenPourashavaNames.add(localityName)'))) {
+            throw new Error('Duplicate Pourashava names must be deduplicated in the Farmer locality picker.');
+          }
+          console.log(JSON.stringify({ duplicateUnionEntries, duplicatePourashavaEntries }));
+
           if (!html.includes('id="farmerDivision"') || !html.includes('id="farmerDistrict"') ||
               !html.includes('id="farmerUpazila"') || !html.includes('id="farmerUnion"') ||
               !html.includes('name="registered_at"') || !/registered_at:f\.registered_at\|\|null/.test(html)) {
