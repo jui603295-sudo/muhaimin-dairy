@@ -182,13 +182,14 @@ jobs:
           const photoSchemaPath = 'supabase/diagnostics/farmer_photo_schema_preflight.sql';
           if (!fs.existsSync(photoSchemaPath)) throw new Error('Farmer photo schema preflight is missing.');
           const photoSchemaSql = fs.readFileSync(photoSchemaPath, 'utf8');
-          if (!/TEST-only, read-only preflight/i.test(photoSchemaSql) ||
-              !/information_schema\.columns/i.test(photoSchemaSql) ||
-              !/photo_data_url/i.test(photoSchemaSql) ||
-              !/photo_storage_path/i.test(photoSchemaSql) ||
-              !/pg_policies/i.test(photoSchemaSql) ||
-              !/pg_indexes/i.test(photoSchemaSql) ||
-              /\b(insert\s+into|update\s+\w|delete\s+from|alter\s+table|create\s+(?:table|index|policy)|drop\s+\w|truncate\s+)/i.test(photoSchemaSql)) {
+          const executablePhotoSql = photoSchemaSql.replace(/--.*$/gm, '');
+          if (!/TEST-only, read-only preflight/i.test(executablePhotoSql) ||
+              !/information_schema\.columns/i.test(executablePhotoSql) ||
+              !/photo_data_url/i.test(executablePhotoSql) ||
+              !/photo_storage_path/i.test(executablePhotoSql) ||
+              !/pg_policies/i.test(executablePhotoSql) ||
+              !/pg_indexes/i.test(executablePhotoSql) ||
+              /\b(insert\s+into|update\s+\w|delete\s+from|alter\s+table|create\s+(?:table|index|policy)|drop\s+\w|truncate\s+)/i.test(executablePhotoSql)) {
             throw new Error('Farmer photo schema diagnostic must inspect column types, storage-path alternatives, RLS policies and indexes without writes or DDL.');
           }
 
