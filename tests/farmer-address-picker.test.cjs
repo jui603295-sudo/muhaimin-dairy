@@ -260,3 +260,89 @@ test("farmer locality submit rejects blank manual names and malformed locality v
     /সঠিক ইউনিয়ন বা পৌরসভা নির্বাচন করুন/
   );
 });
+
+
+test("farmer save payload preserves registration time, compressed photo and captured GPS metadata", async () => {
+  const marker = 'bindForm("farmerForm",async f=>{';
+  const start = html.indexOf(marker);
+  const end = html.indexOf('\n$("saveCollectionDraft")', start);
+  assert.ok(start >= 0 && end > start, "Farmer form save handler must exist");
+  const body = html.slice(start + marker.length, end).replace(/\}\);\s*$/, "");
+  let saved = null;
+  const photo = { dataset: { compressedDataUrl: "data:image/jpeg;base64,ZmFrZQ==" } };
+  const form = new FakeElement("form");
+  const context = {
+    assertFarmerBranchAvailable: value => value,
+    normalizeFarmerMobile: value => value,
+    assertFarmerCodeAvailable: async value => value,
+    normalizeFarmerLocalitySelection: () => "আকচা",
+    n: value => Number(value),
+    $: id => id === "farmerPhoto" ? photo : id === "farmerForm" ? form : null,
+    insertRow: async (table, payload, targetForm) => {
+      saved = { table, payload, targetForm };
+      return saved;
+    }
+  };
+  const saveHandler = vm.runInNewContext("(async function(f) {" + body + "\n})", context);
+  await saveHandler({
+    branch_id: "branch-1",
+    mobile: "01700000000",
+    farmer_code: "F-001",
+    name: "পরীক্ষা কৃষক",
+    farmer_village_name: "পরীক্ষা গ্রাম",
+    village: "",
+    farmer_country: "বাংলাদেশ",
+    farmer_division: "রংপুর",
+    farmer_district: "ঠাকুরগাঁও",
+    farmer_upazila: "ঠাকুরগাঁও সদর",
+    expected_liters: "25",
+    latitude: "26.0337",
+    longitude: "88.4617",
+    location_accuracy: "18",
+    location_captured_at: "2026-10-31T00:00:00.000Z",
+    registered_at: "2026-10-31T00:00:00.000Z"
+  });
+  assert.equal(saved.table, "farmers");
+  assert.equal(saved.payload.registered_at, "2026-10-31T00:00:00.000Z");
+  assert.equal(saved.payload.photo_data_url, "data:image/jpeg;base64,ZmFrZQ==");
+  assert.equal(saved.payload.latitude, 26.0337);
+  assert.equal(saved.payload.longitude, 88.4617);
+  assert.equal(saved.payload.location_accuracy, 18);
+  assert.equal(saved.payload.location_captured_at, "2026-10-31T00:00:00.000Z");
+  assert.equal(saved.payload.union_name, "আকচা");
+  assert.equal(saved.payload.village_name, "পরীক্ষা গ্রাম");
+  assert.equal(saved.payload.expected_liters, 25);
+});
+
+test("farmer save payload stores absent photo and GPS values as null, not stale data", async () => {
+  const marker = 'bindForm("farmerForm",async f=>{';
+  const start = html.indexOf(marker);
+  const end = html.indexOf('\n$("saveCollectionDraft")', start);
+  assert.ok(start >= 0 && end > start, "Farmer form save handler must exist");
+  const body = html.slice(start + marker.length, end).replace(/\}\);\s*$/, "");
+  let saved = null;
+  const context = {
+    assertFarmerBranchAvailable: value => value,
+    normalizeFarmerMobile: value => value,
+    assertFarmerCodeAvailable: async value => value,
+    normalizeFarmerLocalitySelection: () => null,
+    n: value => Number(value),
+    $: () => ({ dataset: {} }),
+    insertRow: async (table, payload) => { saved = payload; return payload; }
+  };
+  const saveHandler = vm.runInNewContext("(async function(f) {" + body + "\n})", context);
+  await saveHandler({
+    branch_id: "branch-1", mobile: "01700000000", farmer_code: "F-002",
+    name: "নতুন কৃষক", farmer_village_name: "", village: "",
+    farmer_country: "বাংলাদেশ", farmer_division: "", farmer_district: "",
+    farmer_upazila: "", expected_liters: "0",
+    latitude: "", longitude: "", location_accuracy: "", location_captured_at: "",
+    registered_at: "2026-10-31T00:00:00.000Z"
+  });
+  assert.equal(saved.photo_data_url, null);
+  assert.equal(saved.latitude, null);
+  assert.equal(saved.longitude, null);
+  assert.equal(saved.location_accuracy, null);
+  assert.equal(saved.location_captured_at, null);
+  assert.equal(saved.union_name, null);
+});
