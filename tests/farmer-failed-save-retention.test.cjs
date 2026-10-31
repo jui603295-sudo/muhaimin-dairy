@@ -149,7 +149,9 @@ function bindFormHarness() {
       return { name: "পরীক্ষামূলক কৃষক", mobile: "01700000000" };
     },
     setFarmerRegistrationTime() { registeredAtCalls++; },
-    toast(message) { toasts.push(String(message)); }
+    toast(message) { toasts.push(String(message)); },
+    navigator: { onLine: true },
+    setOnline(value) { context.navigator.onLine = value; }
   };
   const start = html.indexOf("function bindForm");
   const end = html.indexOf('$("language").value=lang();', start);
@@ -172,11 +174,36 @@ function bindFormHarness() {
       return { prevented };
     },
     toasts,
+    setOnline: value => context.setOnline(value),
     counts: () => ({ registeredAtCalls, handlerCalls }),
     form,
     submitted: () => ({ payload: submittedPayload, form: submittedForm })
   };
 }
+
+
+test("Farmer bindForm blocks an offline submit without clearing or processing the form", async () => {
+  const h = bindFormHarness();
+  let saved = false;
+  h.bind(async () => { saved = true; });
+  h.setOnline(false);
+  const result = await h.submit();
+  assert.equal(result.prevented, true);
+  assert.equal(saved, false);
+  assert.deepEqual(h.toasts, ["ইন্টারনেট সংযোগ নেই। কৃষকের তথ্য এখনো সংরক্ষণ হয়নি। ফর্মটি খোলা রাখুন; সংযোগ ফিরে এলে আবার সংরক্ষণ করুন।"]);
+  assert.deepEqual(h.counts(), { registeredAtCalls: 0, handlerCalls: 0 });
+});
+
+test("Farmer bindForm allows a retry after connectivity returns", async () => {
+  const h = bindFormHarness();
+  h.bind(async () => ({ saved: true }));
+  h.setOnline(false);
+  await h.submit();
+  h.setOnline(true);
+  await h.submit();
+  assert.deepEqual(h.counts(), { registeredAtCalls: 1, handlerCalls: 1 });
+  assert.equal(h.toasts.length, 1);
+});
 
 test("Farmer bindForm displays Bengali insert errors and keeps submit state intact", async () => {
   const h = bindFormHarness();
