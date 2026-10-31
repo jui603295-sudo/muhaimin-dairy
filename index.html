@@ -1160,8 +1160,9 @@ function initAddressCascade(prefix){
     if(division.value)division.dispatchEvent(new Event("change"));
   }).catch(error=>{
     if(status)status.textContent=(error.message||"ঠিকানা তালিকা লোড হয়নি.")+" ইন্টারনেট সংযোগ পরীক্ষা করে পেজ রিফ্রেশ করুন।";
-    throw error;
+    return null;
   });
+}
 initAddressCascade("branch");
 initAddressCascade("farmer");
 
