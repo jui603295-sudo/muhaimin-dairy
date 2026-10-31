@@ -1038,7 +1038,7 @@ function bindForm(id,handler) {
     const controls=Array.from(form.querySelectorAll("input,select,textarea,button"));
     if(submitter&&!controls.includes(submitter))controls.push(submitter);
     const disabledBefore=controls.map(control=>({control,disabled:!!control.disabled}));
-    controls.forEach(({control})=>{control.disabled=true;});
+    controls.forEach(control=>{control.disabled=true;});
     form.setAttribute("aria-busy","true");
     try {
       await handler(formObj(form),form);
