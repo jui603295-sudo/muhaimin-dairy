@@ -409,6 +409,6 @@ test("Branch and Farmer Edit handlers leave the selected form untouched while a 
     vm.runInNewContext(extractFunction(kind==="branch"?"editBranchRecord":"editFarmerRecord"),x.context);
     await vm.runInNewContext((kind==="branch"?"editBranchRecord":"editFarmerRecord")+"('"+row.id+"')",x.context);
     assert.equal(x.form.fields.record_id.value,"");
-    assert.equal(x.ids[kind+"EditStatus"].classes.has("hidden"),true);
+    assert.equal(x.ids[kind+"EditStatus"].textContent,"");
   }
 });
