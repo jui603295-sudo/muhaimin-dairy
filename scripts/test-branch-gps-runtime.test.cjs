@@ -58,7 +58,9 @@ test("captures valid coordinates, accuracy and timestamp only after a tap", () =
   h.click("captureBranchLocation");
   assert.equal(h.elements.captureBranchLocation.disabled, true);
   assert.match(h.elements.branchLocationStatus.textContent, /লোকেশন নেওয়া হচ্ছে/);
-  assert.deepEqual(options, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+  assert.equal(options.enableHighAccuracy, true);
+  assert.equal(options.timeout, 20000);
+  assert.equal(options.maximumAge, 0);
   success(fix());
   assert.equal(h.elements.branchLatitude.value, "26.0337");
   assert.equal(h.elements.branchLongitude.value, "88.4617");
