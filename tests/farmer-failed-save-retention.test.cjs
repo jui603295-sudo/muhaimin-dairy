@@ -35,7 +35,7 @@ function harness(result) {
     }
   };
   const context = {
-    sb: { from(table) { return { insert: async payload => ({ ...result, table, payload }) }; } },
+    sb: { from(table) { return { insert: async payload => { if (result.reject) throw result.reject; return { ...result, table, payload }; } }; } },
     lang: () => "bn",
     $: id => id === "farmerPhoto" ? photoInput : id === "farmerPhotoPreview" ? photoPreview : null,
     logActivity: () => { activityCount++; },
@@ -81,4 +81,18 @@ test("failed non-Farmer insert also avoids success-only reset and side effects",
   const h = harness({ error: { code: "42501", message: "permission denied" } });
   await assert.rejects(h.insert("branches", { name: "পরীক্ষা কেন্দ্র" }), error => error && error.message === "permission denied");
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
+});
+
+test("network rejection preserves Farmer form and photo state without success side effects", async () => {
+  const h = harness({ reject: new Error("network unavailable") });
+  await assert.rejects(
+    h.insert("farmers", { name: "পরীক্ষামূলক কৃষক" }),
+    error => error && error.message === "network unavailable"
+  );
+  assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
+  assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");
+  assert.equal(h.farmerMobile.value, "01700000000");
+  assert.equal(h.photoInput.value, "farmer-photo.jpg");
+  assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
+  assert.equal(h.photoPreview.src, "data:image/jpeg;base64,ZmFrZQ==");
 });
