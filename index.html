@@ -531,7 +531,12 @@ function optionalLocationNumber(value,min,max,label){
 function validateFreshFarmerLocation(form,existing){
  const latitude=String(form.latitude||"").trim(),longitude=String(form.longitude||"").trim();
  if(!latitude&&!longitude)return;
- const sameSavedCoordinates=!!existing&&existing.latitude!==null&&existing.latitude!==undefined&&
+ const hasCompleteCoordinates=latitude!==""&&longitude!==""&&
+  Number.isFinite(Number(latitude))&&Number.isFinite(Number(longitude))&&
+  Number(latitude)>=-90&&Number(latitude)<=90&&Number(longitude)>=-180&&Number(longitude)<=180;
+ const sameSavedCoordinates=hasCompleteCoordinates&&!!existing&&
+  existing.latitude!==null&&existing.latitude!==undefined&&
+  existing.longitude!==null&&existing.longitude!==undefined&&
   Number(latitude)===Number(existing.latitude)&&Number(longitude)===Number(existing.longitude);
  if(sameSavedCoordinates)return;
  const accuracy=Number(form.location_accuracy);
