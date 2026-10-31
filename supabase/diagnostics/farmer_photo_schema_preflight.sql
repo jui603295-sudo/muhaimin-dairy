@@ -85,3 +85,104 @@ order by indexname;
 -- If present as text, confirm actual row insert/readback and practical row-size behavior in TEST.
 -- Do not add a column or storage bucket until the TEST schema, existing storage setup,
 -- RLS policies, backup/restore plan, and migration history have been reviewed.
+
+
+-- 5) Compare every photo/GPS/registration payload column with the live TEST schema.
+-- Missing columns and type/default mismatches are reported; this query is read-only.
+with expected(column_name, expected_data_type) as (
+  values
+    ('photo_data_url', 'text'),
+    ('latitude', 'double precision'),
+    ('longitude', 'double precision'),
+    ('location_accuracy', 'double precision'),
+    ('location_captured_at', 'timestamp with time zone'),
+    ('registered_at', 'timestamp with time zone')
+)
+select
+  expected.column_name,
+  expected.expected_data_type,
+  actual.data_type as actual_data_type,
+  actual.is_nullable,
+  actual.column_default,
+  (actual.column_name is not null) as column_exists,
+  (actual.data_type = expected.expected_data_type) as type_matches
+from expected
+left join information_schema.columns actual
+  on actual.table_schema = 'public'
+ and actual.table_name = 'farmers'
+ and actual.column_name = expected.column_name
+order by expected.column_name;
+
+-- 6) Show whether each Farmer profile constraint is validated for existing rows.
+-- NOT VALID constraints still protect new inserts/updates; convalidated=false means
+-- historical rows have not been scanned by PostgreSQL for that constraint.
+select
+  con.conname,
+  con.convalidated,
+  pg_get_constraintdef(con.oid) as definition
+from pg_constraint con
+where con.conrelid = to_regclass('public.farmers')
+  and con.conname in (
+    'farmers_latitude_range_check',
+    'farmers_longitude_range_check',
+    'farmers_location_pair_check',
+    'farmers_photo_data_url_size_check'
+  )
+order by con.conname;
+
+
+-- 7) Read-only inventory of Supabase Storage schema availability and policy coverage.
+-- This intentionally does not create a bucket, change public/private visibility, or
+-- read photo objects. Inspect metadata before designing a private photo-path migration.
+select
+  table_name,
+  column_name,
+  data_type,
+  is_nullable
+from information_schema.columns
+where table_schema = 'storage'
+  and table_name in ('buckets', 'objects')
+order by table_name, ordinal_position;
+
+select
+  schemaname,
+  tablename,
+  policyname,
+  permissive,
+  roles,
+  cmd,
+  qual,
+  with_check
+from pg_policies
+where schemaname = 'storage'
+  and tablename = 'objects'
+order by policyname;
+
+-- Storage decision gate:
+-- * Confirm storage.buckets and storage.objects exist.
+-- * Review existing bucket visibility, file-size and MIME restrictions in the TEST project.
+-- * Review object policies against the app's actual authenticated role/RLS model.
+-- * Confirm backup/restore and orphan-file cleanup before replacing photo_data_url.
+-- Until all checks pass, keep the current optional compressed data-URL path unchanged.
+
+
+-- 8) Inventory bucket configuration fields without exposing or reading photo objects.
+-- These metadata columns determine whether a private farmer-photo bucket can enforce
+-- file-size and MIME restrictions. This remains safe if Storage is not installed.
+select
+  column_name,
+  data_type,
+  is_nullable,
+  column_default
+from information_schema.columns
+where table_schema = 'storage'
+  and table_name = 'buckets'
+  and column_name in (
+    'id', 'name', 'public', 'file_size_limit', 'allowed_mime_types'
+  )
+order by column_name;
+
+-- Expected review: public should be false for private farmer photos; file_size_limit
+-- should be no larger than the compressed upload contract; allowed_mime_types should
+-- restrict uploads to image/jpeg (or explicitly approved formats).
+-- Do not create or modify a bucket from this diagnostic.
