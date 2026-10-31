@@ -150,3 +150,11 @@ Do these once, in order, and record evidence in this file:
 - [ ] **F-28 negative path:** Select Manual again and confirm the field becomes visible/enabled and its new text is the only locality value submitted.
 - [ ] **C-15:** Static workflow assertion verifies the manual field starts disabled, is disabled/cleared on parent reset, is disabled/cleared after Upazila refresh, and is enabled only for the Manual option.
 - **Source review:** Hidden manual locality text can no longer be included in FormData; actual browser/Android form serialization and TEST insert/readback remain BLOCKED pending an approved TEST environment.
+
+
+## 11. Farmer duplicate locality option handling
+
+- [ ] **F-29:** For any Upazila whose source dataset repeats the same Bangla Union name, show that locality only once in the picker. Keep Union and Pourashava namespaces separate so a same-named Union and Pourashava remain distinct options.
+- [ ] **F-29 data integrity:** Do not silently delete or rewrite source administrative records based only on duplicate labels; confirm authoritative source data before any dataset correction.
+- [ ] **C-16:** Static workflow checks for empty Bangla locality names, detects duplicate names within each locality type and verifies the picker deduplicates those names.
+- **Source review:** The UI now deduplicates repeated names independently for Union and Pourashava while retaining the original offline dataset. Browser/Android rendering and TEST persistence remain BLOCKED pending approved runtime access.
