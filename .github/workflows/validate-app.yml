@@ -345,6 +345,21 @@ jobs:
             throw new Error('Farmer manual locality input must be disabled when hidden and cleared when a listed union/pouroshava is selected.');
           }
 
+          // Validate manual/locality selection before farmer insert; manual names must never silently save as NULL.
+          const localityHelperStart = html.indexOf('function normalizeFarmerLocalitySelection');
+          const localityHelperEnd = html.indexOf('function setFarmerRegistrationTime', localityHelperStart);
+          const localityHelper = html.slice(localityHelperStart, localityHelperEnd);
+          const farmerSubmitForLocality = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          if (localityHelperStart < 0 ||
+              !localityHelper.includes('selected==="manual"') ||
+              !localityHelper.includes('String(formData.farmer_locality_manual||"").trim()') ||
+              !localityHelper.includes('if(!manual)throw new Error') ||
+              !localityHelper.includes('/^(union|pourashava)::.+$/') ||
+              !localityHelper.includes('return selected.replace') ||
+              !farmerSubmitForLocality.includes('union_name:normalizeFarmerLocalitySelection(f)')) {
+            throw new Error('Farmer locality submit validation must require nonblank manual names and accept only current typed Union/Pourashava options.');
+          }
+
           // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
           const addressPath = 'data/bangladesh-address.json';
           if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
