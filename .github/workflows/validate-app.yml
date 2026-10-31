@@ -315,6 +315,24 @@ jobs:
             throw new Error('Farmer unique-conflict errors must be handled without claiming a database constraint is already installed.');
           }
 
+          // Parent address changes must clear stale locality/manual/village values, and no locality may be chosen without an upazila.
+          const addressResetStart = html.indexOf('function resetFarmerAddressChildren');
+          const addressResetEnd = html.indexOf('async function initFarmerAddressPicker', addressResetStart);
+          const addressResetSource = html.slice(addressResetStart, addressResetEnd);
+          const upazilaChangeStart = html.indexOf('$("farmerUpazila")?.addEventListener("change"');
+          const upazilaChangeEnd = html.indexOf('$("farmerUnion")?.addEventListener("change"', upazilaChangeStart);
+          const upazilaChangeSource = html.slice(upazilaChangeStart, upazilaChangeEnd);
+          if (addressResetStart < 0 ||
+              !addressResetSource.includes('manual.value=""') ||
+              !addressResetSource.includes('manual.classList.add("hidden")') ||
+              !addressResetSource.includes('elements.farmer_village_name') ||
+              !addressResetSource.includes('village.value=""') ||
+              !upazilaChangeSource.includes('resetFarmerAddressChildren(3)') ||
+              !/if\(!locality\|\|!upazila\)return/.test(upazilaChangeSource) ||
+              upazilaChangeSource.indexOf('if(!locality||!upazila)return') > upazilaChangeSource.indexOf('locality.disabled=false')) {
+            throw new Error('Farmer address cascade must clear stale lower-level values and keep locality disabled without a selected upazila.');
+          }
+
           // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
           const addressPath = 'data/bangladesh-address.json';
           if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
