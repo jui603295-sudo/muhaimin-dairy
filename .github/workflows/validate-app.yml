@@ -43,6 +43,19 @@ jobs:
           const missingIds = referencedIds.filter(id => !uniqueIds.has(id));
           if (missingIds.length) throw new Error('JavaScript references missing HTML IDs: ' + missingIds.join(', '));
 
+          // Farmer address JSON is a required offline shell asset; optional assets cannot abort installation.
+          const serviceWorker = fs.readFileSync('sw.js', 'utf8');
+          const requiredShell = 'const REQUIRED_APP_SHELL = ["./index.html", "./data/bangladesh-address.json"]';
+          if (!serviceWorker.includes('const CACHE_NAME = "muhaimin-v6"') ||
+              !serviceWorker.includes(requiredShell) ||
+              !serviceWorker.includes('await cache.addAll(REQUIRED_APP_SHELL)') ||
+              !serviceWorker.includes('OPTIONAL_APP_ASSETS.map(async asset =>') ||
+              !serviceWorker.includes('try { await cache.add(asset); } catch') ||
+              !serviceWorker.includes('key.startsWith("muhaimin-") && key !== CACHE_NAME') ||
+              !serviceWorker.includes('caches.match(request).then(cached => cached || fetch(request)')) {
+            throw new Error('Service Worker must require the Farmer address JSON for offline use, tolerate missing optional assets, clear old app caches, and serve cached static assets first.');
+          }
+
           const forms = [...html.matchAll(/<form\b[^>]*\bid=["']([^"']+)["']/gi)].map(m => m[1]);
           const boundForms = [...inlineCode.matchAll(/(?:bindForm|bindInventoryTransaction)\(["']([^"']+)["']/g)].map(m => m[1]);
           const missingForms = forms.filter(id => !boundForms.includes(id) && !new RegExp('\\$\\(["\\x27]' + id + '["\\x27]\\)\\.addEventListener\\(["\\x27]submit').test(inlineCode));
