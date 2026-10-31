@@ -47,7 +47,8 @@ function makeHarness({ cachedTree = tree, fetchImpl } = {}) {
   if (cachedTree) store.set("muhaimin_bd_address_tree_v1", JSON.stringify(cachedTree));
   const localStorage = {
     getItem(key) { return store.get(key) ?? null; },
-    setItem(key, value) { store.set(key, value); }
+    setItem(key, value) { store.set(key, value); },
+    removeItem(key) { store.delete(key); }
   };
   const context = {
     document: { getElementById(id) { return elements[id] || null; } },
@@ -129,4 +130,23 @@ test("malformed downloaded data is rejected and not cached", async () => {
   await ready(h);
   assert.match(h.elements.branchAddressStatus.textContent, /ফরম্যাট সঠিক নয়/);
   assert.equal(h.store.has("muhaimin_bd_address_tree_v1"), false);
+});
+
+test("rejects a malformed cached tree, removes it, and recovers from a valid download", async () => {
+  let calls=0;
+  const h=makeHarness({cachedTree:[{bn_name:"রংপুর",districts:[{bn_name:"ঠাকুরগাঁও",upazilas:"invalid"}]}],
+    fetchImpl:async()=>{calls++;return {ok:true,json:async()=>tree};}});
+  await ready(h);
+  assert.equal(calls,1);
+  assert.ok(h.elements.branchDivision.options.some(o=>o.value==="রংপুর"));
+  assert.ok(h.elements.farmerDivision.options.some(o=>o.value==="ঢাকা"));
+  assert.ok(JSON.parse(h.store.get("muhaimin_bd_address_tree_v1")).every(x=>Array.isArray(x.districts)));
+});
+
+test("rejects malformed nested downloaded hierarchy and does not cache it", async () => {
+  const malformed=[{bn_name:"রংপুর",districts:[{bn_name:"ঠাকুরগাঁও",upazilas:[{bn_name:"সদর",unions:"invalid"}]}]}];
+  const h=makeHarness({cachedTree:null,fetchImpl:async()=>({ok:true,json:async()=>malformed})});
+  await ready(h);
+  assert.match(h.elements.branchAddressStatus.textContent,/ফরম্যাট সঠিক নয়/);
+  assert.equal(h.store.has("muhaimin_bd_address_tree_v1"),false);
 });
