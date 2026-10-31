@@ -134,3 +134,19 @@ Do these once, in order, and record evidence in this file:
 - [ ] **C-13:** Static workflow assertion confirms the insert error branch throws before any form reset and the submit handler reports the error without clearing the form.
 - [ ] **Success contrast:** after a confirmed successful TEST insert, verify the form and photo preview clear exactly once and the new farmer appears after reload.
 - **Source review:** reset/photo cleanup is located after the insert error branch; runtime proof remains BLOCKED until an approved TEST environment and browser/Android session are available.
+
+
+## 9. Farmer address cascade stale-value protection
+
+- [ ] **F-27:** Change Division, District, or Upazila after entering a lower-level locality/village. Confirm the old Union/Pouroshava, manual locality text, and village value are cleared so they cannot be silently saved under a different administrative area.
+- [ ] **F-27 negative path:** Clear the selected Upazila and confirm the Union/Pouroshava selector remains disabled until a valid Upazila is selected again.
+- [ ] **C-14:** Static workflow assertion verifies parent changes clear manual locality and village values, reset the locality selector, and prevent locality selection without an Upazila.
+- **Source review:** Added reset behavior to the shared child-reset helper and Upazila change handler. Browser/Android runtime interaction remains BLOCKED pending an approved TEST preview session.
+
+
+## 10. Farmer manual locality validation
+
+- [ ] **F-28:** Select “অন্যান্য / ম্যানুয়াল” and submit without a locality name. The form must show a localized validation message and must not call the database insert.
+- [ ] **F-28 dependency:** A manual locality must also require a selected Upazila; whitespace-only input is invalid. A valid trimmed name is saved as `union_name`.
+- [ ] **C-15:** Static workflow assertion verifies manual-name and Upazila checks are wired into the farmer submit path before persistence.
+- **Source review:** Added a single normalization/validation helper used by the farmer submit handler. Runtime submit interception and TEST insert/readback remain BLOCKED pending an approved TEST environment and browser/Android session.
