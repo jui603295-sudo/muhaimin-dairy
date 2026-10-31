@@ -82,6 +82,7 @@ function makeHarness({ missing = [], networkOffline = false } = {}) {
     assert.ok(handler, "Service Worker must register " + type + " handler");
     let pending;
     event.waitUntil = promise => { pending = promise; };
+    event.respondWith = promise => { event.responsePromise = promise; };
     handler(event);
     if (pending) await pending;
     return event;
