@@ -43,6 +43,19 @@ jobs:
           const missingIds = referencedIds.filter(id => !uniqueIds.has(id));
           if (missingIds.length) throw new Error('JavaScript references missing HTML IDs: ' + missingIds.join(', '));
 
+          // Farmer address JSON is a required offline shell asset; optional assets cannot abort installation.
+          const serviceWorker = fs.readFileSync('sw.js', 'utf8');
+          const requiredShell = 'const REQUIRED_APP_SHELL = ["./index.html", "./data/bangladesh-address.json"]';
+          if (!serviceWorker.includes('const CACHE_NAME = "muhaimin-v6"') ||
+              !serviceWorker.includes(requiredShell) ||
+              !serviceWorker.includes('await cache.addAll(REQUIRED_APP_SHELL)') ||
+              !serviceWorker.includes('OPTIONAL_APP_ASSETS.map(async asset =>') ||
+              !serviceWorker.includes('try { await cache.add(asset); } catch') ||
+              !serviceWorker.includes('key.startsWith("muhaimin-") && key !== CACHE_NAME') ||
+              !serviceWorker.includes('caches.match(request).then(cached => cached || fetch(request)')) {
+            throw new Error('Service Worker must require the Farmer address JSON for offline use, tolerate missing optional assets, clear old app caches, and serve cached static assets first.');
+          }
+
           const forms = [...html.matchAll(/<form\b[^>]*\bid=["']([^"']+)["']/gi)].map(m => m[1]);
           const boundForms = [...inlineCode.matchAll(/(?:bindForm|bindInventoryTransaction)\(["']([^"']+)["']/g)].map(m => m[1]);
           const missingForms = forms.filter(id => !boundForms.includes(id) && !new RegExp('\\$\\(["\\x27]' + id + '["\\x27]\\)\\.addEventListener\\(["\\x27]submit').test(inlineCode));
@@ -240,7 +253,7 @@ jobs:
               insertErrorBlock.includes('form.reset()') ||
               failedSaveInsertSource.indexOf('if(result.error)') > failedSaveInsertSource.indexOf('if(form)form.reset()') ||
               !farmerBindSource.includes('insertRow("farmers"') ||
-              !/catch\(error\)\s*\{\s*toast\(/.test(html.slice(html.indexOf('function bindForm('), html.indexOf('$("language")'))) ) {
+              !/catch\(error\)\s*\{\s*toast\(error/.test(html)) {
             throw new Error('Farmer failed-save path must report the error without resetting the form or clearing photo state; reset is allowed only after insert success.');
           }
 
@@ -315,6 +328,51 @@ jobs:
             throw new Error('Farmer unique-conflict errors must be handled without claiming a database constraint is already installed.');
           }
 
+          // Parent address changes must clear stale locality/manual/village values, and no locality may be chosen without an upazila.
+          const addressResetStart = html.indexOf('function resetFarmerAddressChildren');
+          const addressResetEnd = html.indexOf('async function initFarmerAddressPicker', addressResetStart);
+          const addressResetSource = html.slice(addressResetStart, addressResetEnd);
+          const upazilaChangeStart = html.indexOf('$("farmerUpazila")?.addEventListener("change"');
+          const upazilaChangeEnd = html.indexOf('$("farmerUnion")?.addEventListener("change"', upazilaChangeStart);
+          const upazilaChangeSource = html.slice(upazilaChangeStart, upazilaChangeEnd);
+          if (addressResetStart < 0 ||
+              !addressResetSource.includes('manual.value=""') ||
+              !addressResetSource.includes('manual.classList.add("hidden")') ||
+              !addressResetSource.includes('elements.farmer_village_name') ||
+              !addressResetSource.includes('village.value=""') ||
+              !upazilaChangeSource.includes('resetFarmerAddressChildren(3)') ||
+              !/if\(!locality\|\|!upazila\)return/.test(upazilaChangeSource) ||
+              upazilaChangeSource.indexOf('if(!locality||!upazila)return') > upazilaChangeSource.indexOf('locality.disabled=false')) {
+            throw new Error('Farmer address cascade must clear stale lower-level values and keep locality disabled without a selected upazila.');
+          }
+
+          // Ensure the hidden manual locality field cannot leak stale text into FormData.
+          const farmerUnionChangeStart = html.indexOf('$("farmerUnion")?.addEventListener("change"');
+          const farmerUnionChangeEnd = html.indexOf('\n});', farmerUnionChangeStart);
+          const farmerUnionChangeSource = html.slice(farmerUnionChangeStart, farmerUnionChangeEnd);
+          if (!/id="farmerLocalityManual" class="hidden" disabled/.test(html) ||
+              !/manual\.disabled=true/.test(addressResetSource) ||
+              !/manualInput\.disabled=true/.test(upazilaChangeSource) ||
+              !farmerUnionChangeSource.includes('manualInput.disabled=!manual') ||
+              !farmerUnionChangeSource.includes('if(!manual)manualInput.value=""')) {
+            throw new Error('Farmer manual locality input must be disabled when hidden and cleared when a listed union/pouroshava is selected.');
+          }
+
+          // Validate manual/locality selection before farmer insert; manual names must never silently save as NULL.
+          const localityHelperStart = html.indexOf('function normalizeFarmerLocalitySelection');
+          const localityHelperEnd = html.indexOf('function setFarmerRegistrationTime', localityHelperStart);
+          const localityHelper = html.slice(localityHelperStart, localityHelperEnd);
+          const farmerSubmitForLocality = html.slice(html.indexOf('bindForm("farmerForm"'), html.indexOf('$("saveCollectionDraft")'));
+          if (localityHelperStart < 0 ||
+              !localityHelper.includes('selected==="manual"') ||
+              !localityHelper.includes('String(formData.farmer_locality_manual||"").trim()') ||
+              !localityHelper.includes('if(!manual)throw new Error') ||
+              !localityHelper.includes('/^(union|pourashava)::.+$/') ||
+              !localityHelper.includes('return selected.replace') ||
+              !farmerSubmitForLocality.includes('union_name:normalizeFarmerLocalitySelection(f)')) {
+            throw new Error('Farmer locality submit validation must require nonblank manual names and accept only current typed Union/Pourashava options.');
+          }
+
           // Validate the offline Bangladesh address hierarchy and farmer registration timestamp.
           const addressPath = 'data/bangladesh-address.json';
           if (!fs.existsSync(addressPath)) throw new Error('Bangladesh address dataset is missing.');
@@ -328,6 +386,71 @@ jobs:
               unionCount !== 4540 || pourashavaCount !== 328) {
             throw new Error('Bangladesh address hierarchy counts do not match the reviewed dataset.');
           }
+          // Division, district and Upazila are selected by Bangla name; require sibling uniqueness.
+          const assertUniqueAdministrativeNames = (items, level, parent) => {
+            const seen = new Set();
+            for (const item of items || []) {
+              const name = String(item.bn || "").trim().normalize("NFC");
+              if (!name) throw new Error(level + " dataset contains an empty Bangla name under " + parent + ".");
+              if (seen.has(name)) throw new Error(level + " names must be unique under " + parent + ": " + name);
+              seen.add(name);
+            }
+          };
+          assertUniqueAdministrativeNames(addressTree, "Division", "Bangladesh");
+          for (const division of addressTree) {
+            assertUniqueAdministrativeNames(division.districts, "District", division.bn);
+            for (const district of division.districts || []) {
+              assertUniqueAdministrativeNames(district.upazilas, "Upazila", district.bn);
+            }
+          }
+          const thakurgaonDivision = addressTree.find(item => item.bn === "রংপুর");
+          const thakurgaonDistrict = thakurgaonDivision?.districts?.find(item => item.bn === "ঠাকুরগাঁও");
+          const thakurgaonSadar = thakurgaonDistrict?.upazilas?.find(item => item.bn === "ঠাকুরগাঁও সদর");
+          if (!thakurgaonSadar || !Array.isArray(thakurgaonSadar.unions) ||
+              !Array.isArray(thakurgaonSadar.pourashavas) ||
+              thakurgaonSadar.unions.length !== 21 || thakurgaonSadar.pourashavas.length !== 1) {
+            throw new Error("Thakurgaon Sadar address path must remain available in the offline dataset.");
+          }
+
+          // Duplicate locality labels must not produce duplicate picker values.
+          const localityPickerStart = html.indexOf('$("farmerUpazila")?.addEventListener("change"');
+          const localityPickerEnd = html.indexOf('$("farmerUnion")?.addEventListener("change"', localityPickerStart);
+          const localityPickerSource = html.slice(localityPickerStart, localityPickerEnd);
+          let duplicateUnionEntries = 0;
+          let duplicatePourashavaEntries = 0;
+          for (const division of addressTree) {
+            for (const district of division.districts || []) {
+              for (const upazila of district.upazilas || []) {
+                for (const list of [
+                  { items: upazila.unions || [], kind: "union" },
+                  { items: upazila.pourashavas || [], kind: "pourashava" }
+                ]) {
+                  const seen = new Set();
+                  for (const item of list.items) {
+                    const name = String(item.bn || "").trim().normalize("NFC");
+                    if (!name) throw new Error("Farmer locality dataset contains an empty Bangla name.");
+                    if (seen.has(name)) {
+                      if (list.kind === "union") duplicateUnionEntries++;
+                      else duplicatePourashavaEntries++;
+                    }
+                    seen.add(name);
+                  }
+                }
+              }
+            }
+          }
+          if (duplicateUnionEntries > 0 &&
+              (!localityPickerSource.includes('seenUnionNames.has(localityName)') ||
+               !localityPickerSource.includes('seenUnionNames.add(localityName)'))) {
+            throw new Error('Duplicate Union names must be deduplicated in the Farmer locality picker.');
+          }
+          if (duplicatePourashavaEntries > 0 &&
+              (!localityPickerSource.includes('seenPourashavaNames.has(localityName)') ||
+               !localityPickerSource.includes('seenPourashavaNames.add(localityName)'))) {
+            throw new Error('Duplicate Pourashava names must be deduplicated in the Farmer locality picker.');
+          }
+          console.log(JSON.stringify({ duplicateUnionEntries, duplicatePourashavaEntries }));
+
           if (!html.includes('id="farmerDivision"') || !html.includes('id="farmerDistrict"') ||
               !html.includes('id="farmerUpazila"') || !html.includes('id="farmerUnion"') ||
               !html.includes('name="registered_at"') || !/registered_at:f\.registered_at\|\|null/.test(html)) {
@@ -344,20 +467,20 @@ jobs:
           }
           const sw = fs.readFileSync('sw.js', 'utf8');
           new Function(sw);
-          if (!/const CACHE_NAME = "muhaimin-v5"/.test(sw) ||
+          if (!/const CACHE_NAME = "muhaimin-v6"/.test(sw) ||
               !/const SUPABASE_JS = "https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/.test(sw) ||
-              !/cache\.add\(SUPABASE_JS\)/.test(sw) ||
+              !/try \{ await cache\.add\(SUPABASE_JS\); \} catch/.test(sw) ||
               !/url\.href === SUPABASE_JS/.test(sw)) {
-            throw new Error('PWA service worker must cache the Supabase client needed for offline app startup.');
+            throw new Error('PWA service worker must keep Supabase CDN caching optional and use the current cache version.');
           }
-          const shellMatch = sw.match(/APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
-          if (!shellMatch) throw new Error('Could not find APP_SHELL in sw.js.');
+          const shellMatch = sw.match(/REQUIRED_APP_SHELL\s*=\s*\[([\s\S]*?)\]/);
+          if (!shellMatch) throw new Error('Could not find REQUIRED_APP_SHELL in sw.js.');
           const shell = [...shellMatch[1].matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
-          if (!shell.includes('./data/bangladesh-address.json')) {
-            throw new Error('Offline PWA shell must pre-cache the Bangladesh address dataset.');
+          if (!shell.includes('./index.html') || !shell.includes('./data/bangladesh-address.json')) {
+            throw new Error('Offline PWA shell must require both the app document and Bangladesh address dataset.');
           }
           const missingShellFiles = shell.filter(path => !fs.existsSync(path.replace(/^\.\//, '') || 'index.html'));
-          if (missingShellFiles.length) throw new Error('PWA shell files missing: ' + missingShellFiles.join(', '));
+          if (missingShellFiles.length) throw new Error('Required PWA shell files missing: ' + missingShellFiles.join(', '));
 
           // Keep the TEST execution runbook and read-only SQL preflight available and safety-scoped.
           const runbookPath = 'docs/MILK_COLLECTION_V3_TEST_RUNBOOK.md';

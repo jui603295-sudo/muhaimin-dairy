@@ -134,3 +134,55 @@ Do these once, in order, and record evidence in this file:
 - [ ] **C-13:** Static workflow assertion confirms the insert error branch throws before any form reset and the submit handler reports the error without clearing the form.
 - [ ] **Success contrast:** after a confirmed successful TEST insert, verify the form and photo preview clear exactly once and the new farmer appears after reload.
 - **Source review:** reset/photo cleanup is located after the insert error branch; runtime proof remains BLOCKED until an approved TEST environment and browser/Android session are available.
+
+
+## 9. Farmer address cascade stale-value protection
+
+- [ ] **F-27:** Change Division, District, or Upazila after entering a lower-level locality/village. Confirm the old Union/Pouroshava, manual locality text, and village value are cleared so they cannot be silently saved under a different administrative area.
+- [ ] **F-27 negative path:** Clear the selected Upazila and confirm the Union/Pouroshava selector remains disabled until a valid Upazila is selected again.
+- [ ] **C-14:** Static workflow assertion verifies parent changes clear manual locality and village values, reset the locality selector, and prevent locality selection without an Upazila.
+- **Source review:** Added reset behavior to the shared child-reset helper and Upazila change handler. Browser/Android runtime interaction remains BLOCKED pending an approved TEST preview session.
+
+
+## 10. Farmer manual locality stale-value and form-data protection
+
+- [ ] **F-28:** Select the Manual locality option, enter a locality, then switch to a listed Union/Pouroshava. Confirm the manual field is cleared, hidden, and disabled; submit only the selected listed locality.
+- [ ] **F-28 negative path:** Select Manual again and confirm the field becomes visible/enabled and its new text is the only locality value submitted.
+- [ ] **C-15:** Static workflow assertion verifies the manual field starts disabled, is disabled/cleared on parent reset, is disabled/cleared after Upazila refresh, and is enabled only for the Manual option.
+- **Source review:** Hidden manual locality text can no longer be included in FormData; actual browser/Android form serialization and TEST insert/readback remain BLOCKED pending an approved TEST environment.
+
+
+## 11. Farmer duplicate locality option handling
+
+- [ ] **F-29:** For any Upazila whose source dataset repeats the same Bangla Union name, show that locality only once in the picker. Keep Union and Pourashava namespaces separate so a same-named Union and Pourashava remain distinct options.
+- [ ] **F-29 data integrity:** Do not silently delete or rewrite source administrative records based only on duplicate labels; confirm authoritative source data before any dataset correction.
+- [ ] **C-16:** Static workflow checks for empty Bangla locality names, detects duplicate names within each locality type and verifies the picker deduplicates those names.
+- **Source review:** The UI now deduplicates repeated names independently for Union and Pourashava while retaining the original offline dataset. Browser/Android rendering and TEST persistence remain BLOCKED pending approved runtime access.
+
+
+## 12. Farmer administrative selector uniqueness and local path regression
+
+- [ ] **F-30:** Verify Division, District and Upazila Bangla names are unique within their parent list, because the cascading picker resolves each selected level by Bangla name.
+- [ ] **F-30 regression:** Confirm Rangpur → Thakurgaon → Thakurgaon Sadar remains present with its expected 21 Union entries and one Pourashava entry.
+- [ ] **C-17:** Static CI checks sibling uniqueness for Division/District/Upazila and checks the Thakurgaon Sadar fixture in the offline dataset.
+- **Source review:** Current dataset scan found no duplicate Division, District or Upazila names; static assertions now guard this invariant. Browser/Android interaction remains BLOCKED until approved runtime testing.
+
+
+## 13. Farmer locality submit-time validation
+
+- [ ] **F-31:** Select Manual locality and submit with the name blank; the form must show a localized validation message and must not attempt a database insert.
+- [ ] **F-31 positive path:** Enter a manual locality with leading/trailing spaces; verify the trimmed value is saved as `union_name`.
+- [ ] **F-31 listed path:** Select a current Union or Pourashava option; verify its type prefix is removed and the selected Bangla name is saved.
+- [ ] **F-31 invalid path:** Submit an empty or malformed locality option; verify it is normalized to NULL only when genuinely unselected, and malformed values are rejected.
+- [ ] **C-18:** Static CI assertion verifies the submit helper rejects blank manual locality, trims manual input, validates typed locality options, and is wired into the farmer insert payload.
+- **Runtime status:** Browser/Android form submission and TEST database readback remain BLOCKED until an approved TEST environment is available.
+
+
+## 14. Farmer address dataset offline cache reliability
+
+- [ ] **F-32 required shell:** Install the Service Worker with the app HTML and `data/bangladesh-address.json` available; verify both are cached in the new version.
+- [ ] **F-32 failure isolation:** Make an optional logo/manifest asset unavailable during install; verify the Service Worker still installs because optional presentation assets do not block the required app/address shell.
+- [ ] **F-32 offline reload:** After one successful online load, disable network and reload; verify the app shell and Farmer Division → District → Upazila → Union/Pouroshava data remain available from cache.
+- [ ] **F-32 upgrade:** Verify activation removes older `muhaimin-*` caches only after the new required shell has installed.
+- [ ] **C-19:** Static CI checks the cache version, required offline address dataset, optional-asset failure isolation, old-cache cleanup, and cache-first static asset path.
+- **Runtime status:** Browser/Android offline reload, install-failure simulation and cache inspection remain BLOCKED until an approved preview test session is available.
