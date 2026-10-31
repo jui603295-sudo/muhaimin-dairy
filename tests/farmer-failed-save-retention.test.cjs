@@ -7,8 +7,7 @@ const html = fs.readFileSync("index.html", "utf8");
 const start = html.indexOf("async function insertRow");
 const end = html.indexOf("function bindForm", start);
 assert.ok(start >= 0 && end > start, "actual insertRow implementation must exist");
-const source = html.slice(start, end) + "
-globalThis.__insertRow = insertRow;";
+const source = html.slice(start, end) + "\nglobalThis.__insertRow = insertRow;";
 
 function harness(result) {
   let resetCount = 0;
