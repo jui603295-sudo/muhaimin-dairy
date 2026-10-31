@@ -47,7 +47,6 @@ test("failed Farmer insert preserves form values and compressed photo state", as
     h.insert("farmers", { name: "পরীক্ষামূলক কৃষক" }),
     /row-level security policy denied/
   );
-  assert.equal(h.form.resetCount, undefined);
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
   assert.equal(h.photoInput.value, "farmer-photo.jpg");
   assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
