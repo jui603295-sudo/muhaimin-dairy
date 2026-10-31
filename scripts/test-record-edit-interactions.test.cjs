@@ -408,3 +408,24 @@ test("Branch and Farmer Edit handlers leave the selected form untouched while a 
     assert.equal(x.ids[kind+"EditStatus"].textContent,"");
   }
 });
+
+
+test("Cancel Edit event handlers invoke the pending-write guard before clearing edit state", () => {
+  const branchCancel = html.match(/\$\("cancelBranchEdit"\)\.addEventListener\("click",\(\)=>\{([^}]*)\}\);/);
+  const farmerCancel = html.match(/\$\("cancelFarmerEdit"\)\.addEventListener\("click",\(\)=>\{([^}]*)\}\);/);
+  assert.ok(branchCancel, "Branch Cancel Edit click handler must exist");
+  assert.ok(farmerCancel, "Farmer Cancel Edit click handler must exist");
+  assert.match(branchCancel[1], /recordFormWritePending\("branch"\)/);
+  assert.match(branchCancel[1], /clearEditState\("branch"\)/);
+  assert.match(farmerCancel[1], /recordFormWritePending\("farmer"\)/);
+  assert.match(farmerCancel[1], /clearEditState\("farmer"\)/);
+});
+
+test("pending-write guard fails open safely when the target form is not mounted", () => {
+  const notices=[];
+  const context={$(id){return null;},toast(message){notices.push(message);}};
+  vm.runInNewContext(extractFunction("recordFormWritePending"),context);
+  assert.equal(context.recordFormWritePending("branch"),false);
+  assert.equal(context.recordFormWritePending("farmer"),false);
+  assert.deepEqual(notices,[]);
+});
