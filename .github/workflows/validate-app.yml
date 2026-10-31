@@ -224,6 +224,18 @@ jobs:
             throw new Error('Farmer insert must fail closed unless branch_id references a loaded branch.');
           }
 
+          // Farmer branch selector stays disabled until branches load and when none exist.
+          const farmerBranchMarkup = html.match(/<select name="branch_id" id="farmerBranch"[^>]*>/)?.[0] || '';
+          const branchSelectStart = html.indexOf('function fillFarmerBranchSelect');
+          const branchSelectEnd = html.indexOf('function farmerName', branchSelectStart);
+          const branchSelectSource = html.slice(branchSelectStart, branchSelectEnd);
+          if (!/id="farmerBranch"[^>]*disabled/.test(farmerBranchMarkup) ||
+              !branchSelectSource.includes('state.branches.length===0') ||
+              !branchSelectSource.includes('select.disabled=true') ||
+              !branchSelectSource.includes('select.disabled=false')) {
+            throw new Error('Farmer branch selector must remain disabled during initial loading and when no branches are available, then enable after a successful branch list load.');
+          }
+
           // Farmer mobile input accepts common Bangladesh formats and normalizes to local 11-digit form.
           const mobileHelperStart = html.indexOf('function normalizeBanglaDigits');
           const mobileHelperEnd = html.indexOf('async function assertFarmerCodeAvailable', mobileHelperStart);
