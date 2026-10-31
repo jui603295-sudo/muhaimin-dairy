@@ -371,3 +371,44 @@ test("Confirmed update stays successful when the follow-up list refresh fails", 
   assert.match(notices[0],/সফলভাবে আপডেট হয়েছে/);
   assert.match(notices[1],/রেকর্ড আপডেট হয়েছে, তবে তালিকা রিফ্রেশ হয়নি/);
 });
+
+
+test("pending-write guard allows normal editing when no write is active", () => {
+  const notices=[];
+  const forms={branchForm:{dataset:{}},farmerForm:{dataset:{}}};
+  const context={$(id){return forms[id]||null;},toast(message){notices.push(message);}};
+  vm.runInNewContext(extractFunction("recordFormWritePending"),context);
+  assert.equal(context.recordFormWritePending("branch"),false);
+  assert.equal(context.recordFormWritePending("farmer"),false);
+  assert.deepEqual(notices,[]);
+});
+
+test("pending-write guard blocks switching or cancelling a Branch/Farmer edit", () => {
+  const notices=[];
+  const forms={branchForm:{dataset:{submitting:"true"}},farmerForm:{dataset:{submitting:"true"}}};
+  const context={$(id){return forms[id]||null;},toast(message){notices.push(message);}};
+  vm.runInNewContext(extractFunction("recordFormWritePending"),context);
+  assert.equal(context.recordFormWritePending("branch"),true);
+  assert.equal(context.recordFormWritePending("farmer"),true);
+  assert.equal(notices.length,2);
+  assert.ok(notices.every(message=>/সংরক্ষণ চলছে/.test(message)));
+});
+
+test("Branch and Farmer Edit handlers leave the selected form untouched while a write is pending", async () => {
+  for (const kind of ["branch","farmer"]) {
+    const x=setup(kind);
+    x.form.dataset={submitting:"true"};
+    x.context.recordFormWritePending=function(recordKind){
+      const form=this.$(recordKind+"Form");
+      if(form?.dataset?.submitting!=="true")return false;
+      this.toast("সংরক্ষণ চলছে");
+      return true;
+    };
+    const row=kind==="branch"?{id:"branch-42",name:"কেন্দ্র"}:{id:"farmer-9",name:"কৃষক"};
+    x.context.state[kind==="branch"?"branches":"farmers"].push(row);
+    vm.runInNewContext(extractFunction(kind==="branch"?"editBranchRecord":"editFarmerRecord"),x.context);
+    await vm.runInNewContext((kind==="branch"?"editBranchRecord":"editFarmerRecord")+"('"+row.id+"')",x.context);
+    assert.equal(x.form.fields.record_id.value,"");
+    assert.equal(x.ids[kind+"EditStatus"].classes.has("hidden"),true);
+  }
+});
