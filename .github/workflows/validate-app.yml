@@ -225,20 +225,20 @@ jobs:
           }
 
           // Farmer failed inserts must preserve all form values and photo preview/data.
-          const insertRowStart = html.indexOf('async function insertRow(');
-          const insertRowEnd = html.indexOf('function bindForm(', insertRowStart);
-          const insertRowSource = html.slice(insertRowStart, insertRowEnd);
-          const insertErrorEnd = insertRowSource.indexOf('  if(form)form.reset();');
-          const insertErrorBlock = insertRowSource.slice(0, insertErrorEnd);
+          const failedSaveInsertStart = html.indexOf('async function insertRow(');
+          const failedSaveInsertEnd = html.indexOf('function bindForm(', failedSaveInsertStart);
+          const failedSaveInsertSource = html.slice(failedSaveInsertStart, failedSaveInsertEnd);
+          const insertErrorEnd = failedSaveInsertSource.indexOf('  if(form)form.reset();');
+          const insertErrorBlock = failedSaveInsertSource.slice(0, insertErrorEnd);
           const farmerBindStart = html.indexOf('bindForm("farmerForm"');
           const farmerBindEnd = html.indexOf('$("saveCollectionDraft")', farmerBindStart);
           const farmerBindSource = html.slice(farmerBindStart, farmerBindEnd);
-          if (insertRowStart < 0 || insertRowEnd < 0 ||
+          if (failedSaveInsertStart < 0 || failedSaveInsertEnd < 0 ||
               insertErrorEnd < 0 ||
               !insertErrorBlock.includes('if(result.error)') ||
               !insertErrorBlock.includes('throw result.error') ||
               insertErrorBlock.includes('form.reset()') ||
-              insertRowSource.indexOf('if(result.error)') > insertRowSource.indexOf('if(form)form.reset()') ||
+              failedSaveInsertSource.indexOf('if(result.error)') > failedSaveInsertSource.indexOf('if(form)form.reset()') ||
               !farmerBindSource.includes('insertRow("farmers"') ||
               !/catch\(error\)\s*\{\s*toast\(/.test(html.slice(html.indexOf('function bindForm('), html.indexOf('$("language")'))) ) {
             throw new Error('Farmer failed-save path must report the error without resetting the form or clearing photo state; reset is allowed only after insert success.');
