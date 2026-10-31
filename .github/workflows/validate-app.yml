@@ -247,3 +247,6 @@ jobs:
 
       - name: Test Branch GPS capture and race safety
         run: node --test scripts/test-branch-gps-runtime.test.cjs
+
+      - name: Test Branch and Farmer GPS save/readback mapping
+        run: node --test scripts/test-gps-save-readback.test.cjs
