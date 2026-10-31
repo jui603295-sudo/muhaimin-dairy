@@ -7,7 +7,8 @@ const html = fs.readFileSync("index.html", "utf8");
 const start = html.indexOf("async function insertRow");
 const end = html.indexOf("function bindForm", start);
 assert.ok(start >= 0 && end > start, "actual insertRow implementation must exist");
-const source = html.slice(start, end) + "\nglobalThis.__insertRow = insertRow;";
+const source = html.slice(start, end) + "
+globalThis.__insertRow = insertRow;";
 
 function harness(result) {
   let resetCount = 0;
@@ -54,10 +55,12 @@ test("failed Farmer insert preserves form values and compressed photo state", as
   const h = harness({ error: { code: "42501", message: "row-level security policy denied" } });
   await assert.rejects(
     h.insert("farmers", { name: "পরীক্ষামূলক কৃষক" }),
-    /row-level security policy denied/
+    error => error && error.message === "row-level security policy denied"
   );
   assert.deepEqual(h.counts(), { resetCount: 0, activityCount: 0, toastCount: 0, loadCount: 0 });
-  assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");\n  assert.equal(h.farmerMobile.value, "01700000000");\n  assert.equal(h.photoInput.value, "farmer-photo.jpg");
+  assert.equal(h.farmerName.value, "পরীক্ষামূলক কৃষক");
+  assert.equal(h.farmerMobile.value, "01700000000");
+  assert.equal(h.photoInput.value, "farmer-photo.jpg");
   assert.equal(h.photoInput.dataset.compressedDataUrl, "data:image/jpeg;base64,ZmFrZQ==");
   assert.equal(h.photoPreview.src, "data:image/jpeg;base64,ZmFrZQ==");
   assert.equal(h.photoPreview.classNames.has("hidden"), false);
@@ -67,7 +70,9 @@ test("successful Farmer insert resets the form and clears photo state exactly af
   const h = harness({ error: null, data: [{ id: "farmer-1" }] });
   await h.insert("farmers", { name: "পরীক্ষামূলক কৃষক" });
   assert.deepEqual(h.counts(), { resetCount: 1, activityCount: 1, toastCount: 1, loadCount: 1 });
-  assert.equal(h.farmerName.value, "");\n  assert.equal(h.farmerMobile.value, "");\n  assert.equal(h.photoInput.value, "");
+  assert.equal(h.farmerName.value, "");
+  assert.equal(h.farmerMobile.value, "");
+  assert.equal(h.photoInput.value, "");
   assert.equal(Object.hasOwn(h.photoInput.dataset, "compressedDataUrl"), false);
   assert.equal(h.photoPreview.src, "");
   assert.equal(h.photoPreview.classNames.has("hidden"), true);
