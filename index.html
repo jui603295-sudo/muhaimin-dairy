@@ -490,6 +490,12 @@ async function loadAll() {
   [state.branches,state.farmers,state.collections,state.payments,state.feedProducts,state.feedPurchases,
    state.feedSales,state.vetCompanies,state.vetProducts,state.vetPurchases,state.vetSales,
    state.agroProducts,state.agroPurchases,state.agroSales]=data;
+  if(USE_TEST2_BACKEND){
+    await Promise.all([
+      ...state.branches.map(async row=>{row.photo_signed_url=await signedPrivatePhotoUrl("muhaimin-branch-photos",row.photo_path);}),
+      ...state.farmers.map(async row=>{row.photo_signed_url=await signedPrivatePhotoUrl("muhaimin-farmer-photos",row.photo_path);})
+    ]);
+  }
   render();
   const sessionForCache=await sb.auth.getSession();
   const cacheUserId=sessionForCache.data?.session?.user?.id;
@@ -1081,10 +1087,12 @@ function clearEditState(kind){
  $(kind+"SubmitButton").textContent=kind==="branch"?"সংরক্ষণ":"কৃষক সংরক্ষণ";
  $("cancel"+(kind==="branch"?"Branch":"Farmer")+"Edit")?.classList.add("hidden");
  if(kind==="farmer"){
-  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoDataUrl;photo.value="";}
+  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoUrl;photo.value="";}
   $("farmerPhotoPreview")?.classList.add("hidden");
   $("farmerLocationStatus").textContent="বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না।";
  }else{
+  const photo=$("branchPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoUrl;photo.value="";}
+  $("branchPhotoPreview")?.classList.add("hidden");
   $("branchLocationStatus").textContent="ব্যবহারকারীর স্পষ্ট অনুমতি ছাড়া লোকেশন নেওয়া হবে না।";
  }
 }
@@ -1098,6 +1106,10 @@ async function editBranchRecord(id){
   branch_latitude:row.latitude,branch_longitude:row.longitude,branch_location_accuracy_m:row.location_accuracy_m,
   branch_location_captured_at:row.location_captured_at}))setFormValue(form,name,value);
  await restoreAddressFields("branch",{division:row.division,district:row.district,upazila:row.upazila,union_name:row.union_name,village_name:row.village_name});
+ const branchPhoto=$("branchPhoto"),branchPreview=$("branchPhotoPreview");
+ if(branchPhoto){delete branchPhoto.dataset.compressedDataUrl;branchPhoto.dataset.existingPhotoUrl=row.photo_signed_url||"";branchPhoto.value="";}
+ if(branchPreview&&row.photo_signed_url){branchPreview.src=row.photo_signed_url;branchPreview.classList.remove("hidden");}
+ else branchPreview?.classList.add("hidden");
  $("branchEditStatus").classList.remove("hidden");
  $("branchSubmitButton").textContent="পরিবর্তন সংরক্ষণ";
  $("cancelBranchEdit").classList.remove("hidden");
@@ -1115,8 +1127,8 @@ async function editFarmerRecord(id){
   location_accuracy:row.location_accuracy,location_captured_at:row.location_captured_at}))setFormValue(form,name,value);
  await restoreAddressFields("farmer",{division:row.division,district:row.district,upazila:row.upazila,union_name:row.union_name,village_name:row.village_name});
  const photo=$("farmerPhoto"),preview=$("farmerPhotoPreview");
- if(photo){delete photo.dataset.compressedDataUrl;photo.dataset.existingPhotoDataUrl=row.photo_data_url||"";photo.value="";}
- if(preview&&row.photo_data_url){preview.src=row.photo_data_url;preview.classList.remove("hidden");}
+ if(photo){delete photo.dataset.compressedDataUrl;photo.dataset.existingPhotoUrl=row.photo_signed_url||row.photo_data_url||"";photo.value="";}
+ if(preview&&(row.photo_signed_url||row.photo_data_url)){preview.src=row.photo_signed_url||row.photo_data_url;preview.classList.remove("hidden");}
  else preview?.classList.add("hidden");
  $("farmerEditStatus").classList.remove("hidden");
  $("farmerSubmitButton").textContent="পরিবর্তন সংরক্ষণ";
@@ -1418,7 +1430,20 @@ bindForm("branchForm",async f=>{
  const form=$("branchForm"),id=f.record_id,existing=id?state.branches.find(item=>String(item.id)===String(id)):null;
  if(id&&!existing)throw new Error("সম্পাদনার কেন্দ্র রেকর্ড তালিকায় নেই। আবার লোড করুন।");
  const payload=branchPayloadFromForm(f,existing);
- return id?updateRow("branches",id,payload,form):insertRow("branches",payload,form);
+ let uploadedPath=null;
+ if(USE_TEST2_BACKEND){
+  payload.photo_path=existing?.photo_path||null;
+  uploadedPath=await uploadCompressedPhoto("branchPhoto","muhaimin-branch-photos");
+  if(uploadedPath)payload.photo_path=uploadedPath;
+ }
+ try{
+  const saved=id?await updateRow("branches",id,payload,form):await insertRow("branches",payload,form);
+  if(uploadedPath&&existing?.photo_path&&existing.photo_path!==uploadedPath)await removePrivatePhoto("muhaimin-branch-photos",existing.photo_path);
+  return saved;
+ }catch(error){
+  if(uploadedPath)await removePrivatePhoto("muhaimin-branch-photos",uploadedPath);
+  throw error;
+ }
 });
 bindForm("farmerForm",async f=>{
  const form=$("farmerForm"),id=f.record_id;
@@ -1426,7 +1451,20 @@ bindForm("farmerForm",async f=>{
  if(id&&!existing)throw new Error("সম্পাদনার কৃষক রেকর্ড তালিকায় নেই। আবার লোড করুন।");
  validateFreshFarmerLocation(f,existing);
  const payload=farmerPayloadFromForm(f,existing);
- return id?updateRow("farmers",id,payload,form):insertRow("farmers",payload,form);
+ let uploadedPath=null;
+ if(USE_TEST2_BACKEND){
+  payload.photo_path=existing?.photo_path||null;
+  uploadedPath=await uploadCompressedPhoto("farmerPhoto","muhaimin-farmer-photos");
+  if(uploadedPath){payload.photo_path=uploadedPath;payload.photo_data_url=null;}
+ }
+ try{
+  const saved=id?await updateRow("farmers",id,payload,form):await insertRow("farmers",payload,form);
+  if(uploadedPath&&existing?.photo_path&&existing.photo_path!==uploadedPath)await removePrivatePhoto("muhaimin-farmer-photos",existing.photo_path);
+  return saved;
+ }catch(error){
+  if(uploadedPath)await removePrivatePhoto("muhaimin-farmer-photos",uploadedPath);
+  throw error;
+ }
 });
 $("branchTable").addEventListener("click",async event=>{
  const button=event.target.closest('[data-record-action="edit-branch"]');if(!button)return;
