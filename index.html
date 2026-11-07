@@ -179,17 +179,35 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
-const SUPABASE_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+// Production remains the default. TEST 2 is opt-in via ?backend=test2 and uses
+// a separate Auth storage namespace so test sessions/cache never reuse production state.
+const USE_TEST2_BACKEND = new URLSearchParams(window.location.search).get("backend") === "test2";
+const SUPABASE_URL = USE_TEST2_BACKEND
+  ? "https://wpomsmvzylrembojdsxd.supabase.co"
+  : "https://hhqshslzoznwyprhjzia.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = USE_TEST2_BACKEND
+  ? "sb_publishable_q_-9k6hlPJiEo5GHDBzh8Q_HTSvoNEP"
+  : "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+if (USE_TEST2_BACKEND) {
+  const banner = document.createElement("div");
+  banner.textContent = "TEST 2 ENVIRONMENT — পরীক্ষার ডেটা בלבד; Production নয়";
+  banner.setAttribute("role", "status");
+  banner.style.cssText = "position:sticky;top:0;z-index:1000;padding:8px;text-align:center;background:#92400e;color:#fff;font-weight:700;font-size:13px";
+  document.body.prepend(banner);
+}
 const $ = id => document.getElementById(id);
 const state = {
   settings: null, milkCollectionSettings: null, branches: [], farmers: [], collections: [], payments: [],
   feedProducts: [], feedPurchases: [], feedSales: [], vetCompanies: [], vetProducts: [],
   vetPurchases: [], vetSales: [], agroProducts: [], agroPurchases: [], agroSales: []
 };
-const OFFLINE_CACHE_PREFIX = "muhaimin-offline-cache-v1:";
-const OFFLINE_ADMIN_KEY = "muhaimin-offline-admin-user";
+const OFFLINE_CACHE_PREFIX = USE_TEST2_BACKEND
+  ? "muhaimin-test2-offline-cache-v1:"
+  : "muhaimin-offline-cache-v1:";
+const OFFLINE_ADMIN_KEY = USE_TEST2_BACKEND
+  ? "muhaimin-test2-offline-admin-user"
+  : "muhaimin-offline-admin-user";
 const OFFLINE_ENABLED_KEY = "muhaimin-offline-cache-enabled";
 function offlineCacheEnabled(){return localStorage.getItem(OFFLINE_ENABLED_KEY)!=="false";}
 function setOfflineModeStatus(message){
