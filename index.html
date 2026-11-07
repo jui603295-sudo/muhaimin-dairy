@@ -1437,7 +1437,8 @@ bindForm("branchForm",async f=>{
   if(uploadedPath)payload.photo_path=uploadedPath;
  }
  try{
-  const saved=id?await updateRow("branches",id,payload,form):await insertRow("branches",payload,form);
+  const savedPromise=id?updateRow("branches",id,payload,form):insertRow("branches",payload,form);
+  const saved=await savedPromise;
   if(uploadedPath&&existing?.photo_path&&existing.photo_path!==uploadedPath)await removePrivatePhoto("muhaimin-branch-photos",existing.photo_path);
   return saved;
  }catch(error){
@@ -1459,7 +1460,8 @@ bindForm("farmerForm",async f=>{
   if(uploadedPath){payload.photo_path=uploadedPath;payload.photo_data_url=null;}
  }
  try{
-  const saved=id?await updateRow("farmers",id,payload,form):await insertRow("farmers",payload,form);
+  const savedPromise=id?updateRow("farmers",id,payload,form):insertRow("farmers",payload,form);
+  const saved=await savedPromise;
   if(uploadedPath&&existing?.photo_path&&existing.photo_path!==uploadedPath)await removePrivatePhoto("muhaimin-farmer-photos",existing.photo_path);
   return saved;
  }catch(error){
