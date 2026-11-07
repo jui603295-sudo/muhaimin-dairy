@@ -1006,7 +1006,7 @@ async function preparePhotoInput(inputId,previewId,file){
  const input=$(inputId),preview=$(previewId);
  delete input.dataset.compressedDataUrl;
  if(!file){
-  const old=input.dataset.existingPhotoUrl;
+  const old=input.dataset.existingPhotoUrl||input.dataset.existingPhotoDataUrl;
   if(old&&preview){preview.src=old;preview.classList.remove("hidden");}
   else preview?.classList.add("hidden");
   return;
@@ -1087,7 +1087,7 @@ function clearEditState(kind){
  $(kind+"SubmitButton").textContent=kind==="branch"?"সংরক্ষণ":"কৃষক সংরক্ষণ";
  $("cancel"+(kind==="branch"?"Branch":"Farmer")+"Edit")?.classList.add("hidden");
  if(kind==="farmer"){
-  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoUrl;photo.value="";}
+  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoUrl;delete photo.dataset.existingPhotoDataUrl;photo.value="";}
   $("farmerPhotoPreview")?.classList.add("hidden");
   $("farmerLocationStatus").textContent="বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না।";
  }else{
@@ -1127,7 +1127,7 @@ async function editFarmerRecord(id){
   location_accuracy:row.location_accuracy,location_captured_at:row.location_captured_at}))setFormValue(form,name,value);
  await restoreAddressFields("farmer",{division:row.division,district:row.district,upazila:row.upazila,union_name:row.union_name,village_name:row.village_name});
  const photo=$("farmerPhoto"),preview=$("farmerPhotoPreview");
- if(photo){delete photo.dataset.compressedDataUrl;photo.dataset.existingPhotoUrl=row.photo_signed_url||row.photo_data_url||"";photo.value="";}
+ if(photo){delete photo.dataset.compressedDataUrl;photo.dataset.existingPhotoUrl=row.photo_signed_url||row.photo_data_url||"";photo.dataset.existingPhotoDataUrl=row.photo_signed_url||row.photo_data_url||"";photo.value="";}
  if(preview&&(row.photo_signed_url||row.photo_data_url)){preview.src=row.photo_signed_url||row.photo_data_url;preview.classList.remove("hidden");}
  else preview?.classList.add("hidden");
  $("farmerEditStatus").classList.remove("hidden");
