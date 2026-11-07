@@ -93,7 +93,7 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <div class="row"><div><label>দেশ / Country<select name="branch_country" id="branchCountry" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="branch_division" id="branchDivision" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div>
 <div class="row"><div><label>জেলা / District<select name="branch_district" id="branchDistrict"><option value="">আগে বিভাগ নির্বাচন করুন</option></select></label></div><div><label>উপজেলা / থানা<select name="branch_upazila" id="branchUpazila"><option value="">আগে জেলা নির্বাচন করুন</option></select></label></div></div>
 <div class="row"><div><label>ইউনিয়ন / পৌরসভা<select name="branch_union_name" id="branchUnion"><option value="">আগে উপজেলা নির্বাচন করুন</option></select></label></div><div><label>গ্রাম / মহল্লা<input name="branch_village_name" id="branchVillage" autocomplete="address-line2" placeholder="গ্রাম / মহল্লার নাম লিখুন"></label></div></div>
-<p class="small" id="branchAddressStatus" role="status" aria-live="polite">বিভাগ নির্বাচন করলে জেলা, উপজেলা এবং ইউনিয়ন/পৌরসভা ধাপে ধাপে দেখাবে। গ্রামের নাম হাতে লিখুন—উৎস ডেটায় পূর্ণ গ্রামভিত্তিক তালিকা নেই।</p></fieldset><fieldset class="address-fields" id="branchLiveLocationFields"><legend>📍 কেন্দ্রের লাইভ লোকেশন / GPS</legend><p class="small">বোতাম চাপলে ব্রাউজারের অনুমতি নিয়ে বর্তমান স্থানাঙ্ক নেওয়া হবে। লোকেশন ঐচ্ছিক; না নিলেও কেন্দ্র সংরক্ষণ করা যাবে।</p><div class="row"><div><label>অক্ষাংশ / Latitude<input id="branchLatitude" name="branch_latitude" type="number" step="any" readonly placeholder="GPS নিলে পূরণ হবে"></label></div><div><label>দ্রাঘিমাংশ / Longitude<input id="branchLongitude" name="branch_longitude" type="number" step="any" readonly placeholder="GPS নিলে পূরণ হবে"></label></div></div><div class="row"><div><label>GPS নির্ভুলতা (মিটার)<input id="branchLocationAccuracy" name="branch_location_accuracy_m" type="number" step="any" readonly placeholder="—"></label></div><div><label>লোকেশন নেওয়ার সময়<input id="branchLocationCapturedAt" name="branch_location_captured_at" type="text" readonly placeholder="—"></label></div></div><div class="row"><button class="btn" type="button" id="captureBranchLocation">📍 বর্তমান লাইভ লোকেশন নিন</button><button class="btn" type="button" id="clearBranchLocation">লোকেশন মুছুন</button></div><p id="branchLocationStatus" class="small" role="status" aria-live="polite">ব্যবহারকারীর স্পষ্ট অনুমতি ছাড়া লোকেশন নেওয়া হবে না।</p></fieldset><div class="row"><div><label data-i18n="dailyTargetLiters">দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label data-i18n="statusLabel">অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><div class="row"><button class="btn" type="button" id="saveCollectionDraft">📝 ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="restoreCollectionDraft">↩️ ড্রাফট ফিরিয়ে আনুন</button><button class="btn" type="button" id="clearCollectionDraft">🗑️ ড্রাফট মুছুন</button></div><p class="small">ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।</p><div class="row"><button class="btn primary" id="branchSubmitButton" data-i18n="save">সংরক্ষণ</button><button class="btn hidden" type="button" id="cancelBranchEdit">সম্পাদনা বাতিল</button></div></form></div></section>
+<p class="small" id="branchAddressStatus" role="status" aria-live="polite">বিভাগ নির্বাচন করলে জেলা, উপজেলা এবং ইউনিয়ন/পৌরসভা ধাপে ধাপে দেখাবে। গ্রামের নাম হাতে লিখুন—উৎস ডেটায় পূর্ণ গ্রামভিত্তিক তালিকা নেই।</p></fieldset><fieldset class="address-fields" id="branchLiveLocationFields"><legend>📍 কেন্দ্রের লাইভ লোকেশন / GPS</legend><p class="small">বোতাম চাপলে ব্রাউজারের অনুমতি নিয়ে বর্তমান স্থানাঙ্ক নেওয়া হবে। লোকেশন ঐচ্ছিক; না নিলেও কেন্দ্র সংরক্ষণ করা যাবে।</p><div class="row"><div><label>অক্ষাংশ / Latitude<input id="branchLatitude" name="branch_latitude" type="number" step="any" readonly placeholder="GPS নিলে পূরণ হবে"></label></div><div><label>দ্রাঘিমাংশ / Longitude<input id="branchLongitude" name="branch_longitude" type="number" step="any" readonly placeholder="GPS নিলে পূরণ হবে"></label></div></div><div class="row"><div><label>GPS নির্ভুলতা (মিটার)<input id="branchLocationAccuracy" name="branch_location_accuracy_m" type="number" step="any" readonly placeholder="—"></label></div><div><label>লোকেশন নেওয়ার সময়<input id="branchLocationCapturedAt" name="branch_location_captured_at" type="text" readonly placeholder="—"></label></div></div><div class="row"><button class="btn" type="button" id="captureBranchLocation">📍 বর্তমান লাইভ লোকেশন নিন</button><button class="btn" type="button" id="clearBranchLocation">লোকেশন মুছুন</button></div><p id="branchLocationStatus" class="small" role="status" aria-live="polite">ব্যবহারকারীর স্পষ্ট অনুমতি ছাড়া লোকেশন নেওয়া হবে না।</p></fieldset><fieldset id="branchPhotoFields" class="address-fields hidden"><legend>🏢 কেন্দ্রের ছবি / Private Storage (TEST 2)</legend><input name="branch_photo" id="branchPhoto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><small class="small">TEST 2-তে ছবিটি Private Storage-এ আপলোড হবে।</small><img id="branchPhotoPreview" class="hidden" alt="কেন্দ্রের ছবির প্রিভিউ" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-top:8px"></fieldset><div class="row"><div><label data-i18n="dailyTargetLiters">দৈনিক লক্ষ্য (L)<input name="target_liters" type="number" value="500"></label></div><div><label data-i18n="statusLabel">অবস্থা<select name="status"><option>Active</option><option>Payment Hold</option><option>Machine Hold</option><option>Closed</option></select></label></div></div><label data-i18n="notesLabel">নোট<textarea name="notes"></textarea></label><div class="row"><button class="btn" type="button" id="saveCollectionDraft">📝 ড্রাফট সংরক্ষণ</button><button class="btn" type="button" id="restoreCollectionDraft">↩️ ড্রাফট ফিরিয়ে আনুন</button><button class="btn" type="button" id="clearCollectionDraft">🗑️ ড্রাফট মুছুন</button></div><p class="small">ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।</p><div class="row"><button class="btn primary" id="branchSubmitButton" data-i18n="save">সংরক্ষণ</button><button class="btn hidden" type="button" id="cancelBranchEdit">সম্পাদনা বাতিল</button></div></form></div></section>
 <section id="farmers" class="page"><div class="card"><h3 data-i18n="addFarmer">👨‍🌾 কৃষক যোগ করুন</h3><form id="farmerForm"><input type="hidden" name="record_id"><p id="farmerEditStatus" class="small hidden" role="status">কৃষক সম্পাদনা চলছে।</p><div class="row"><div><label>Farmer Code<input name="farmer_code" placeholder="F00001" required></label></div><div><label data-i18n="nameLabel">নাম<input name="name" required></label></div></div><div class="row"><div><label data-i18n="mobileLabel">মোবাইল<input name="mobile" required type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX"></label></div><div><label>পুরোনো ঠিকানা / অতিরিক্ত ঠিকানা<input name="village" placeholder="ঐচ্ছিক"></label></div></div><div class="row"><div><label>কৃষকের ছবি / Photo<input name="farmer_photo" id="farmerPhoto" type="file" accept="image/*" capture="environment"></label><small class="small">ছবি নির্বাচন/তোলার পর ছোট আকারে সংরক্ষণের জন্য প্রস্তুত হবে।</small><img id="farmerPhotoPreview" class="hidden" alt="কৃষকের ছবির প্রিভিউ" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-top:8px"></div><div><label>নিবন্ধনের তারিখ ও সময় / Date &amp; time<input id="farmerRegisteredAt" type="text" readonly></label><label>লাইভ লোকেশন / GPS</label><button class="btn" type="button" id="captureFarmerLocation">📍 বর্তমান লোকেশন নিন</button><small id="farmerLocationStatus" class="small" role="status">বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না।</small><input type="hidden" name="latitude"><input type="hidden" name="longitude"><input type="hidden" name="location_accuracy"><input type="hidden" name="location_captured_at"></div></div><fieldset class="address-fields" id="farmerAddressFields"><legend>ঠিকানা / Address — ধাপে ধাপে নির্বাচন</legend>
 <div class="row"><div><label>দেশ / Country<select name="farmer_country" id="farmerCountry" required><option value="বাংলাদেশ" selected>বাংলাদেশ</option></select></label></div><div><label>বিভাগ / Division<select name="farmer_division" id="farmerDivision" required><option value="">বিভাগ নির্বাচন</option><option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option><option>রংপুর</option><option>ময়মনসিংহ</option></select></label></div></div>
 <div class="row"><div><label>জেলা / District<select name="farmer_district" id="farmerDistrict"><option value="">আগে বিভাগ নির্বাচন করুন</option></select></label></div><div><label>উপজেলা / থানা<select name="farmer_upazila" id="farmerUpazila"><option value="">আগে জেলা নির্বাচন করুন</option></select></label></div></div>
@@ -179,17 +179,36 @@ data-i18n="exportBackup">সম্পূর্ণ উপলভ্য ডেট�
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
-const SUPABASE_URL = "https://hhqshslzoznwyprhjzia.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
+// Production remains the default. TEST 2 is opt-in via ?backend=test2 and uses
+// a separate Auth storage namespace so test sessions/cache never reuse production state.
+const USE_TEST2_BACKEND = new URLSearchParams(window.location.search).get("backend") === "test2";
+const SUPABASE_URL = USE_TEST2_BACKEND
+  ? "https://wpomsmvzylrembojdsxd.supabase.co"
+  : "https://hhqshslzoznwyprhjzia.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = USE_TEST2_BACKEND
+  ? "sb_publishable_q_-9k6hlPJiEo5GHDBzh8Q_HTSvoNEP"
+  : "sb_publishable_Yv6oJdpTLriMOtzXoXbxGQ_h4AFAlQk";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+if (USE_TEST2_BACKEND) {
+  document.getElementById("branchPhotoFields")?.classList.remove("hidden");
+  const banner = document.createElement("div");
+  banner.textContent = "TEST 2 ENVIRONMENT — পরীক্ষার ডেটা בלבד; Production নয়";
+  banner.setAttribute("role", "status");
+  banner.style.cssText = "position:sticky;top:0;z-index:1000;padding:8px;text-align:center;background:#92400e;color:#fff;font-weight:700;font-size:13px";
+  document.body.prepend(banner);
+}
 const $ = id => document.getElementById(id);
 const state = {
   settings: null, milkCollectionSettings: null, branches: [], farmers: [], collections: [], payments: [],
   feedProducts: [], feedPurchases: [], feedSales: [], vetCompanies: [], vetProducts: [],
   vetPurchases: [], vetSales: [], agroProducts: [], agroPurchases: [], agroSales: []
 };
-const OFFLINE_CACHE_PREFIX = "muhaimin-offline-cache-v1:";
-const OFFLINE_ADMIN_KEY = "muhaimin-offline-admin-user";
+const OFFLINE_CACHE_PREFIX = USE_TEST2_BACKEND
+  ? "muhaimin-test2-offline-cache-v1:"
+  : "muhaimin-offline-cache-v1:";
+const OFFLINE_ADMIN_KEY = USE_TEST2_BACKEND
+  ? "muhaimin-test2-offline-admin-user"
+  : "muhaimin-offline-admin-user";
 const OFFLINE_ENABLED_KEY = "muhaimin-offline-cache-enabled";
 function offlineCacheEnabled(){return localStorage.getItem(OFFLINE_ENABLED_KEY)!=="false";}
 function setOfflineModeStatus(message){
@@ -471,6 +490,12 @@ async function loadAll() {
   [state.branches,state.farmers,state.collections,state.payments,state.feedProducts,state.feedPurchases,
    state.feedSales,state.vetCompanies,state.vetProducts,state.vetPurchases,state.vetSales,
    state.agroProducts,state.agroPurchases,state.agroSales]=data;
+  if(USE_TEST2_BACKEND){
+    await Promise.all([
+      ...state.branches.map(async row=>{row.photo_signed_url=await signedPrivatePhotoUrl("muhaimin-branch-photos",row.photo_path);}),
+      ...state.farmers.map(async row=>{row.photo_signed_url=await signedPrivatePhotoUrl("muhaimin-farmer-photos",row.photo_path);})
+    ]);
+  }
   render();
   const sessionForCache=await sb.auth.getSession();
   const cacheUserId=sessionForCache.data?.session?.user?.id;
@@ -528,6 +553,26 @@ function optionalLocationNumber(value,min,max,label){
  if(!Number.isFinite(number)||number<min||number>max)throw new Error(label+" তথ্য সঠিক নয়।");
  return number;
 }
+function validateFreshFarmerLocation(form,existing){
+ const latitude=String(form.latitude||"").trim(),longitude=String(form.longitude||"").trim();
+ if(!latitude&&!longitude)return;
+ const hasCompleteCoordinates=latitude!==""&&longitude!==""&&
+  Number.isFinite(Number(latitude))&&Number.isFinite(Number(longitude))&&
+  Number(latitude)>=-90&&Number(latitude)<=90&&Number(longitude)>=-180&&Number(longitude)<=180;
+ const sameSavedCoordinates=hasCompleteCoordinates&&!!existing&&
+  existing.latitude!==null&&existing.latitude!==undefined&&
+  existing.longitude!==null&&existing.longitude!==undefined&&
+  Number(latitude)===Number(existing.latitude)&&Number(longitude)===Number(existing.longitude);
+ if(sameSavedCoordinates)return;
+ const accuracy=Number(form.location_accuracy);
+ const capturedAt=Date.parse(String(form.location_captured_at||""));
+ const age=Date.now()-capturedAt;
+ if(!latitude||!longitude||!Number.isFinite(Number(latitude))||!Number.isFinite(Number(longitude))||
+    !Number.isFinite(accuracy)||accuracy<0||accuracy>150||
+    !Number.isFinite(capturedAt)||age < -30000||age>10*60*1000){
+  throw new Error("কৃষকের GPS তথ্য পুরোনো বা নির্ভুলতা গ্রহণযোগ্য নয়। নতুন করে লোকেশন নিন।");
+ }
+}
 function locationPayloadFromForm(form,fields,allowLegacyIncomplete=false){
  const latitude=optionalLocationNumber(form[fields.latitude],-90,90,"অক্ষাংশ");
  const longitude=optionalLocationNumber(form[fields.longitude],-180,180,"দ্রাঘিমাংশ");
@@ -569,7 +614,8 @@ function farmerPayloadFromForm(f,existing){
  return {farmer_code:f.farmer_code,name:f.name,mobile:f.mobile,village,
   country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,
   upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,
-  branch_id:f.branch_id,expected_liters:n(f.expected_liters),photo_data_url:photoData,
+  branch_id:f.branch_id,expected_liters:n(f.expected_liters),
+  photo_data_url:photoData,
   ...locationPayloadFromForm(f,{latitude:"latitude",longitude:"longitude",accuracy:"location_accuracy",
    capturedAt:"location_captured_at",accuracyColumn:"location_accuracy"},sameCoordinates)};
 }
@@ -930,6 +976,57 @@ function renderLedger() {
   const rows=entries.map(x=>{balance+=x.debit-x.credit;return [dateBN(x.date),esc(x.time),x.type,money(x.debit),money(x.credit),money(balance),esc(x.detail)];});
   result.innerHTML=table([tr("dateLabel"),lang()==="en"?"Time":"সময়",lang()==="en"?"Type":"ধরন",lang()==="en"?"Due":"প্রাপ্য",lang()==="en"?"Paid":"পরিশোধ",lang()==="en"?"Balance":"ব্যালেন্স",lang()==="en"?"Details":"বিবরণ"],rows);
 }
+async function uploadCompressedPhoto(inputId,bucketName){
+ if(!USE_TEST2_BACKEND)return null;
+ const dataUrl=$(inputId)?.dataset?.compressedDataUrl;
+ if(!dataUrl)return null;
+ const session=await sb.auth.getSession();
+ const user=session.data?.session?.user;
+ if(!user)throw new Error("ছবি আপলোডের আগে Main Admin হিসেবে লগইন করুন।");
+ const blob=await (await fetch(dataUrl)).blob();
+ if(!["image/jpeg","image/png","image/webp"].includes(blob.type)||blob.size>5*1024*1024)
+  throw new Error("ছবির ধরন বা আকার Storage-এর সীমার বাইরে।");
+ const path=user.id+"/"+crypto.randomUUID()+"."+(blob.type==="image/png"?"png":blob.type==="image/webp"?"webp":"jpg");
+ const result=await sb.storage.from(bucketName).upload(path,blob,{contentType:blob.type,upsert:false,cacheControl:"3600"});
+ if(result.error)throw result.error;
+ return path;
+}
+async function removePrivatePhoto(bucketName,path){
+ if(!USE_TEST2_BACKEND||!path)return;
+ const result=await sb.storage.from(bucketName).remove([path]);
+ if(result.error)console.warn("Old private photo cleanup failed:",result.error.message);
+}
+async function signedPrivatePhotoUrl(bucketName,path){
+ if(!USE_TEST2_BACKEND||!path)return null;
+ const result=await sb.storage.from(bucketName).createSignedUrl(path,600);
+ if(result.error){console.warn("Private photo readback failed:",result.error.message);return null;}
+ return result.data?.signedUrl||null;
+}
+async function preparePhotoInput(inputId,previewId,file){
+ const input=$(inputId),preview=$(previewId);
+ delete input.dataset.compressedDataUrl;
+ if(!file){
+  const old=input.dataset.existingPhotoUrl||input.dataset.existingPhotoDataUrl;
+  if(old&&preview){preview.src=old;preview.classList.remove("hidden");}
+  else preview?.classList.add("hidden");
+  return;
+ }
+ if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+  toast("শুধু JPEG, PNG বা WebP ছবি নির্বাচন করুন।");input.value="";return;
+ }
+ try{
+  const bitmap=await createImageBitmap(file),max=720;
+  const scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height));
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+  canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
+  const data=canvas.toDataURL("image/jpeg",0.72);
+  if(data.length>650000)throw new Error("ছবিটি ছোট করে আবার নির্বাচন করুন।");
+  input.dataset.compressedDataUrl=data;
+  if(preview){preview.src=data;preview.classList.remove("hidden");}
+ }catch(error){toast(error.message||"ছবি প্রস্তুত করা যায়নি।");input.value="";}
+}
 async function insertRow(tableName,data,form) {
   const timeKeys=Object.keys(data).filter(key=>/_time$/.test(key));
   const result=await sb.from(tableName).insert(data);
@@ -990,10 +1087,12 @@ function clearEditState(kind){
  $(kind+"SubmitButton").textContent=kind==="branch"?"সংরক্ষণ":"কৃষক সংরক্ষণ";
  $("cancel"+(kind==="branch"?"Branch":"Farmer")+"Edit")?.classList.add("hidden");
  if(kind==="farmer"){
-  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoDataUrl;photo.value="";}
+  const photo=$("farmerPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoUrl;delete photo.dataset.existingPhotoDataUrl;photo.value="";}
   $("farmerPhotoPreview")?.classList.add("hidden");
   $("farmerLocationStatus").textContent="বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না।";
  }else{
+  const photo=$("branchPhoto");if(photo){delete photo.dataset.compressedDataUrl;delete photo.dataset.existingPhotoUrl;photo.value="";}
+  $("branchPhotoPreview")?.classList.add("hidden");
   $("branchLocationStatus").textContent="ব্যবহারকারীর স্পষ্ট অনুমতি ছাড়া লোকেশন নেওয়া হবে না।";
  }
 }
@@ -1007,6 +1106,10 @@ async function editBranchRecord(id){
   branch_latitude:row.latitude,branch_longitude:row.longitude,branch_location_accuracy_m:row.location_accuracy_m,
   branch_location_captured_at:row.location_captured_at}))setFormValue(form,name,value);
  await restoreAddressFields("branch",{division:row.division,district:row.district,upazila:row.upazila,union_name:row.union_name,village_name:row.village_name});
+ const branchPhoto=$("branchPhoto"),branchPreview=$("branchPhotoPreview");
+ if(branchPhoto){delete branchPhoto.dataset.compressedDataUrl;branchPhoto.dataset.existingPhotoUrl=row.photo_signed_url||"";branchPhoto.value="";}
+ if(branchPreview&&row.photo_signed_url){branchPreview.src=row.photo_signed_url;branchPreview.classList.remove("hidden");}
+ else branchPreview?.classList.add("hidden");
  $("branchEditStatus").classList.remove("hidden");
  $("branchSubmitButton").textContent="পরিবর্তন সংরক্ষণ";
  $("cancelBranchEdit").classList.remove("hidden");
@@ -1024,8 +1127,8 @@ async function editFarmerRecord(id){
   location_accuracy:row.location_accuracy,location_captured_at:row.location_captured_at}))setFormValue(form,name,value);
  await restoreAddressFields("farmer",{division:row.division,district:row.district,upazila:row.upazila,union_name:row.union_name,village_name:row.village_name});
  const photo=$("farmerPhoto"),preview=$("farmerPhotoPreview");
- if(photo){delete photo.dataset.compressedDataUrl;photo.dataset.existingPhotoDataUrl=row.photo_data_url||"";photo.value="";}
- if(preview&&row.photo_data_url){preview.src=row.photo_data_url;preview.classList.remove("hidden");}
+ if(photo){delete photo.dataset.compressedDataUrl;photo.dataset.existingPhotoUrl=row.photo_signed_url||row.photo_data_url||"";photo.dataset.existingPhotoDataUrl=row.photo_signed_url||row.photo_data_url||"";photo.value="";}
+ if(preview&&(row.photo_signed_url||row.photo_data_url)){preview.src=row.photo_signed_url||row.photo_data_url;preview.classList.remove("hidden");}
  else preview?.classList.add("hidden");
  $("farmerEditStatus").classList.remove("hidden");
  $("farmerSubmitButton").textContent="পরিবর্তন সংরক্ষণ";
@@ -1125,8 +1228,68 @@ $("verifyOtpBtn").onclick=async()=>{
 $("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}catch(error){toast(error.message || String(error));}};
 function setFarmerRegistrationTime(){const el=$("farmerRegisteredAt");if(el)el.value=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date())+" (বাংলাদেশ সময়)";}
 setFarmerRegistrationTime();
-$("farmerPhoto")?.addEventListener("change",async event=>{const input=event.currentTarget, file=input.files?.[0], preview=$("farmerPhotoPreview");delete input.dataset.compressedDataUrl;if(!file){if(input.dataset.existingPhotoDataUrl&&preview){preview.src=input.dataset.existingPhotoDataUrl;preview.classList.remove("hidden");}else preview?.classList.add("hidden");return;}if(!file.type.startsWith("image/")){toast("শুধু ছবি নির্বাচন করুন।");input.value="";return;}try{const bitmap=await createImageBitmap(file);const max=720,scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();const data=canvas.toDataURL("image/jpeg",0.72);if(data.length>650000)throw new Error("ছবিটি ছোট করে আবার নির্বাচন করুন।");input.dataset.compressedDataUrl=data;if(preview){preview.src=data;preview.classList.remove("hidden");}}catch(error){toast(error.message||"ছবি প্রস্তুত করা যায়নি।");input.value="";}});
-$("captureFarmerLocation")?.addEventListener("click",()=>{const status=$("farmerLocationStatus");if(!navigator.geolocation){status.textContent="এই ব্রাউজারে GPS সমর্থিত নয়।";return;}status.textContent="লোকেশন নেওয়া হচ্ছে…";navigator.geolocation.getCurrentPosition(position=>{const f=$("farmerForm");f.elements.latitude.value=String(position.coords.latitude);f.elements.longitude.value=String(position.coords.longitude);f.elements.location_accuracy.value=String(Math.round(position.coords.accuracy));f.elements.location_captured_at.value=new Date(position.timestamp).toISOString();status.textContent="লোকেশন নেওয়া হয়েছে • নির্ভুলতা প্রায় "+Math.round(position.coords.accuracy)+" মিটার";},error=>{status.textContent=error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি।":error.code===2?"লোকেশন পাওয়া যায়নি।":"লোকেশন নিতে সময় শেষ হয়েছে।";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});});
+$("farmerPhoto")?.addEventListener("change",event=>preparePhotoInput("farmerPhoto","farmerPhotoPreview",event.currentTarget.files?.[0]));
+$("branchPhoto")?.addEventListener("change",event=>preparePhotoInput("branchPhoto","branchPhotoPreview",event.currentTarget.files?.[0]));
+// Farmer GPS: explicit tap, validated fix, race protection, and no background tracking.
+let farmerLocationRequestId=0;
+const clearFarmerLocationFields=()=>{
+  const form=$("farmerForm");
+  ["latitude","longitude","location_accuracy","location_captured_at"].forEach(name=>{form.elements[name].value="";});
+};
+$("captureFarmerLocation")?.addEventListener("click",()=>{
+  const requestId=++farmerLocationRequestId;
+  const status=$("farmerLocationStatus");
+  const captureButton=$("captureFarmerLocation");
+  if(!navigator.geolocation){
+    clearFarmerLocationFields();
+    status.textContent="এই ব্রাউজারে GPS সমর্থিত নয়।";
+    return;
+  }
+  captureButton.disabled=true;
+  status.textContent="লোকেশন নেওয়া হচ্ছে…";
+  const failCurrentCapture=message=>{
+    if(requestId!==farmerLocationRequestId)return;
+    clearFarmerLocationFields();
+    status.textContent=message;
+    captureButton.disabled=false;
+  };
+  try{
+    navigator.geolocation.getCurrentPosition(position=>{
+      if(requestId!==farmerLocationRequestId)return;
+      const latitude=Number(position?.coords?.latitude);
+      const longitude=Number(position?.coords?.longitude);
+      const accuracy=Number(position?.coords?.accuracy);
+      if(!Number.isFinite(latitude)||latitude < -90||latitude > 90||
+         !Number.isFinite(longitude)||longitude < -180||longitude > 180||
+         !Number.isFinite(accuracy)||accuracy < 0||accuracy > 150){
+        failCurrentCapture("GPS নির্ভুলতা গ্রহণযোগ্য নয় (সর্বোচ্চ ১৫০ মিটার)। আবার চেষ্টা করুন।");
+        return;
+      }
+      const rawTimestamp=Number(position.timestamp);
+      if(!Number.isFinite(rawTimestamp)||rawTimestamp<=0){
+        failCurrentCapture("লোকেশন নেওয়ার সময় সঠিক নয়। আবার চেষ্টা করুন।");
+        return;
+      }
+      const age=Date.now()-rawTimestamp;
+      if(age < -30000||age > 10*60*1000){
+        failCurrentCapture("GPS তথ্য ১০ মিনিটের বেশি পুরোনো বা ভবিষ্যতের। নতুন করে লোকেশন নিন।");
+        return;
+      }
+      const capturedAt=new Date(rawTimestamp);
+      const form=$("farmerForm");
+      form.elements.latitude.value=String(latitude);
+      form.elements.longitude.value=String(longitude);
+      form.elements.location_accuracy.value=String(Math.round(accuracy));
+      form.elements.location_captured_at.value=capturedAt.toISOString();
+      status.textContent="লোকেশন নেওয়া হয়েছে • নির্ভুলতা প্রায় "+Math.round(accuracy)+" মিটার";
+      captureButton.disabled=false;
+    },error=>{
+      failCurrentCapture(error.code===1?"লোকেশন অনুমতি দেওয়া হয়নি।":error.code===2?"লোকেশন পাওয়া যায়নি।":"লোকেশন নিতে সময় শেষ হয়েছে।");
+    },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+  }catch(error){
+    failCurrentCapture("লোকেশন নিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+  }
+});
 
 
 // Bangladesh address cascade. The hierarchy is cached locally after a successful download.
@@ -1267,14 +1430,44 @@ bindForm("branchForm",async f=>{
  const form=$("branchForm"),id=f.record_id,existing=id?state.branches.find(item=>String(item.id)===String(id)):null;
  if(id&&!existing)throw new Error("সম্পাদনার কেন্দ্র রেকর্ড তালিকায় নেই। আবার লোড করুন।");
  const payload=branchPayloadFromForm(f,existing);
- return id?updateRow("branches",id,payload,form):insertRow("branches",payload,form);
+ let uploadedPath=null;
+ if(USE_TEST2_BACKEND){
+  payload.photo_path=existing?.photo_path||null;
+  uploadedPath=await uploadCompressedPhoto("branchPhoto","muhaimin-branch-photos");
+  if(uploadedPath)payload.photo_path=uploadedPath;
+ }
+ try{
+  const savedPromise=id?updateRow("branches",id,payload,form):insertRow("branches",payload,form);
+  const saved=await savedPromise;
+  if(uploadedPath&&existing?.photo_path&&existing.photo_path!==uploadedPath)await removePrivatePhoto("muhaimin-branch-photos",existing.photo_path);
+  return saved;
+ }catch(error){
+  if(uploadedPath)await removePrivatePhoto("muhaimin-branch-photos",uploadedPath);
+  throw error;
+ }
 });
 bindForm("farmerForm",async f=>{
  const form=$("farmerForm"),id=f.record_id;
  const existing=id?state.farmers.find(item=>String(item.id)===String(id)):null;
  if(id&&!existing)throw new Error("সম্পাদনার কৃষক রেকর্ড তালিকায় নেই। আবার লোড করুন।");
+ validateFreshFarmerLocation(f,existing);
  const payload=farmerPayloadFromForm(f,existing);
- return id?updateRow("farmers",id,payload,form):insertRow("farmers",payload,form);
+ let uploadedPath=null;
+ if(USE_TEST2_BACKEND){
+  payload.photo_path=existing?.photo_path||null;
+  if(existing?.photo_path)payload.photo_data_url=null;
+  uploadedPath=await uploadCompressedPhoto("farmerPhoto","muhaimin-farmer-photos");
+  if(uploadedPath){payload.photo_path=uploadedPath;payload.photo_data_url=null;}
+ }
+ try{
+  const savedPromise=id?updateRow("farmers",id,payload,form):insertRow("farmers",payload,form);
+  const saved=await savedPromise;
+  if(uploadedPath&&existing?.photo_path&&existing.photo_path!==uploadedPath)await removePrivatePhoto("muhaimin-farmer-photos",existing.photo_path);
+  return saved;
+ }catch(error){
+  if(uploadedPath)await removePrivatePhoto("muhaimin-farmer-photos",uploadedPath);
+  throw error;
+ }
 });
 $("branchTable").addEventListener("click",async event=>{
  const button=event.target.closest('[data-record-action="edit-branch"]');if(!button)return;
