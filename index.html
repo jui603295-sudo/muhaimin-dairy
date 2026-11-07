@@ -615,7 +615,7 @@ function farmerPayloadFromForm(f,existing){
   country:f.farmer_country||"বাংলাদেশ",division:f.farmer_division||null,district:f.farmer_district||null,
   upazila:f.farmer_upazila||null,union_name:f.farmer_union_name||null,village_name:f.farmer_village_name||null,
   branch_id:f.branch_id,expected_liters:n(f.expected_liters),
-  photo_data_url:USE_TEST2_BACKEND?(existing?.photo_path?null:(existing?.photo_data_url||null)):photoData,
+  photo_data_url:photoData,
   ...locationPayloadFromForm(f,{latitude:"latitude",longitude:"longitude",accuracy:"location_accuracy",
    capturedAt:"location_captured_at",accuracyColumn:"location_accuracy"},sameCoordinates)};
 }
@@ -1454,6 +1454,7 @@ bindForm("farmerForm",async f=>{
  let uploadedPath=null;
  if(USE_TEST2_BACKEND){
   payload.photo_path=existing?.photo_path||null;
+  if(existing?.photo_path)payload.photo_data_url=null;
   uploadedPath=await uploadCompressedPhoto("farmerPhoto","muhaimin-farmer-photos");
   if(uploadedPath){payload.photo_path=uploadedPath;payload.photo_data_url=null;}
  }
