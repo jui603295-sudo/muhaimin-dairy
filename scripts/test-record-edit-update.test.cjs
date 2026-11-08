@@ -34,7 +34,7 @@ test("Branch edit payload retains address, status, target, notes and GPS fields"
     notes: "সকাল সংগ্রহ কেন্দ্র", country: "বাংলাদেশ", division: "রংপুর",
     district: "ঠাকুরগাঁও", upazila: "ঠাকুরগাঁও সদর", union_name: "আকচা",
     village_name: "আকচা বাজার", latitude: 26.0337, longitude: 88.4617,
-    location_accuracy_m: 12, location_captured_at: "2026-10-31T02:00:00.000Z"
+    location_accuracy_m: 12, location_captured_at: "2026-10-31T02:00:00.000Z", photo_path: null, photo_data_url: null
   });
 });
 
@@ -48,6 +48,7 @@ test("Farmer edit payload retains existing photo when no replacement is selected
     location_accuracy: "9", location_captured_at: "2026-10-31T02:01:00.000Z"
   }, { photo_data_url: "data:image/jpeg;base64,EXISTING" });
   assert.equal(payload.photo_data_url, "data:image/jpeg;base64,EXISTING");
+  assert.equal(payload.photo_path, null);
   assert.equal(payload.branch_id, "branch-1");
   assert.equal(payload.location_accuracy, 9);
   assert.equal(payload.location_captured_at, "2026-10-31T02:01:00.000Z");
@@ -59,8 +60,9 @@ test("Farmer edit payload uses a newly compressed photo when supplied", () => {
     farmer_code: "F00001", name: "পরীক্ষা কৃষক", mobile: "01700000000",
     farmer_country: "বাংলাদেশ", branch_id: "branch-1", expected_liters: "0",
     latitude: "", longitude: "", location_accuracy: "", location_captured_at: ""
-  }, { photo_data_url: "data:image/jpeg;base64,OLD" });
-  assert.equal(payload.photo_data_url, "data:image/jpeg;base64,NEW");
+  }, { photo_data_url: "data:image/jpeg;base64,OLD" }, "admin-id/record-id/new.jpg");
+  assert.equal(payload.photo_data_url, null);
+  assert.equal(payload.photo_path, null);
   assert.equal(payload.expected_liters, 0);
 });
 
@@ -76,8 +78,9 @@ test("Farmer edit without any old or new photo remains null", () => {
 test("Both edit forms call update by record id and require a returned row", () => {
   assert.match(html, /sb\.from\(tableName\)\.update\(data\)\.eq\("id",id\)\.select\("id"\)\.maybeSingle\(\)/);
   assert.match(html, /if\(!result\.data\?\.id\)throw new Error/);
-  assert.match(html, /id\?updateRow\("branches",id,payload,form\):insertRow\("branches",payload,form\)/);
-  assert.match(html, /id\?updateRow\("farmers",id,payload,form\):insertRow\("farmers",payload,form\)/);
+  assert.match(html, /saveRecordWithPrivatePhoto\("branch",f\)/);
+  assert.match(html, /saveRecordWithPrivatePhoto\("farmer",f\)/);
+  assert.match(html, /saved=id\?await updateRow\(tableName,id,payload,form\):await insertRow\(tableName,payload,form\)/);
 });
 
 test("Edit actions are present for both Branch and Farmer lists", () => {
