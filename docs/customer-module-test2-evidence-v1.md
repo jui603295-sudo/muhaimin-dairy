@@ -68,6 +68,7 @@ Reviewed the PR branch source:
 - Customer-requested feature activation is specified as a separate review/approval/configuration workflow. A support ticket or feature request never activates a capability by itself.
 - These are architecture decisions only. No support ticket schema, feature-request schema, Admin Settings controls, inbox UI, notification workflow or activation endpoint is asserted to exist or to have been tested by this evidence record.
 - All future capabilities remain OFF until the full server-side authorization, configuration, audit and TEST 2 acceptance gates are implemented and verified.
+
 ## 8. Read-only support / feature architecture schema audit
 
 Performed a read-only catalog audit in TEST 2 (`wpomsmvzylrembojdsxd`) before planning support and feature-request storage.
@@ -113,3 +114,25 @@ Design consequence:
 ## 11. Next implementation gate
 
 The logical support/feature schema and RLS matrix are now documented in the architecture specification as a proposal only. Before any TEST 2 migration, the next work is to review current frontend route/API patterns and the exact existing role/permission helpers, then prepare a migration-by-migration implementation plan with test cases and rollback steps. No schema migration has been applied for Support, Feature Requests or Notifications.
+
+## 12. Auth troubleshooting and Customer Profile RLS performance follow-up
+
+### Auth evidence
+- TEST 2 Auth logs show two `POST /auth/v1/token?grant_type=password` responses with HTTP 400 and `x_sb_error_code=invalid_credentials`.
+- The same log window shows an older password-recovery verification request whose redirect destination was `http://localhost:3000`. The token itself is intentionally not copied into this evidence.
+- The PR #79 test client source explicitly calls `resetPasswordForEmail(email, { redirectTo: location.origin })` and `signUp(... emailRedirectTo: location.origin)`. Therefore, a fresh recovery request initiated from the current PR #79 Vercel preview should request that preview origin, provided the exact preview origin remains in the Auth Redirect URLs allow list.
+- The old localhost recovery event is not proof that the current PR #79 client still sends users to localhost. The Site URL is only the fallback when no explicit redirectTo is supplied.
+- Main Admin role verification: the existing Auth user ID has `app_user_roles.role = 'main_admin'`. This does not verify the user's current password or a live browser JWT.
+- A previous SQLSTATE 42501 event was traced to an audit/simulation SQL statement calling `public.current_app_role()` even though the operational policies call `private.current_app_role()`. This was a permission error in the diagnostic SQL, not evidence of a user-facing login failure. No privileges were broadened to silence it.
+
+### RLS performance correction applied in TEST 2
+- The initial Performance Advisor reported three `auth_rls_initplan` warnings for `customer_profiles_select_own`, `customer_profiles_insert_own`, and `customer_profiles_update_own`.
+- Applied TEST 2 migration `20261108215313_customer_profile_rls_initplan_optimization_v1`. It preserves the exact owner + customer-role predicates and wraps `auth.uid()` in scalar subqueries.
+- Re-read `pg_policies` after the migration: all three policies contain the optimized scalar-subquery form.
+- Re-ran Performance Advisor: the three `auth_rls_initplan` warnings are gone. Seventeen unused-index informational notices remain; indexes were not dropped because current low usage is not evidence that they are unnecessary for future workloads.
+- The same migration is committed to the PR #84 branch at `supabase/migrations/20261108215313_customer_profile_rls_initplan_optimization_v1.sql`.
+
+### Remaining Auth gate
+- A fresh recovery request from the PR #79 preview and successful password reset have not yet been observed in logs.
+- A real Main Admin browser session/JWT and successful post-reset login are still required.
+- The dashboard Site URL field was not changed through an API; no available connected Supabase action exposes that Auth URL setting. The current app client supplies an explicit `redirectTo`, so the exact allow-listed preview origin is the relevant setting for this preview test.
