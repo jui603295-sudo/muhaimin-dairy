@@ -1,0 +1,15 @@
+/* Customer Portal is deliberately isolated from the Main Admin workspace. */
+#customerPortal{max-width:760px;margin:18px auto;padding:0 12px}
+#customerPortal .cp-card{background:#fff;border:1px solid #dbe5e3;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #00000008}
+#customerPortal .cp-muted{color:#64748b;font-size:13px;line-height:1.6}
+#customerPortal .cp-grid{display:grid;grid-template-columns:1fr;gap:10px}
+#customerPortal label{display:block;font-weight:700;font-size:13px;margin:10px 0 5px}
+#customerPortal input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;background:#fff;color:#17202a}
+#customerPortal input[readonly]{background:#f8fafc;color:#64748b}
+#customerPortal .cp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#customerPortal button{border:0;border-radius:10px;padding:10px 14px;background:#e3f2ef;color:#0f5f59;font-weight:700;cursor:pointer}
+#customerPortal button.primary{background:#0f766e;color:#fff}
+#customerPortal button:disabled{opacity:.55;cursor:not-allowed}
+#customerPortal [role=status]{min-height:1.4em}
+#customerPortal .cp-notice{padding:11px;border-radius:10px;background:#fffbeb;color:#92400e;border:1px solid #fcd34d}
+@media(min-width:620px){#customerPortal .cp-grid{grid-template-columns:1fr 1fr}}
