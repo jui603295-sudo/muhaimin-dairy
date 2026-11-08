@@ -61,3 +61,10 @@ Reviewed the PR branch source:
 - No Customer test users were created by this verification.
 - No PR merge or Production deployment was performed.
 - Orders, payments, subscriptions, AI, KYC and all other future business features remain OFF.
+
+## 7. Support and feature-request architecture status
+
+- Customer Support & Communication System is specified as a first-class portal capability with a Main Admin Support Inbox, customer-owned tickets, customer-visible replies, internal-only notes, controlled attachments, notification adapters and audit events.
+- Customer-requested feature activation is specified as a separate review/approval/configuration workflow. A support ticket or feature request never activates a capability by itself.
+- These are architecture decisions only. No support ticket schema, feature-request schema, Admin Settings controls, inbox UI, notification workflow or activation endpoint is asserted to exist or to have been tested by this evidence record.
+- All future capabilities remain OFF until the full server-side authorization, configuration, audit and TEST 2 acceptance gates are implemented and verified.
