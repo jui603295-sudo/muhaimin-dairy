@@ -30,8 +30,10 @@ class MockOption {
 }
 class MockEvent { constructor(type) { this.type = type; } }
 class MockSelect {
-  constructor() { this.options = []; this.value = ""; this.listeners = {}; }
-  replaceChildren(option) { this.options = [option]; this.value = ""; }
+  constructor() { this.options = []; this._value = ""; this.listeners = {}; }
+  get value() { return this._value; }
+  set value(value) { this._value = this.options.some(option => option.value === value) ? value : ""; }
+  replaceChildren(option) { this.options = [option]; this._value = ""; }
   add(option) { this.options.push(option); }
   addEventListener(type, callback) { this.listeners[type] = callback; }
   dispatchEvent(event) { this.listeners[event.type]?.(event); }
@@ -53,13 +55,13 @@ function makeHarness({ cachedTree = tree, fetchImpl } = {}) {
     fetch: fetchImpl || (async () => { throw new Error("unexpected fetch"); }),
     Option: MockOption, Event: MockEvent, Array, Set, JSON, Promise, Error
   };
-  vm.runInNewContext(html.slice(start, end), context, { timeout: 1000 });
+  vm.runInNewContext(html.slice(start, end) + "\\nglobalThis.__addressCascadeReady = addressCascadeReady; globalThis.__addressCascadeControllers = addressCascadeControllers;", context, { timeout: 1000 });
   return { elements, store, context };
 }
 
 test("Branch and Farmer cascades populate Thakurgaon district, upazila and union/pourashava", async () => {
   const h = makeHarness();
-  await Promise.all([h.context.addressCascadeReady.branch, h.context.addressCascadeReady.farmer]);
+  await Promise.all([h.context.__addressCascadeReady.branch, h.context.addressCascadeReady.farmer]);
   for (const prefix of ["branch", "farmer"]) {
     const division = h.elements[prefix + "Division"];
     const district = h.elements[prefix + "District"];
@@ -81,12 +83,13 @@ test("Branch and Farmer cascades populate Thakurgaon district, upazila and union
 test("Edit controller restores saved address only when each value belongs to its parent", async () => {
   const h = makeHarness();
   await h.context.addressCascadeReady.branch;
-  const restored = h.context.addressCascadeControllers.branch({
+  const restored = h.context.__addressCascadeControllers.branch({
     division: "রংপুর", district: "ঠাকুরগাঁও", upazila: "ঠাকুরগাঁও সদর", union_name: "আকচা"
   });
-  assert.deepEqual(restored, {
-    division: "রংপুর", district: "ঠাকুরগাঁও", upazila: "ঠাকুরগাঁও সদর", union_name: "আকচা"
-  });
+  assert.equal(restored.division, "রংপুর");
+  assert.equal(restored.district, "ঠাকুরগাঁও");
+  assert.equal(restored.upazila, "ঠাকুরগাঁও সদর");
+  assert.equal(restored.union_name, "আকচা");
   const invalid = h.context.addressCascadeControllers.branch({
     division: "রংপুর", district: "ঠাকুরগাঁও", upazila: "পীরগঞ্জ", union_name: "আকচা"
   });
