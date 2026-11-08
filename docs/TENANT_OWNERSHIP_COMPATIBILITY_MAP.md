@@ -116,7 +116,7 @@ Observed behavior that blocks a safe operational tenant migration:
 
 A backend-only resolver and read-only Edge Function have now been added:
 
-- Migration: `202611090001_test2_tenant_context_resolver_v1`.
+- Migration: `20261108234457_test2_tenant_context_resolver_v1`.
 - SQL function: `public.resolve_tenant_context_for_user(uuid)`.
 - Edge Function: `tenant-context`, ACTIVE, version 1, JWT verification enabled.
 - The Edge Function validates the bearer token with Supabase Auth and derives the user ID from the verified Auth response. It ignores request-supplied identity and tenant IDs.
