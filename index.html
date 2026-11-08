@@ -55,12 +55,16 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <section id="passwordRecoveryPanel" class="card hidden" aria-label="Password recovery">
   <h3>🔐 নতুন পাসওয়ার্ড সেট করুন</h3>
   <p class="small">রিকভারি যাচাই সম্পন্ন হয়েছে। এখন নতুন পাসওয়ার্ড দিন।</p>
-  <label for="newPassword">নতুন পাসওয়ার্ড
+  <label for="newPassword">নতুন পাসওয়ার্ড</label>
+  <div class="pw-wrap">
     <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
-  </label>
-  <label for="confirmNewPassword">নতুন পাসওয়ার্ড আবার লিখুন
+    <button type="button" data-password-toggle="newPassword" aria-label="পাসওয়ার্ড দেখান" aria-pressed="false" title="পাসওয়ার্ড দেখান">👁</button>
+  </div>
+  <label for="confirmNewPassword">নতুন পাসওয়ার্ড আবার লিখুন</label>
+  <div class="pw-wrap">
     <input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8" required>
-  </label>
+    <button type="button" data-password-toggle="confirmNewPassword" aria-label="পাসওয়ার্ড দেখান" aria-pressed="false" title="পাসওয়ার্ড দেখান">👁</button>
+  </div>
   <button class="btn primary" id="saveNewPasswordBtn" type="button">নতুন পাসওয়ার্ড সংরক্ষণ</button>
   <p id="passwordRecoveryMsg" class="small" role="status" aria-live="polite"></p>
 </section>
@@ -1203,6 +1207,18 @@ document.querySelectorAll("[data-date-input]").forEach(input=>{
 });
 applyLanguage(lang());
 $("togglePassword").onclick=()=>{const input=$("loginPassword");input.type=input.type==="password"?"text":"password";$("togglePassword").textContent=input.type==="password"?"👁":"🙈";};
+document.querySelectorAll("[data-password-toggle]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    const input=$(button.dataset.passwordToggle);
+    if(!input)return;
+    const visible=input.type==="password";
+    input.type=visible?"text":"password";
+    button.textContent=visible?"🙈":"👁";
+    button.setAttribute("aria-pressed",visible?"true":"false");
+    button.setAttribute("aria-label",visible?"পাসওয়ার্ড লুকান":"পাসওয়ার্ড দেখান");
+    button.title=visible?"পাসওয়ার্ড লুকান":"পাসওয়ার্ড দেখান";
+  });
+});
 $("loginBtn").onclick=async()=>{
   try {
     const email=$("loginEmail").value.trim(), password=$("loginPassword").value;
