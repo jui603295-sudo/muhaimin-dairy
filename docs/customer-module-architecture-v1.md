@@ -183,3 +183,79 @@ The TEST 2 preview currently contains a generic Supabase email/password signup/l
 - Main Admin/Branch staff access is governed by explicit permissions and minimum necessary fields.
 - Existing Main Admin, Branch, Farmer and Milk Collection flows remain unchanged.
 - TEST 2 browser/JWT evidence is captured; no Production change or deployment occurs.
+
+## 13. Customer Support & Communication System
+
+**Decision:** Customer Support is a first-class Customer Portal capability and a shared operational service for Main Admin. It must be simple for customers and manageable from one Admin inbox. It is a communication and case-management channel, not an informal chat that bypasses authorization or the audit trail.
+
+### Customer experience
+- A clearly visible **সাপোর্ট / সাহায্য** entry is available from the Customer Portal.
+- Customers can submit: general questions, service difficulties, complaints, suggestions, feature/facility requests, order/delivery issues and payment/invoice queries.
+- Each submission creates a unique ticket/reference number and shows its current status.
+- Customers can view their own ticket history, Admin replies and resolution notes, and add follow-up messages to an open ticket.
+- Customers may choose a category and priority suggestion; the server applies the final priority rules to prevent abuse.
+- The form should be short and mobile-friendly: subject, category, message, optional related order/reference and optional attachment where enabled.
+- Show clear acknowledgement after submission and explain expected response hours only after the business defines an actual support schedule.
+
+### Main Admin experience
+- A single Support Inbox lists new, open, waiting-for-customer, escalated and resolved tickets.
+- Main Admin can assign a ticket to an authorized staff member, change category/priority, reply, add internal-only notes, escalate, merge duplicates and resolve/reopen with a reason.
+- Internal notes must never be visible to customers.
+- Admin can filter/search by ticket number, customer, category, status, branch and date; customer lookup must respect role permissions.
+- Main Admin controls categories, availability, response targets, notification rules and staff access through Admin Settings.
+- A ticket's related branch/order is context only; it must not grant access to unrelated branch or customer records.
+
+### Ticket lifecycle
+
+NEW → OPEN → WAITING_FOR_CUSTOMER → IN_PROGRESS → RESOLVED → CLOSED
+
+ESCALATED is an auditable flag/state for cases needing Main Admin attention. Customers may reply to reopen a resolved ticket within a configurable period; otherwise they create a linked follow-up ticket. Exact SLA and auto-close timing remain configurable and OFF until business rules are approved.
+
+### Messages, attachments and notifications
+- Keep ticket metadata and message history separate so every reply has author, timestamp and visibility (customer or internal).
+- Customer can read only their own tickets and customer-visible messages. Staff access is limited to assigned permissions; Main Admin has oversight.
+- Attachments are optional and must use private Storage, strict size/type limits, generated object paths, authorization checks and malware/content review where available. Do not accept passwords, OTPs, payment card details or identity-document uploads through general support.
+- Notify customers when a ticket is received, answered, status-changed or resolved. Use in-app notifications first; email/SMS/push are provider adapters and remain configurable. Do not expose private ticket content in notification previews by default.
+- Rate-limit ticket creation and replies; validate and safely render text to reduce spam and injection risk.
+- Record ticket assignment, status/priority changes, internal notes, replies, attachment access and administrative actions in an append-only audit trail.
+- Define retention, export and deletion policy before launch. A customer must not be able to erase an audit record by deleting a ticket.
+
+### Separation from feature activation
+A request for a new facility may be submitted through Support, but it must be classified and linked to a structured Feature Activation Request workflow (Section 14). A support ticket or customer message alone never enables a capability.
+
+## 14. Customer-requested feature activation and Admin control
+
+Future capabilities remain OFF by default. The Customer Portal may let a customer request a capability, but request submission and activation are separate operations.
+
+### Customer flow
+1. Customer opens the capability catalogue and selects Request activation for an eligible OFF capability.
+2. Customer submits a short reason and any required business context.
+3. System creates a request linked to the authenticated customer and a support/reference record where useful.
+4. Customer can track status and read the decision/reason; customer cannot edit Admin configuration or directly turn a feature ON.
+
+### Main Admin flow
+- Admin Settings provides a central feature-control panel and a review queue.
+- Main Admin can approve, reject, request more information, suspend or revoke a request with a recorded reason.
+- Effective scope may be global, customer group, or an individual customer. A broader scope requires explicit confirmation and a clear impact preview.
+- Approval is not the same as activation: provider setup, configuration, permissions, consent, dependency checks, rollout and TEST 2 validation must pass before effective state becomes ON.
+- Main Admin can disable a feature at any time. Disabling must not delete customer data; retention and access behavior must be defined per capability.
+
+### Canonical states
+
+OFF → REQUESTED → UNDER_REVIEW → APPROVED → CONFIGURATION_REQUIRED → TESTING → ON
+
+Alternative outcomes: MORE_INFORMATION_REQUIRED, REJECTED, SUSPENDED, REVOKED. The UI must distinguish request status from effective feature status; an approved request may still show the capability as OFF until activation gates pass.
+
+### Authorization and audit
+- Only authenticated customer can create/read their own requests; customer cannot approve, reject, change scope or edit registry/configuration.
+- Only Main Admin with the explicit feature-management permission can review or change effective configuration.
+- Customer-group membership and global scope are resolved server-side, never trusted from client input.
+- Sensitive capabilities (payments, refunds, AI, KYC/identity verification, biometrics) require capability-specific review and additional controls; AI remains advisory only.
+- Every request, decision, configuration change, scope change, activation, suspension and rollback records actor, timestamp, target scope, before/after state and reason in an append-only audit log.
+- Enforce authorization in server-side functions/RLS. Hiding controls in the browser is not sufficient.
+
+### Conceptual data domains — not approved schema
+Potential domains include a feature registry, scoped feature entitlements/configurations, customer feature requests, support tickets/messages and append-only support/feature audit events. These are logical concepts only. Before creating any table or function, inspect TEST 2 for equivalent structures, compare naming/constraints/indexes/RLS/grants, and document migration and rollback plans. Do not create duplicate registries or parallel ticket systems.
+
+### Current implementation boundary
+This section is an architecture decision only. It does not claim that Support Inbox, ticket tables, customer request submission, Admin Settings controls, notifications or activation APIs currently exist. Do not add inert buttons or pretend requests are being delivered until the complete authorized backend and customer/admin flows are implemented and tested in TEST 2.
