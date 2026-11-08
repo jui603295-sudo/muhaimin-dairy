@@ -265,3 +265,6 @@ jobs:
 
       - name: Test TEST 2 Storage photo policy role helper
         run: node --test scripts/test-storage-photo-policy-helper.test.cjs
+
+      - name: Test private Branch and Farmer photo upload flow
+        run: node --test scripts/test-private-photo-storage-flow.test.cjs
