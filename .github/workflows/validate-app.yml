@@ -259,3 +259,6 @@ jobs:
 
       - name: Test Branch and Farmer edit/update interactions
         run: node --test scripts/test-record-edit-interactions.test.cjs
+
+      - name: Test email password recovery redirect and update flow
+        run: node --test scripts/test-auth-password-recovery.test.cjs
