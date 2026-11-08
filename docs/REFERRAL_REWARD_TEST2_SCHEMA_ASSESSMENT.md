@@ -189,7 +189,7 @@ Supabase CLI v3 changes hosted command defaults and requires explicit remote tar
 | Tenant model design gap identified | Complete | No tenant/business/membership model found |
 | Referral architecture specification | Drafted | `REFERRAL_REWARD_ARCHITECTURE_V1.md` |
 | Initial tenant foundation tables | Complete (TEST 2 only) | `private.tenants`, `private.tenant_memberships`, `private.tenant_invitations`; RLS enabled; browser roles denied; one pending TEST 2 tenant and owner membership bootstrapped |
-| Tenant-to-operational-data integration | Not started | Existing business tables remain unchanged; mapping/backfill and tenant-aware RLS must be implemented before tenant access is enabled |\n| Referral backend / UI | Not started | No live links or reward engine |
+| Tenant-to-operational-data integration | Blocked pending app cutover | Existing browser writes and offline replay are not tenant-aware; do not add operational tenant_id columns yet |\n| Referral backend / UI | Not started | No live links or reward engine |
 | AI Gateway / models | Not started | No AI provider or service enabled |
 | Real JWT and browser acceptance | Not run | Requires role-specific test users and browser execution |
 
@@ -201,7 +201,7 @@ Supabase CLI v3 changes hosted command defaults and requires explicit remote tar
 Two additive migrations have now been applied to TEST 2 project `wpomsmvzylrembojdsxd` and committed to the development branch:
 
 - `20261108231026_test2_tenant_foundation_v1`
-- `20261108231840_test2_tenant_foundation_fk_indexes_v1`
+- `20261108231127_test2_tenant_foundation_fk_indexes_v1`
 
 Created internal tables:
 - `private.tenants`
@@ -234,3 +234,26 @@ Important boundary:
 - Tenant invitations are not referral links. No raw tokens have been generated.
 - No referral, reward, or AI runtime service is active.
 - The next required step is an explicit compatibility map for all operational tables, then a staged nullable tenant_id backfill and tested tenant-aware authorization without weakening the current Main Admin policies.
+
+## 10. Tenant context backend milestone — 2026-11-09
+
+TEST 2 now has a backend-only, read-only tenant context path:
+
+- Applied database migration version: `20261108234457` (migration name `202611090001_test2_tenant_context_resolver_v1`).
+- Repository migration file: `supabase/migrations/20261108234457_test2_tenant_context_resolver_v1.sql`.
+- Function: `public.resolve_tenant_context_for_user(uuid)`.
+- Edge Function: `tenant-context`, ACTIVE v1, `verify_jwt=true`.
+- SQL function EXECUTE: anon=false, authenticated=false, service_role=true.
+- Resolver smoke test: PASS. It returns the existing Main Admin platform role and the pending TEST 2 owner membership, with `can_operate=false`.
+- Public RLS policy count remains 22; no operational `tenant_id` columns were added.
+- Added repeatable test: `supabase/tests/tenant_context_resolver_access.sql`.
+
+The Edge Function validates the bearer token with Supabase Auth, derives the user ID from the verified Auth response, and ignores caller-supplied identity/tenant values. The service-role key is used only server-side.
+
+**Not yet accepted:** a real authenticated HTTP request/response through the deployed Edge Function using a TEST 2 user JWT has not been run in this environment. The browser app has not yet been changed to depend on the endpoint. Do not treat the endpoint as fully end-to-end verified until that test passes.
+
+Next sequence:
+1. Authenticated HTTP/JWT test of tenant-context.
+2. Add a resilient, read-only frontend context bootstrap without breaking current Main Admin access.
+3. Introduce trusted tenant-aware read/write APIs and offline replay validation.
+4. Only then add operational tenant_id columns/backfill and tenant-aware RLS.
