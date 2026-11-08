@@ -259,3 +259,71 @@ Potential domains include a feature registry, scoped feature entitlements/config
 
 ### Current implementation boundary
 This section is an architecture decision only. It does not claim that Support Inbox, ticket tables, customer request submission, Admin Settings controls, notifications or activation APIs currently exist. Do not add inert buttons or pretend requests are being delivered until the complete authorized backend and customer/admin flows are implemented and tested in TEST 2.
+
+
+## 15. Support and feature-control logical schema proposal — design only
+
+**Status:** Proposed logical model; not SQL, not a migration, and not yet approved for deployment. Names and relationships must be reconciled against the live TEST 2 schema immediately before implementation.
+
+### 15.1 Ownership and entities
+
+| Logical entity | Purpose | Key relationships |
+|---|---|---|
+| `support_tickets` | Ticket header, customer ownership, category, status, priority, branch/order context, assignment and timestamps | One customer; many messages; optional attachment metadata |
+| `support_messages` | Immutable message entries with author and visibility | One ticket; author references authenticated user where applicable |
+| `support_attachments` | Private object metadata, MIME/size/hash, uploader, scan state and ticket linkage | One ticket and one message; object key only, never public URL |
+| `support_categories` | Admin-managed categories and availability | Referenced by tickets |
+| `customer_feature_requests` | Customer request, reason, desired scope/context, decision status and linked ticket | One customer; optional ticket; reviewed by authorized Main Admin |
+| `feature_registry` | Canonical capability key, version, default state, dependencies and risk class | Referenced by scoped entitlements |
+| `feature_entitlements` | Effective capability state and scope: environment/global/group/customer | References registry; scope resolved server-side |
+| `support_notification_outbox` | Durable event queue for in-app/email/SMS adapters | References ticket/message or feature request; provider delivery status |
+
+Do not create one table per feature. The registry describes capabilities; entitlements describe effective scope; requests describe customer intent. These are separate concepts.
+
+### 15.2 Important field and state rules
+
+- Ticket IDs: UUID primary key plus a separate human-readable, non-sequential reference code generated server-side.
+- Ticket ownership: immutable `customer_user_id` after creation. Reassignment is an Admin-only assignment field and never changes ownership.
+- Ticket states: `NEW`, `OPEN`, `WAITING_FOR_CUSTOMER`, `IN_PROGRESS`, `RESOLVED`, `CLOSED`; escalation is a separate auditable flag unless workflow evidence justifies a distinct state.
+- Message visibility: exactly `CUSTOMER` or `INTERNAL`; internal notes must never be returned by customer-facing APIs.
+- Messages: append-only from the client perspective. Corrections should be a new message or audited moderation action, not silent mutation.
+- Attachments: private Storage object key, strict allowlist/size cap, scan status and uploader metadata. No public bucket or client-selected storage path.
+- Feature requests: customer can create and read own request; only authorized Admin workflow can decide or change scope.
+- Entitlements: default OFF. Effective state is computed server-side from environment, scope, dependencies, permission, consent and rollout gates; an APPROVED request alone is not ON.
+- Notifications: outbox event contains minimal metadata. Provider delivery must be idempotent; message body and sensitive ticket details are not copied into push/SMS previews by default.
+
+### 15.3 RLS and authorization matrix (target design)
+
+| Data | Anonymous | Customer | Assigned support staff | Main Admin |
+|---|---|---|---|---|
+| Ticket headers | No access | SELECT own; create own; limited customer-safe updates | SELECT assigned/authorized queue; controlled updates | Full authorized support management |
+| Ticket messages | No access | SELECT own CUSTOMER-visible; INSERT own CUSTOMER message | SELECT assigned ticket messages; INSERT CUSTOMER reply or INTERNAL note per permission | Full authorized support management |
+| Attachment metadata | No access | Own ticket, customer-visible attachment metadata only | Assigned tickets, subject to permission | Authorized support oversight |
+| Attachment objects | No access | Signed access only after own-ticket/message authorization | Signed access only for assigned tickets | Authorized access with audit |
+| Feature requests | No access | SELECT/INSERT own; no decision/scope mutation | No access unless explicitly assigned | Review/decision with explicit permission |
+| Feature registry | No access | Read only safe published capability metadata | Read only if operationally needed | Manage through server-side Admin control |
+| Feature entitlements | No access | Read effective state applicable to self only | No direct mutation | Manage through server-side Admin control |
+| Notification outbox | No access | No direct table access | No direct table access | No direct table access; delivery/admin views via controlled service |
+| Support/feature audit | No access | No access | No direct access by default | Read via authorized audit view/service; no client mutation |
+
+RLS is necessary but not sufficient. Sensitive state transitions, assignment, scope changes, attachment authorization and notification dispatch must use server-validated operations. Do not grant customers direct UPDATE on ticket status, assignment, priority, decision, entitlement or delivery fields. Use column-limited grants or server-side functions with explicit actor/ownership checks.
+
+### 15.4 Audit strategy and existing audit infrastructure
+
+- Preserve current `audit_events` and `audit_log` behavior for existing business modules.
+- Do not reuse either as ticket/message storage.
+- Before extending audit coverage, determine whether the existing audit writer can safely support the required event metadata without changing its current semantics.
+- New support/feature events must be append-only from application roles: no client UPDATE/DELETE/TRUNCATE. Writes should be emitted by trusted server-side operations and capture actor, event, target, scope, timestamp, reason and correlation ID.
+- Avoid adding a second generic audit framework if the existing system can be safely extended; document the choice after function/trigger and permission review.
+
+### 15.5 Acceptance and rollback gates
+
+Before a migration is proposed:
+1. Re-run schema comparison and check for naming collisions, foreign keys, indexes, grants, RLS and Storage policies.
+2. Review all relevant function definitions, owners, SECURITY DEFINER status, search_path and EXECUTE grants.
+3. Prepare additive migration SQL, rollback/recovery plan and data-retention policy.
+4. Test Customer A/B isolation, internal-note invisibility, staff assignment boundaries, Admin permissions, attachment access, duplicate/retry behavior and feature OFF-by-default.
+5. Preserve all existing Branch, Farmer, Milk Collection and audit regression tests.
+6. Record What / How / Proof / Retest timing / Known limitations.
+
+No migration, Storage bucket, UI control or activation endpoint is authorized by this design section alone.
