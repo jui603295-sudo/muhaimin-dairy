@@ -9,6 +9,8 @@ function normalizeMembership(value) {
   const keys = ['tenant_id','tenant_slug','tenant_name','tenant_status','membership_role','membership_status'];
   if (!keys.every((key) => isNonEmptyString(value[key]))) return null;
   if (typeof value.can_operate !== 'boolean') return null;
+  const serverDerivedCanOperate = value.tenant_status === 'active' && value.membership_status === 'active';
+  if (value.can_operate !== serverDerivedCanOperate) return null;
   return Object.freeze({ tenantId:value.tenant_id, slug:value.tenant_slug, name:value.tenant_name, tenantStatus:value.tenant_status, membershipRole:value.membership_role, membershipStatus:value.membership_status, canOperate:value.can_operate });
 }
 export function validateTenantContextResponse(payload, expectedUserId) {
@@ -19,6 +21,7 @@ export function validateTenantContextResponse(payload, expectedUserId) {
   if (!Array.isArray(payload.memberships)) return { ok:false, reason:'invalid_memberships' };
   const memberships = payload.memberships.map(normalizeMembership);
   if (memberships.some((item) => item === null)) return { ok:false, reason:'invalid_membership_record' };
+  if (new Set(memberships.map((item) => item.tenantId)).size !== memberships.length) return { ok:false, reason:'duplicate_membership' };
   const operable = memberships.filter((item) => item.canOperate);
   let status = 'tenant_not_operational';
   let selectedTenant = null;
