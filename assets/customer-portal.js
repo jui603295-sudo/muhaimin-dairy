@@ -37,10 +37,12 @@
         </form>
       </section>
       <section class="cp-card">
-        <h3 style="margin-top:0">🚧 পরবর্তী সুবিধা</h3>
-        <p class="cp-muted">অর্ডার, ডেলিভারি, সাবস্ক্রিপশন, পেমেন্ট, ইনভয়েস, সাপোর্ট ও লয়্যালটি পরবর্তী ধাপে যুক্ত হবে। এগুলো এখনো চালু নয় এবং কোনো লেনদেন এখানে করা যাবে না।</p>
+        <h3 style="margin-top:0">🧩 Customer সুবিধাসমূহ</h3>
+        <p class="cp-muted">ভবিষ্যতের সব সুবিধা এখানে দৃশ্যমান থাকবে। প্রতিটি সুবিধার অবস্থা আলাদাভাবে নিয়ন্ত্রিত হবে; বর্তমানে সব ব্যবসায়িক সুবিধা বন্ধ।</p>
+        <div class="cp-feature-grid" id="cpFeatureGrid" aria-label="Customer feature catalogue"></div>
       </section>`;
     byId("cpEmail").textContent=user.email||"";
+    renderFeatureCatalogue();
     byId("cpProfileForm").addEventListener("submit",saveProfile);
     byId("cpReload").addEventListener("click",loadProfile);
     byId("cpLogout").addEventListener("click",async()=>{
@@ -49,6 +51,33 @@
       catch(error){setStatus("লগআউট করা যায়নি: "+(error.message||String(error)));button.disabled=false;}
     });
     return true;
+  }
+  const CUSTOMER_FEATURES = [
+    ["🛍️","পণ্য ও ক্যাটালগ","পণ্য দেখা, বিবরণ, মূল্য ও প্রাপ্যতা","OFF"],
+    ["🧺","অর্ডার ব্যবস্থাপনা","কার্ট, অর্ডার তৈরি, অর্ডার ইতিহাস ও স্ট্যাটাস","OFF"],
+    ["🚚","ডেলিভারি ও ট্র্যাকিং","ডেলিভারি ঠিকানা, সময়, ট্র্যাকিং ও প্রাপ্তি নিশ্চিতকরণ","OFF"],
+    ["🔁","নিয়মিত সরবরাহ / সাবস্ক্রিপশন","দৈনিক বা সাপ্তাহিক পুনরাবৃত্ত সরবরাহ","OFF"],
+    ["💳","পেমেন্ট","অনলাইন পেমেন্ট, পেমেন্ট স্ট্যাটাস ও রসিদ","OFF"],
+    ["🧾","ইনভয়েস ও হিসাব","ইনভয়েস, স্টেটমেন্ট ও লেনদেনের ইতিহাস","OFF"],
+    ["↩️","রিফান্ড ও অভিযোগ","রিফান্ড অনুরোধ, অর্ডার সমস্যা ও সমাধানের অগ্রগতি","OFF"],
+    ["⭐","লয়্যালটি ও পুরস্কার","পয়েন্ট, কুপন, সদস্য সুবিধা ও রিওয়ার্ড","OFF"],
+    ["🔔","নোটিফিকেশন","অর্ডার, ডেলিভারি, পেমেন্ট ও গুরুত্বপূর্ণ আপডেট","OFF"],
+    ["🎧","কাস্টমার সাপোর্ট","সহায়তা টিকিট, বার্তা ও অভিযোগ ট্র্যাকিং","OFF"],
+    ["🥛","পণ্যের উৎস ও মান","ব্যাচ, উৎপাদন/সংগ্রহের উৎস এবং মান-সংক্রান্ত তথ্য","OFF"],
+    ["📍","একাধিক শাখা / সংগ্রহ কেন্দ্র","পছন্দের শাখা, কেন্দ্র ও সেবা-এলাকা নির্বাচন","OFF"],
+    ["🛡️","গোপনীয়তা ও নিরাপত্তা","সম্মতি, সেশন, অ্যাকাউন্ট নিরাপত্তা ও ডেটা অনুরোধ","OFF"],
+    ["🤖","AI Smart Assistant","পণ্য-তথ্য, অর্ডার সহায়তা ও ব্যক্তিগত পরামর্শ","OFF"],
+    ["🪪","পরিচয় যাচাই (KYC)","প্রয়োজন হলে আইনসম্মত পরিচয় যাচাই; মানবীয় পর্যালোচনাসহ","OFF"]
+  ];
+  function renderFeatureCatalogue(){
+    const grid=byId("cpFeatureGrid");if(!grid)return;
+    grid.innerHTML=CUSTOMER_FEATURES.map(([icon,title,description,status])=>`
+      <article class="cp-feature" aria-label="${title}: ${status}">
+        <div class="cp-feature-top"><span class="cp-feature-icon" aria-hidden="true">${icon}</span><span class="cp-feature-state">${status}</span></div>
+        <strong>${title}</strong>
+        <p>${description}</p>
+        <small>বর্তমানে বন্ধ · ভবিষ্যৎ অনুমোদনসাপেক্ষ</small>
+      </article>`).join("");
   }
   async function loadProfile(){
     const user=window.__muhaiminCustomerUser;
