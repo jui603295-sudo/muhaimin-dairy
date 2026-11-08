@@ -62,7 +62,7 @@ test("Farmer edit payload uses a newly compressed photo when supplied", () => {
     latitude: "", longitude: "", location_accuracy: "", location_captured_at: ""
   }, { photo_data_url: "data:image/jpeg;base64,OLD" }, "admin-id/record-id/new.jpg");
   assert.equal(payload.photo_data_url, null);
-  assert.equal(payload.photo_path, null);
+  assert.equal(payload.photo_path, "admin-id/record-id/new.jpg");
   assert.equal(payload.expected_liters, 0);
 });
 
@@ -73,6 +73,7 @@ test("Farmer edit without any old or new photo remains null", () => {
     branch_id: "branch-1", expected_liters: ""
   }, null);
   assert.equal(payload.photo_data_url, null);
+  assert.equal(payload.photo_path, null);
 });
 
 test("Both edit forms call update by record id and require a returned row", () => {
