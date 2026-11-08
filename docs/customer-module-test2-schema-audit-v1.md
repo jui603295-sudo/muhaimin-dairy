@@ -92,3 +92,20 @@ Inspected `index.html` at preview commit `8ff1b6b37ffa09c2233d72746758b6f17dc2a4
 **Implementation implication:** do not weaken the current Main Admin gate or make the existing operations shell customer-visible. Add a separate customer portal shell and route branch in a later, isolated code change. Customer sessions must never call the operations `loadAll()` path. Keep the Main Admin path byte-for-byte unchanged where practical and prove regression behavior.
 
 This frontend inspection was read-only. No app code was changed and no browser session/JWT test was run.
+
+
+## 10. Auth role count, Storage and function grants
+
+Additional read-only TEST 2 checks:
+
+- `app_user_roles` contains exactly one row with role `main_admin`; no Customer role row was present at audit time.
+- Two private Storage buckets exist:
+  - `muhaimin-branch-photos`
+  - `muhaimin-farmer-photos`
+- Both buckets have a 5 MiB object limit and allow JPEG, PNG and WebP. Both currently contain zero objects.
+- Storage object policies allow only `main_admin` for SELECT, INSERT, UPDATE and DELETE in those two buckets. No customer Storage access policy exists, which is appropriate until a separate customer upload use case is designed.
+- `private.current_app_role()` EXECUTE is granted to `authenticated`, `postgres` and `service_role`.
+- `public.assign_default_customer_role()` EXECUTE was listed for `postgres` and `service_role`, not for `anon` or `authenticated`.
+- `public.current_app_role()`, `public.is_admin_app_user()` and `public.is_active_app_user()` EXECUTE were listed for `postgres` only.
+
+No Storage objects, Auth users, roles, grants or project settings were changed.
