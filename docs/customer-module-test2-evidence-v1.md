@@ -94,3 +94,22 @@ Performed a read-only catalog audit in TEST 2 (`wpomsmvzylrembojdsxd`) before pl
 - This was a targeted catalog inventory, not a complete application-wide security audit or real Customer browser/JWT test.
 - Before writing migrations, inspect trigger attachment inventory, all relevant function grants and exact current support-related frontend routes. Then prepare a separate schema proposal with RLS matrix, migration/rollback plan and tests.
 - No support UI, Support Inbox, feature activation UI/API, or notification delivery has been implemented or tested by this audit.
+
+## 10. Audit trigger and function permission follow-up
+
+A follow-up read-only catalog query inspected all non-internal triggers whose source tables or trigger functions are audit-related, plus EXECUTE privileges for the two existing audit writers.
+
+Verified in TEST 2:
+- `write_audit_log()` is attached to 16 existing source tables: `agro_products`, `agro_purchases`, `agro_sales`, `app_settings`, `app_users`, `branches`, `farmer_payments`, `farmers`, `feed_products`, `feed_purchases`, `feed_sales`, `milk_collections`, `vet_companies`, `vet_products`, `vet_purchases`, and `vet_sales`.
+- `write_audit_log()` is owned by `postgres`, is SECURITY DEFINER, and has `search_path=public, pg_temp`. EXECUTE is granted to `postgres` and `service_role`; `anon` and `authenticated` do not have EXECUTE.
+- `log_milk_collection_change()` is owned by `postgres`, is SECURITY DEFINER, and has an empty search_path setting. EXECUTE is granted to `postgres` and `service_role`; `anon` and `authenticated` do not have EXECUTE.
+- The first narrowly filtered trigger query returned no rows because the existing audit writer triggers are attached to business source tables, not to the audit destination tables themselves. The broader query above identified the actual trigger coverage.
+
+Design consequence:
+- These audit functions are privileged infrastructure and must not be casually changed or called directly from customer clients.
+- Any future extension must preserve existing source-table trigger behavior and re-run the existing Branch/Farmer/Milk Collection/Agro/Feed/Veterinary audit regression checks.
+- This follow-up was read-only. No function, trigger, grant, table, policy, Storage bucket, Auth setting or data was changed.
+
+## 11. Next implementation gate
+
+The logical support/feature schema and RLS matrix are now documented in the architecture specification as a proposal only. Before any TEST 2 migration, the next work is to review current frontend route/API patterns and the exact existing role/permission helpers, then prepare a migration-by-migration implementation plan with test cases and rollback steps. No schema migration has been applied for Support, Feature Requests or Notifications.
