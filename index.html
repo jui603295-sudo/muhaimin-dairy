@@ -204,7 +204,6 @@ function showPasswordRecoveryPanel() {
   $("passwordRecoveryPanel").classList.remove("hidden");
   $("app").classList.add("hidden");
   $("accessGate").classList.add("hidden");
-  $("customerPortal")?.classList.add("hidden");
 }
 sb.auth.onAuthStateChange((event) => {
   if (event === "PASSWORD_RECOVERY") {
