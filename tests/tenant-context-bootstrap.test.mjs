@@ -30,3 +30,12 @@ test('malformed membership fails closed', () => {
  const r=validateTenantContextResponse({user_id:'user-1',platform_role:'main_admin',memberships:[{...owner,tenant_id:''}],write_authority:false},'user-1');
  assert.deepEqual(r,{ok:false,reason:'invalid_membership_record'});
 });
+
+test('can_operate cannot contradict tenant or membership status', () => {
+ const r=validateTenantContextResponse({user_id:'user-1',platform_role:'main_admin',memberships:[{...owner,can_operate:true}],write_authority:false},'user-1');
+ assert.deepEqual(r,{ok:false,reason:'invalid_membership_record'});
+});
+test('duplicate tenant memberships fail closed', () => {
+ const r=validateTenantContextResponse({user_id:'user-1',platform_role:'main_admin',memberships:[owner,owner],write_authority:false},'user-1');
+ assert.deepEqual(r,{ok:false,reason:'duplicate_membership'});
+});
