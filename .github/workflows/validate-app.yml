@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, "feature/bangladesh-address-cascade-v1", "test/branch-gps-runtime-hardening-2026-10-31", "fix/farmer-branch-gps-save-readback-2026-10-31", "fix/farmer-gps-quality-revalidation-2026-10-31", "feat/branch-farmer-edit-update-2026-10-31"]
   push:
-    branches: ["fix/runtime-js-2026-10-16"]
+    branches: ["fix/runtime-js-2026-10-16", "test/test2-main-admin-auth-client-v1"]
 
 permissions:
   contents: read
@@ -262,3 +262,6 @@ jobs:
 
       - name: Test email password recovery redirect and update flow
         run: node --test scripts/test-auth-password-recovery.test.cjs
+
+      - name: Test TEST 2 Storage photo policy role helper
+        run: node --test scripts/test-storage-photo-policy-helper.test.cjs
