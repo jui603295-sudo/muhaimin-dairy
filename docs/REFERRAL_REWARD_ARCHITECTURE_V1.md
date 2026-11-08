@@ -195,8 +195,12 @@ Operations must be authenticated, rate-limited, idempotent where applicable, log
 - [ ] Owner review of the policy and initial reward choice.
 
 ### Phase 2 — TEST 2 backend
-- [ ] Transactional migrations only after schema comparison.
-- [ ] Edge Functions for token lifecycle, attribution and event verification.
+- [x] Initial isolated tenant registry/membership/invitation tables created in private schema; RLS enabled and direct client access denied.
+- [x] Existing TEST 2 Main Admin bootstrapped as owner of a pending tenant without changing the platform role.
+- [x] Foreign-key indexes added for the new tenant foundation.
+- [ ] Map every operational table to tenant ownership and design a safe backfill/compatibility migration.
+- [ ] Add tenant-aware authorization APIs and real-JWT cross-tenant tests before enabling tenant access.
+- [ ] Referral Edge Functions for token lifecycle, attribution and event verification.
 - [ ] Idempotency, rate limits, audit events and kill switch.
 - [ ] Automated PostgreSQL/RLS/Edge Function tests.
 
