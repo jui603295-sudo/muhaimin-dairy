@@ -68,3 +68,29 @@ Reviewed the PR branch source:
 - Customer-requested feature activation is specified as a separate review/approval/configuration workflow. A support ticket or feature request never activates a capability by itself.
 - These are architecture decisions only. No support ticket schema, feature-request schema, Admin Settings controls, inbox UI, notification workflow or activation endpoint is asserted to exist or to have been tested by this evidence record.
 - All future capabilities remain OFF until the full server-side authorization, configuration, audit and TEST 2 acceptance gates are implemented and verified.
+## 8. Read-only support / feature architecture schema audit
+
+Performed a read-only catalog audit in TEST 2 (`wpomsmvzylrembojdsxd`) before planning support and feature-request storage.
+
+### Findings
+- Matching public tables found: `customer_profiles`, `audit_events`, and `audit_log`. No table names matching support, ticket, message, feature, or notification were found in the `public` or `private` schemas searched.
+- `customer_profiles` contains `user_id`, `full_name`, `phone`, `created_at`, `updated_at`; RLS is enabled with customer-owner SELECT/INSERT/UPDATE policies.
+- `audit_events` and `audit_log` have the same eight-column shape: `id`, `table_name`, `record_id`, `action`, `actor_user_id`, `changed_at`, `old_data`, `new_data`.
+- Their authorization models differ: `audit_events` has a Main Admin SELECT policy; `audit_log` has a Main Admin ALL policy. Both tables have broad table-level grants to `authenticated`, but RLS remains an additional row-level gate.
+- Existing trigger functions write to these audit tables: `log_milk_collection_change()` writes to `audit_events`; `write_audit_log()` writes to `audit_log`. Both are SECURITY DEFINER. Their existing behavior must be preserved and reviewed before reuse or modification.
+- Existing private Storage buckets found are `muhaimin-branch-photos` and `muhaimin-farmer-photos`; no customer-support attachment bucket was found in the bucket inventory.
+- TEST 2 migration history includes the two Customer Profile migrations applied earlier. No support/feature-request migration is present.
+- Security Advisor returned one warning: Leaked Password Protection is disabled. This was not changed as part of this audit.
+
+### Design consequences
+- Do not repurpose either existing audit table as the ticket/message store. Support needs first-class ticket and message ownership, visibility boundaries, status lifecycle and attachment references.
+- Do not assume `audit_log` is immutable: its current Main Admin ALL policy includes row-level mutation rights. Any future append-only support/feature audit design needs explicit INSERT-only server-side writing and no client UPDATE/DELETE/TRUNCATE path.
+- Before any migration, trace all triggers attached to `audit_log` and `audit_events`, inspect function grants/search_path and confirm exact table coverage. Preserve current milk-collection audit behavior.
+- The support attachment bucket, if approved later, must be private and use explicit per-ticket authorization. Do not upload support files to the existing branch/farmer buckets.
+- No schema, policy, function, Storage bucket, Auth setting or data was changed by this read-only audit.
+
+## 9. Audit limitations and next gate
+
+- This was a targeted catalog inventory, not a complete application-wide security audit or real Customer browser/JWT test.
+- Before writing migrations, inspect trigger attachment inventory, all relevant function grants and exact current support-related frontend routes. Then prepare a separate schema proposal with RLS matrix, migration/rollback plan and tests.
+- No support UI, Support Inbox, feature activation UI/API, or notification delivery has been implemented or tested by this audit.
