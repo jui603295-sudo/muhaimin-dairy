@@ -188,10 +188,11 @@ Operations must be authenticated, rate-limited, idempotent where applicable, log
 - [ ] Owner review of the policy and initial reward choice.
 
 ### Phase 1 — TEST 2 schema and security design
-- [ ] Inspect actual TEST 2 schema, current auth/tenant/role model and existing audit conventions.
-- [ ] Produce schema comparison and migration plan; do not apply until reviewed.
-- [ ] Write RLS matrix and adversarial tests.
-- [ ] Keep rewards non-monetary and disabled by default.
+- [x] Inspect actual TEST 2 schema, current auth/tenant/role model and existing audit conventions (read-only; 2026-11-09).
+- [x] Produce schema comparison and phased migration plan; see `REFERRAL_REWARD_TEST2_SCHEMA_ASSESSMENT.md`.
+- [x] Draft RLS authorization matrix and adversarial test cases; execution remains pending until the tenant foundation is implemented.
+- [x] Keep rewards non-monetary and disabled by default.
+- [ ] Owner review of the policy and initial reward choice.
 
 ### Phase 2 — TEST 2 backend
 - [ ] Transactional migrations only after schema comparison.
