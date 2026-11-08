@@ -11,7 +11,7 @@ test('one operational membership is selected', () => {
  assert.equal(r.status,'ready'); assert.equal(r.selectedTenant.tenantId,'tenant-1');
 });
 test('multiple operational memberships require explicit selection', () => {
- const r=validateTenantContextResponse({user_id:'user-1',platform_role:'customer',memberships:[{...owner,tenant_status:'active',can_operate:true},{...owner,tenant_id:'tenant-2',tenant_slug:'second',can_operate:true}],write_authority:false},'user-1');
+ const r=validateTenantContextResponse({user_id:'user-1',platform_role:'customer',memberships:[{...owner,tenant_status:'active',can_operate:true},{...owner,tenant_id:'tenant-2',tenant_slug:'second',tenant_status:'active',can_operate:true}],write_authority:false},'user-1');
  assert.equal(r.status,'tenant_selection_required'); assert.equal(r.selectedTenant,null);
 });
 test('no membership returns no access context', () => {
