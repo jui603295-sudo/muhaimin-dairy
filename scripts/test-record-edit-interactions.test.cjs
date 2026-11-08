@@ -75,10 +75,8 @@ function setup(kind) {
     ["cancel" + (kind === "branch" ? "Branch" : "Farmer") + "Edit"]: makeElement(),
     [kind + "LocationStatus"]: makeElement()
   };
-  if (kind === "farmer") {
-    ids.farmerPhoto = makeElement();
-    ids.farmerPhotoPreview = makeElement();
-  }
+  ids[kind + "Photo"] = makeElement();
+  ids[kind + "PhotoPreview"] = makeElement();
   const restored = [];
   const context = {
     state: { branches: [], farmers: [] },
@@ -89,6 +87,13 @@ function setup(kind) {
       if (field && field.type !== "file") field.value = value == null ? "" : String(value);
     },
     async restoreAddressFields(prefix,record) { restored.push({prefix,record}); },
+    async showRecordPhotoPreview(photoKind,row) {
+      const input=ids[photoKind+"Photo"],preview=ids[photoKind+"PhotoPreview"];
+      input.dataset.existingPhotoPath=row.photo_path||"";
+      input.dataset.existingPhotoDataUrl=row.photo_data_url||"";
+      if(row.photo_data_url){preview.src=row.photo_data_url;preview.classes.delete("hidden");}
+      else preview.classes.add("hidden");
+    },
     String, Object, Error, toast() {}
   };
   vm.runInNewContext(extractFunction("recordFormWritePending"),context);
