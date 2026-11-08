@@ -1,6 +1,6 @@
 # Referral & Reward — TEST 2 Schema Assessment and Implementation Plan
 
-**Status:** Read-only inspection completed; implementation not started  
+**Status:** Schema inspection complete; initial TEST 2 tenant foundation migrations applied and verified. Tenant-to-operational-data integration and tenant authorization APIs remain pending  
 **Environment:** Muhaimin Dairy TEST 2 only  
 **Inspected:** 2026-11-09  
 **Related architecture:** [REFERRAL_REWARD_ARCHITECTURE_V1.md](./REFERRAL_REWARD_ARCHITECTURE_V1.md)
@@ -185,12 +185,52 @@ Supabase CLI v3 changes hosted command defaults and requires explicit remote tar
 | TEST 2 schema inspection | Complete | Read-only table/migration/catalog queries on project ref `wpomsmvzylrembojdsxd` |
 | Existing identity/role model review | Complete | `app_user_roles`, `app_users`, `customer_profiles` constraints and policies inspected |
 | Referral/AI object presence check | Complete | 0 matching tables found |
-| Supabase security/performance advisors | Complete | Leaked password protection warning; 17 informational unused-index findings |
+| Supabase security/performance advisors | Complete | Existing leaked-password warning remains; new private tables intentionally have no client policies; tenant FK indexes added |
 | Tenant model design gap identified | Complete | No tenant/business/membership model found |
 | Referral architecture specification | Drafted | `REFERRAL_REWARD_ARCHITECTURE_V1.md` |
-| Tenant foundation migration | Not started | Requires design and test fixtures |
-| Referral backend / UI | Not started | No live links or reward engine |
+| Initial tenant foundation tables | Complete (TEST 2 only) | `private.tenants`, `private.tenant_memberships`, `private.tenant_invitations`; RLS enabled; browser roles denied; one pending TEST 2 tenant and owner membership bootstrapped |
+| Tenant-to-operational-data integration | Not started | Existing business tables remain unchanged; mapping/backfill and tenant-aware RLS must be implemented before tenant access is enabled |\n| Referral backend / UI | Not started | No live links or reward engine |
 | AI Gateway / models | Not started | No AI provider or service enabled |
 | Real JWT and browser acceptance | Not run | Requires role-specific test users and browser execution |
 
 **Do not describe the Referral & Reward System or AI features as complete or live.** The current deliverable is a verified schema assessment and an implementation plan. The next engineering milestone is the tenant foundation, not the reward ledger. No Production change, PR merge or release is authorized by this document.
+
+
+## 9. TEST 2 implementation update — 2026-11-09
+
+Two additive migrations have now been applied to TEST 2 project `wpomsmvzylrembojdsxd` and committed to the development branch:
+
+- `20261108231026_test2_tenant_foundation_v1`
+- `20261108231840_test2_tenant_foundation_fk_indexes_v1`
+
+Created internal tables:
+- `private.tenants`
+- `private.tenant_memberships`
+- `private.tenant_invitations`
+
+Bootstrap result:
+- 1 TEST 2 tenant, status `pending`
+- 1 active `owner` membership for the existing Main Admin identity
+- 0 tenant invitations created
+- Existing platform role remains `main_admin`
+
+Security verification:
+- `anon` and `authenticated` have no USAGE on schema `private`.
+- `anon` and `authenticated` have no SELECT privilege on tenant tables.
+- `service_role` has the intended backend table privileges.
+- RLS is enabled and forced on all three tables. No client policies exist by design; direct client access is denied.
+- Existing public RLS policy count remains 22.
+- Existing TEST 2 operational row counts remain unchanged: 1 branch, 1 farmer, 2 milk collections.
+- Existing public Main Admin role remains unchanged.
+
+Advisor notes:
+- The three `rls_enabled_no_policy` INFO findings are expected for private tables with no client grants or schema usage; do not add broad policies merely to silence the linter.
+- Existing Auth warning: leaked password protection disabled.
+- FK index notices for the new tables were addressed with the second migration.
+- Existing unused-index INFO findings are not a reason to remove working indexes.
+
+Important boundary:
+- This is a tenant registry/bootstrap foundation only. No `tenant_id` columns were added to operational tables, no old data was reassigned, and no tenant-aware access is enabled in the app.
+- Tenant invitations are not referral links. No raw tokens have been generated.
+- No referral, reward, or AI runtime service is active.
+- The next required step is an explicit compatibility map for all operational tables, then a staged nullable tenant_id backfill and tested tenant-aware authorization without weakening the current Main Admin policies.
