@@ -136,3 +136,14 @@ The logical support/feature schema and RLS matrix are now documented in the arch
 - A fresh recovery request from the PR #79 preview and successful password reset have not yet been observed in logs.
 - A real Main Admin browser session/JWT and successful post-reset login are still required.
 - The dashboard Site URL field was not changed through an API; no available connected Supabase action exposes that Auth URL setting. The current app client supplies an explicit `redirectTo`, so the exact allow-listed preview origin is the relevant setting for this preview test.
+
+## 13. Main Admin password-recovery code correction
+
+- Source review of the TEST 2 Auth client found that the prior build could request a password-recovery email but did not provide a dedicated post-recovery password update form or call `auth.updateUser({ password })`.
+- Added a dedicated recovery panel with new-password confirmation and minimum 8-character client validation.
+- Added handling for the Supabase `PASSWORD_RECOVERY` auth event and recovery URL hash, while preventing the recovery session from entering the Main Admin operational `startApp()` path.
+- After a successful password update, the client attempts a local-scope sign-out, removes the auth fragment from the browser URL, and returns the user to the login panel.
+- The recovery request continues to pass `redirectTo: location.origin`; the exact PR #79 preview origin is already present in the TEST 2 Redirect URLs list reported by the project owner.
+- Added `scripts/test-auth-password-recovery.test.cjs` and a CI workflow step for the recovery flow.
+- PR #79 latest commit: `847920de1212c7954df25b5278e87cd0d56efef4`. Vercel reports the Preview deployment as Ready. This deployment status is not a browser/JWT test; the new automated test step has not yet been observed in a GitHub Actions run.
+- Required manual acceptance remains: request a fresh recovery email from the current preview, verify the link returns to the preview (not localhost), set a new password, then sign in with the new password and verify a real Main Admin session/JWT.
