@@ -77,3 +77,18 @@ Do not create orders, payments, KYC, biometric, passport or document storage tab
 - Customer signup/profile save/reload: not performed.
 - Storage upload/readback: not performed.
 - No SQL DDL/DML, Auth mutation, Storage mutation, Production access, merge or deployment occurred.
+
+
+## 9. TEST 2 frontend route-gate inspection
+
+Inspected `index.html` at preview commit `8ff1b6b37ffa09c2233d72746758b6f17dc2a4fa` (2,048 lines).
+
+- `startApp()` retrieves the active Supabase session and reads the caller's own `app_user_roles.role`.
+- Only `role === 'main_admin'` opens the existing operations application and calls `loadAll()`.
+- A Customer role is deliberately shown an access-restricted gate; it does not enter the Branch/Farmer/Milk Collection operations interface.
+- The offline fallback is restricted by the existing per-user Main Admin cache key and is reached only when the role query fails due to offline/network conditions and a verified offline snapshot can be restored.
+- The route gate is fail-closed when role verification fails.
+
+**Implementation implication:** do not weaken the current Main Admin gate or make the existing operations shell customer-visible. Add a separate customer portal shell and route branch in a later, isolated code change. Customer sessions must never call the operations `loadAll()` path. Keep the Main Admin path byte-for-byte unchanged where practical and prove regression behavior.
+
+This frontend inspection was read-only. No app code was changed and no browser session/JWT test was run.
