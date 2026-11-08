@@ -111,3 +111,29 @@ Observed behavior that blocks a safe operational tenant migration:
 ### New read-only preflight
 
 `supabase/tests/tenant_cutover_preflight.sql` checks the expected pre-cutover tables, RLS state, tenant bootstrap and key Branch/Farmer/Collection/Payment foreign-key integrity. It is a stop/go guard, not a migration; it performs no data or schema changes.
+
+## 7. Backend tenant context resolver — deployed to TEST 2 on 2026-11-09
+
+A backend-only resolver and read-only Edge Function have now been added:
+
+- Migration: `202611090001_test2_tenant_context_resolver_v1`.
+- SQL function: `public.resolve_tenant_context_for_user(uuid)`.
+- Edge Function: `tenant-context`, ACTIVE, version 1, JWT verification enabled.
+- The Edge Function validates the bearer token with Supabase Auth and derives the user ID from the verified Auth response. It ignores request-supplied identity and tenant IDs.
+- The service-role key is read only from server-side Edge Function environment variables; it is not present in browser code or repository source.
+- The SQL resolver EXECUTE grant is denied to `anon` and `authenticated`, and granted only to `service_role`.
+- The response is read-only and explicitly reports `write_authority: false`.
+- The TEST 2 tenant remains `pending`; the owner membership is active, but `can_operate=false` until a later, reviewed activation step.
+- The resolver does not change public operational table policies or add tenant columns.
+
+### Verification evidence
+
+- SQL ACL check: anon EXECUTE = false; authenticated EXECUTE = false; service_role EXECUTE = true.
+- Resolver output for the TEST 2 owner correctly reports platform role `main_admin`, one active owner membership, tenant status `pending`, and `can_operate=false`.
+- Public RLS policy count remains 22.
+- Branch/Farmer/Milk Collection operational `tenant_id` column count remains 0.
+- Edge Function deployment metadata: ACTIVE v1 with `verify_jwt=true`.
+
+### Remaining acceptance test
+
+An authenticated end-to-end HTTP invocation with a real TEST 2 user JWT has not yet been performed in this environment. Do not claim the Edge Function's live JWT request/response path is fully tested until that test is run. The frontend must not depend on this endpoint until that acceptance test passes.
