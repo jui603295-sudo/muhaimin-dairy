@@ -79,3 +79,21 @@ Supabase Security Advisor reports leaked-password protection is disabled. No wor
 - App-level Branch/Farmer Storage upload and signed-URL readback are not wired into the forms yet.
 - No real browser JWT test has passed.
 - No PR merge or Production deployment has occurred.
+
+## App-level private photo upload wiring
+
+The TEST 2 client now wires Branch and Farmer photo inputs to their existing private Storage buckets:
+
+- Compresses JPEG/PNG/WebP selections to JPEG before upload.
+- Uses `auth.getUser()` before a photo upload and stores objects under the authenticated user's ID and record ID.
+- Uses non-upsert uploads with generated object names.
+- Stores `photo_path` in the existing Branch/Farmer row and clears the new-photo data URL; legacy `photo_data_url` values remain readable until a photo is replaced.
+- Reopens private images with a one-hour signed URL; no public URL is generated.
+- If the database write fails after upload, the new object is removed; after a successful replacement, the previous object is removed. Cleanup failures are surfaced rather than silently hidden.
+- Both form edit flows restore the existing private or legacy photo preview.
+
+Source-level coverage is in `scripts/test-private-photo-storage-flow.test.cjs` and the Branch/Farmer edit payload tests.
+
+GitHub Actions run [#42528764873](https://github.com/jui603295-sudo/muhaimin-dairy/actions/runs/42528764873) passed all 12 validation/test steps at commit `83e97fe47f2a05d3feac867bea6cb5dc75f96829`.
+
+**Not yet proven:** no real browser JWT has performed an upload/readback, and the Storage buckets still have 0 objects. The actual file transfer and signed-URL reopen must be accepted in the Preview before this is considered complete.
