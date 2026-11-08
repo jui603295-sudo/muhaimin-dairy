@@ -82,3 +82,32 @@ Only after the new app is deployed and verified in TEST 2: make required tenant_
 - Existing TEST 2 operational fixture counts remained unchanged after foundation migration: 1 branch, 1 farmer, 2 milk collections.
 - This document is a compatibility map, not permission to bulk-backfill, change existing RLS, or enable tenant UI.
 - No live referral links, rewards, tenant invites, or AI services are created by this migration.
+
+## 6. Application write-path cutover gate — verified 2026-11-09
+
+The current application file on base branch `test/test2-main-admin-auth-client-v1` was inspected at blob `67329facc75d15cd2cfe730f365a533603c44c78`.
+
+Observed behavior that blocks a safe operational tenant migration:
+
+- The browser creates a Supabase client and performs direct table reads/writes.
+- Shared `insertRow` and `updateRow` helpers write directly to operational tables.
+- Milk Collection creates records with a browser-built payload that includes branch/farmer IDs but no tenant context.
+- The offline queue replay path also inserts the queued payload directly into `milk_collections`; it does not resolve or validate tenant ownership at replay time.
+- `loadAll` reads `app_settings` using `limit(1)`, which is not tenant-deterministic once more than one tenant exists.
+- The current workspace gate checks the global `app_user_roles.role = main_admin`; it does not resolve an active tenant membership or tenant status.
+
+**Decision:** Do not yet add operational `tenant_id` columns, backfill records, or change public RLS. Doing so before the browser and offline write paths become tenant-aware would create unscoped writes or risk breaking existing Main Admin operations.
+
+### Required cutover order
+
+1. Introduce a server-validated tenant context for the signed-in user; never trust a browser-supplied tenant ID or role.
+2. Route operational create/update and milk-queue replay through a trusted backend boundary that derives tenant membership and verifies referenced branch/farmer/product ownership.
+3. Make every read deterministic by active tenant; remove arbitrary `limit(1)` settings selection.
+4. Add tenant context to offline queue records and revalidate it on replay; reject stale, revoked, suspended or cross-tenant queue entries.
+5. Add nullable tenant ownership columns and indexes; backfill only after a relationship preflight passes.
+6. Add cross-tenant integrity constraints and dual-safe RLS only after real JWT tests pass.
+7. Retest existing Main Admin workflows and all branch/farmer/milk/payment/feed/vet/agro paths before tightening constraints.
+
+### New read-only preflight
+
+`supabase/tests/tenant_cutover_preflight.sql` checks the expected pre-cutover tables, RLS state, tenant bootstrap and key Branch/Farmer/Collection/Payment foreign-key integrity. It is a stop/go guard, not a migration; it performs no data or schema changes.
