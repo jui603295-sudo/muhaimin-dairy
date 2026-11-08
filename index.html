@@ -52,6 +52,19 @@ a.callBtn{display:inline-block;text-decoration:none;padding:7px 10px;white-space
 <div class="card" style="background:#f8fafc"><h4 data-i18n="phoneOtpTitle">📲 মোবাইল OTP</h4><label data-i18n="phoneLabel">মোবাইল নম্বর<input id="phoneNumber" type="tel" placeholder="+8801XXXXXXXXX" autocomplete="tel"></label><div class="row"><button class="btn" id="sendOtpBtn">OTP পাঠান</button><button class="btn" id="verifyOtpBtn">OTP যাচাই</button></div><label data-i18n="otpLabel">OTP কোড<input id="phoneOtp" inputmode="numeric" autocomplete="one-time-code"></label><p class="small" data-i18n="otpSetupNote">এই বোতামগুলো Supabase Phone Auth ব্যবহার করে; প্রকল্পে Phone provider ও SMS provider সক্রিয় না থাকলে কাজ করবে না।</p></div>
 </section>
 
+<section id="passwordRecoveryPanel" class="card hidden" aria-label="Password recovery">
+  <h3>🔐 নতুন পাসওয়ার্ড সেট করুন</h3>
+  <p class="small">রিকভারি যাচাই সম্পন্ন হয়েছে। এখন নতুন পাসওয়ার্ড দিন।</p>
+  <label for="newPassword">নতুন পাসওয়ার্ড
+    <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+  </label>
+  <label for="confirmNewPassword">নতুন পাসওয়ার্ড আবার লিখুন
+    <input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8" required>
+  </label>
+  <button class="btn primary" id="saveNewPasswordBtn" type="button">নতুন পাসওয়ার্ড সংরক্ষণ</button>
+  <p id="passwordRecoveryMsg" class="small" role="status" aria-live="polite"></p>
+</section>
+
 <section id="accessGate" class="card hidden" role="status" aria-live="polite" style="max-width:520px;margin:22px auto">
   <h3 id="accessGateTitle">🔒 নিরাপদ প্রবেশ যাচাই</h3>
   <p id="accessGateMessage">অ্যাকাউন্টের অনুমতি যাচাই করা হচ্ছে।</p>
@@ -184,6 +197,21 @@ const SUPABASE_URL = "https://wpomsmvzylrembojdsxd.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_q_-9k6hlPJiEo5GHDBzh8Q_HTSvoNEP";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = id => document.getElementById(id);
+const recoveryHashParams = new URLSearchParams(location.hash.startsWith("#") ? location.hash.slice(1) : location.hash);
+let passwordRecoveryFlow = recoveryHashParams.get("type") === "recovery";
+function showPasswordRecoveryPanel() {
+  $("login").classList.add("hidden");
+  $("passwordRecoveryPanel").classList.remove("hidden");
+  $("app").classList.add("hidden");
+  $("accessGate").classList.add("hidden");
+  $("customerPortal")?.classList.add("hidden");
+}
+sb.auth.onAuthStateChange((event) => {
+  if (event === "PASSWORD_RECOVERY") {
+    passwordRecoveryFlow = true;
+    showPasswordRecoveryPanel();
+  }
+});
 const state = {
   settings: null, milkCollectionSettings: null, branches: [], farmers: [], collections: [], payments: [],
   feedProducts: [], feedPurchases: [], feedSales: [], vetCompanies: [], vetProducts: [],
@@ -1121,6 +1149,35 @@ $("resetBtn").onclick=async()=>{
     $("loginMsg").textContent=lang()==="en"?"Password recovery email requested if the account exists.":"অ্যাকাউন্ট থাকলে পাসওয়ার্ড রিকভারি ইমেইল পাঠানো হবে।";
   } catch(error) { $("loginMsg").textContent=error.message || String(error); }
 };
+$("saveNewPasswordBtn").onclick=async()=>{
+  const newPassword=$("newPassword").value;
+  const confirmPassword=$("confirmNewPassword").value;
+  const message=$("passwordRecoveryMsg");
+  const button=$("saveNewPasswordBtn");
+  if(newPassword.length<8){message.textContent="পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।";return;}
+  if(newPassword!==confirmPassword){message.textContent="দুটি পাসওয়ার্ড মিলছে না।";return;}
+  button.disabled=true;
+  message.textContent="নতুন পাসওয়ার্ড নিরাপদে সংরক্ষণ করা হচ্ছে…";
+  try {
+    const result=await sb.auth.updateUser({password:newPassword});
+    if(result.error)throw result.error;
+    passwordRecoveryFlow=false;
+    const signOutResult=await sb.auth.signOut({scope:"local"});
+    history.replaceState(null,document.title,location.pathname+location.search);
+    $("passwordRecoveryPanel").classList.add("hidden");
+    $("login").classList.remove("hidden");
+    $("loginPassword").value="";
+    $("newPassword").value="";
+    $("confirmNewPassword").value="";
+    $("loginMsg").textContent=signOutResult.error
+      ? "পাসওয়ার্ড পরিবর্তন হয়েছে। বর্তমান সেশন থেকে লগআউট করে নতুন পাসওয়ার্ড দিয়ে প্রবেশ করুন।"
+      : "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।";
+  } catch(error) {
+    message.textContent=error.message || String(error);
+  } finally {
+    button.disabled=false;
+  }
+};
 $("resendBtn").onclick=async()=>{
   try {
     const email=$("loginEmail").value.trim(); if(!email)throw new Error(lang()==="en"?"Enter your email first.":"আগে ইমেইল লিখুন।");
@@ -1962,6 +2019,9 @@ $("validateImportBtn").addEventListener("click",async()=>{
   } catch(error) { $("backupMsg").textContent=lang()==="en"?"Invalid JSON file.":"JSON ফাইলটি সঠিক নয়।"; }
 });
 async function startApp() {
+  // A recovery session may update its password but must not enter the operational workspace.
+  if(passwordRecoveryFlow){showPasswordRecoveryPanel();return;}
+  $("passwordRecoveryPanel").classList.add("hidden");
   // Fail closed: never load operational business data until the database confirms main_admin.
   $("app").classList.add("hidden");
   $("accessGate").classList.add("hidden");
@@ -2040,8 +2100,11 @@ $("accessGateLogout").onclick=async()=>{
 };
 setToday();
 (async()=>{
-  try { const result=await sb.auth.getSession(); if(result.data && result.data.session)await startApp(); }
-  catch(error) { console.error(error); }
+  try {
+    const result=await sb.auth.getSession();
+    if(passwordRecoveryFlow){showPasswordRecoveryPanel();return;}
+    if(result.data && result.data.session)await startApp();
+  } catch(error) { console.error(error); }
 })();
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{});}</script>
