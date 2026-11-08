@@ -19,7 +19,7 @@ test("TEST 2 Storage migration changes only existing photo policies", () => {
 test("all photo policies use the authenticated-executable private role helper", () => {
   const calls = migration.match(/private\.current_app_role\(\)/g) || [];
   assert.equal(calls.length, 5);
-  assert.doesNotMatch(migration, /public\.current_app_role\(\)/);
+  assert.doesNotMatch(migration.replace(/^--.*$/gm, ""), /public\.current_app_role\(\)/);
 });
 
 test("photo bucket restrictions and Main Admin checks remain on every operation", () => {
