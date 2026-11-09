@@ -362,6 +362,101 @@ const translations = {
   }
 };
 function tr(key) { return (translations[lang()] || translations.bn)[key] || (translations.bn[key] || key); }
+const uiEnglish = {
+ "ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online":"Dairy & Livestock Product Management • Supabase Online",
+ "বিভাগ নির্বাচন":"Select division","আগে বিভাগ নির্বাচন করুন":"Select division first","জেলা নির্বাচন":"Select district",
+ "আগে জেলা নির্বাচন করুন":"Select district first","উপজেলা / থানা নির্বাচন":"Select upazila / thana",
+ "আগে উপজেলা নির্বাচন করুন":"Select upazila first","ইউনিয়ন / পৌরসভা নির্বাচন":"Select union / municipality",
+ "ঠিকানা / Address — ধাপে ধাপে নির্বাচন":"Address — select step by step",
+ "দেশ / Country":"Country","বিভাগ / Division":"Division","জেলা / District":"District",
+ "উপজেলা / থানা":"Upazila / Thana","ইউনিয়ন / পৌরসভা":"Union / Municipality","গ্রাম / মহল্লা":"Village / Locality",
+ "বিভাগ নির্বাচন করলে জেলা, উপজেলা এবং ইউনিয়ন/পৌরসভা ধাপে ধাপে দেখাবে। গ্রামের নাম হাতে লিখুন—উৎস ডেটায় পূর্ণ গ্রামভিত্তিক তালিকা নেই।":"Select a division, then district, upazila and union/municipality. Enter the village name manually; a complete village directory is not available.",
+ "ঠিকানা তালিকা প্রস্তুত। বিভাগ → জেলা → উপজেলা/থানা → ইউনিয়ন/পৌরসভা নির্বাচন করুন; গ্রাম/মহল্লা হাতে লিখুন।":"Address lists are ready. Select division → district → upazila/thana → union/municipality; enter the village/locality manually.",
+ "কেন্দ্রের লাইভ লোকেশন / GPS":"Branch live location / GPS",
+ "বোতাম চাপলে ব্রাউজারের অনুমতি নিয়ে বর্তমান স্থানাঙ্ক নেওয়া হবে। লোকেশন ঐচ্ছিক; না নিলেও কেন্দ্র সংরক্ষণ করা যাবে।":"Your browser will ask permission before capturing the current coordinates. Location is optional; the branch can be saved without it.",
+ "অক্ষাংশ / Latitude":"Latitude","দ্রাঘিমাংশ / Longitude":"Longitude","GPS নির্ভুলতা (মিটার)":"GPS accuracy (metres)",
+ "লোকেশন নেওয়ার সময়":"Location captured at","📍 বর্তমান লাইভ লোকেশন নিন":"📍 Capture current location",
+ "📍 বর্তমান লোকেশন নিন":"📍 Get current location","লোকেশন মুছুন":"Clear location",
+ "ব্যবহারকারীর স্পষ্ট অনুমতি ছাড়া লোকেশন নেওয়া হবে না।":"Location is captured only with the user's explicit permission.",
+ "আগের GPS তথ্য দেখানো হচ্ছে। নতুন GPS নিতে চাইলে বোতাম চাপুন।":"Previous GPS data is displayed. Press the button to capture a new location.",
+ "কৃষকের ছবি / Photo":"Farmer photo","কেন্দ্রের ছবি / Photo":"Branch photo",
+ "ছবি নির্বাচন/তোলার পর ছোট আকারে সংরক্ষণের জন্য প্রস্তুত হবে।":"The selected or captured photo will be prepared in a smaller size for storage.",
+ "ছবি ছোট করে ব্যক্তিগত Storage-এ রাখা হবে।":"The photo will be resized and stored in private Storage.",
+ "কৃষকের ছবির প্রিভিউ":"Farmer photo preview","কেন্দ্রের ছবির প্রিভিউ":"Branch photo preview",
+ "নিবন্ধনের তারিখ ও সময় / Date & time":"Registration date & time","লাইভ লোকেশন / GPS":"Live location / GPS",
+ "বোতাম চাপলে অনুমতি চেয়ে লোকেশন নেওয়া হবে; ব্যাকগ্রাউন্ড ট্র্যাকিং হবে না。":"Location will be requested after you press the button; there is no background tracking.",
+ "পুরোনো ঠিকানা / অতিরিক্ত ঠিকানা":"Previous / additional address","ঐচ্ছিক":"Optional",
+ "আনুমানিক L/day":"Expected L/day","কৃষক সংরক্ষণ":"Save farmer","কৃষক সম্পাদনা চলছে।":"Editing farmer.",
+ "কেন্দ্র সম্পাদনা চলছে।":"Editing branch.","সম্পাদনা বাতিল":"Cancel edit","পরিবর্তন সংরক্ষণ":"Save changes",
+ "ড্রাফট সংরক্ষণ":"Save draft","📝 ড্রাফট সংরক্ষণ":"📝 Save draft","↩️ ড্রাফট ফিরিয়ে আনুন":"↩️ Restore draft",
+ "🗑️ ড্রাফট মুছুন":"🗑️ Delete draft",
+ "ড্রাফট শুধু এই ডিভাইসের ব্রাউজারে থাকে; এটি Supabase-এ জমা হয় না এবং অন্য ডিভাইসে Sync হয় না। সংবেদনশীল তথ্য শেয়ার করা ডিভাইসে ড্রাফট রেখে যাবেন না।":"Drafts stay only in this device's browser. They are not saved to Supabase or synced to other devices. Do not leave drafts on a shared device if they contain sensitive information.",
+ "Daily target (L)":"Daily target (L)","দৈনিক লক্ষ্য (L)":"Daily target (L)","অবস্থা":"Status","নোট":"Notes",
+ "Active":"Active","Payment Hold":"Payment Hold","Machine Hold":"Machine Hold","Closed":"Closed",
+ "Code":"Code","Name":"Name","Mobile":"Mobile","Branch":"Branch","Status":"Status","Target":"Target",
+ "কেন্দ্র":"Branch","লক্ষ্য":"Target","কাজ":"Actions","যোগাযোগ":"Contact","মোবাইল":"Mobile","নাম":"Name",
+ "📋 কৃষক তালিকা":"📋 Farmer list","🏢 সংগ্রহ কেন্দ্র":"🏢 Collection branches","➕ নতুন কেন্দ্র":"➕ New branch",
+ "👨‍🌾 কৃষক যোগ করুন":"👨‍🌾 Add farmer","📍 কেন্দ্রভিত্তিক অবস্থা":"📍 Branch status",
+ "📍 GPS তথ্য":"📍 GPS information","গ্রাম / মহল্লার নাম লিখুন":"Enter village / locality",
+ "গ্রাম / মহল্লা লিখুন":"Enter village / locality","আগে বিভাগ নির্বাচন করুন":"Select division first",
+ "আগে জেলা নির্বাচন করুন":"Select district first","আগে উপজেলা নির্বাচন করুন":"Select upazila first",
+ "ব্যবহারকারীর স্পষ্ট অনুমতি ছাড়া লোকেশন নেওয়া হবে না।":"Location is captured only with explicit user permission.",
+ "দুধ সংগ্রহ — মডিউল হোম":"Milk Collection — Module Home","দুধ সংগ্রহ":"Milk Collection",
+ "দৈনিক এন্ট্রি ও কৃষক":"Daily entries and farmers","পেমেন্ট":"Payments","কৃষকের পাওনা ও পরিশোধ":"Farmer dues and payments",
+ "দুধের মান ও ব্যাচ":"Milk quality and batches","মান পরীক্ষা ও ব্যাচ ট্র্যাকিং":"Quality testing and batch tracking",
+ "চিলার লগ":"Chiller log","তাপমাত্রা ও ঘটনা":"Temperature and events","দুধের হিসাব/ক্ষতি":"Milk reconciliation / loss",
+ "স্টক মিল ও পার্থক্য":"Stock reconciliation and variance","খরচ ও বিক্রয়":"Expenses and sales",
+ "ব্যয়, বিক্রয় ও প্রাপ্য":"Expenses, sales and receivables","দুধ সংগ্রহ সেটিংস":"Milk Collection settings",
+ "মান, স্ক্যানার, রসিদ ও ভবিষ্যৎ সুবিধা":"Quality, scanner, receipts and future features",
+ "ভবিষ্যৎ সুবিধা — সেটিংসসহ পরিকল্পনা":"Future features — planned with settings",
+ "দুধ সংগ্রহের সব কাজ এই মডিউলের ভেতরে সাজানো। ভবিষ্যৎ সুবিধা ধাপে ধাপে যুক্ত হবে; যাচাই না হওয়া পর্যন্ত কোনো সেটিংস বা ডেটা-সিঙ্ক চালু হবে না।":"All milk collection tasks are organized in this module. Future features will be added in stages; no setting or data sync will be enabled before verification.",
+ "অফলাইন সংগ্রহ সারি: যাচাই হচ্ছে…":"Offline collection queue: checking…",
+ "অপেক্ষমাণ রেকর্ডের ব্যাকআপ ডাউনলোড":"Download pending-record backup",
+ "ব্যাকআপ ফাইল যাচাই করুন (এখনই পুনরুদ্ধার/ইমপোর্ট হবে না)":"Validate backup file (no restore/import will occur)",
+ "ব্যাকআপ যাচাই":"Validate backup","শেয়ার":"Share","প্রিন্ট/PDF":"Print/PDF",
+ "সম্পাদনা":"Edit","সংরক্ষণ":"Save","লগআউট":"Log out","নির্বাচন করুন":"Select",
+ "ঠিক আছে":"OK","তারিখ নেই":"No date","মেয়াদোত্তীর্ণ":"Expired","শিগগির মেয়াদ শেষ":"Expiring soon",
+ "স্ক্যানার ইনপুট বা কৃষক কোড লিখলে কৃষক নির্বাচন হবে।":"Enter a scanner input or farmer code to select a farmer.",
+ "বারকোড/QR স্ক্যান বন্ধ আছে; নিচের তালিকা থেকে কৃষক নির্বাচন করুন।":"Barcode/QR scanning is off; select a farmer from the list below."
+};
+const uiTextOriginals = new WeakMap();
+const uiAttributeOriginals = new WeakMap();
+function translateUiText() {
+  const english = lang()==="en";
+  const roots = document.querySelectorAll("body *");
+  roots.forEach(el=>{
+    if(el.closest("[data-i18n]")) return;
+    ["placeholder","title","aria-label","alt"].forEach(attr=>{
+      if(!el.hasAttribute(attr))return;
+      let originals=uiAttributeOriginals.get(el);
+      if(!originals){originals={};uiAttributeOriginals.set(el,originals);}
+      if(!(attr in originals))originals[attr]=el.getAttribute(attr);
+      const source=originals[attr];
+      if(english && uiEnglish[source])el.setAttribute(attr,uiEnglish[source]);
+      else if(!english)el.setAttribute(attr,source);
+    });
+    if(el.tagName==="OPTION"){
+      const original=uiTextOriginals.get(el);
+      const source=original===undefined?el.textContent:original;
+      if(original===undefined)uiTextOriginals.set(el,source);
+      if(english && uiEnglish[source.trim()])el.textContent=source.replace(source.trim(),uiEnglish[source.trim()]);
+      else if(!english)el.textContent=source;
+    }
+  });
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  let node;
+  while((node=walker.nextNode())){
+    if(!node.nodeValue.trim())continue;
+    const parent=node.parentElement;
+    if(!parent || parent.closest("[data-i18n]"))continue;
+    if(!parent.closest("label,legend,button,p,small,h1,h2,h3,h4,h5,span,option,nav,a,summary,li"))continue;
+    let source=uiTextOriginals.get(node);
+    if(source===undefined){source=node.nodeValue;uiTextOriginals.set(node,source);}
+    const key=source.trim();
+    if(english && uiEnglish[key])node.nodeValue=source.replace(key,uiEnglish[key]);
+    else if(!english)node.nodeValue=source;
+  }
+}
 function applyLanguage(value) {
   const next = value || lang();
   localStorage.setItem("muhaimin-language", next);
@@ -383,6 +478,7 @@ function applyLanguage(value) {
   if ($("sendOtpBtn")) $("sendOtpBtn").textContent = next==="en" ? "Send OTP" : "OTP পাঠান";
   if ($("verifyOtpBtn")) $("verifyOtpBtn").textContent = next==="en" ? "Verify OTP" : "OTP যাচাই";
   if (state.settings) render();
+  translateUiText();
 }
 function toast(message) {
   const el=$("toast"); if(!el) return;
@@ -769,6 +865,7 @@ function render() {
   $("setCommission").value=state.settings.milk_commission ?? 1;
   renderMilkCollectionSettings(state.milkCollectionSettings);
   setToday(); renderLedger(); renderAudit();
+  translateUiText();
 }
 function stockTable(products,purchases,sales,quantityField) {
   return table([lang()==="en"?"Product":"পণ্য",lang()==="en"?"Purchased":"ক্রয়",lang()==="en"?"Sold":"বিক্রি",lang()==="en"?"Stock":"স্টক"],
