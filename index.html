@@ -1157,7 +1157,6 @@ async function editFarmerRecord(id){
   branch_id:row.branch_id,expected_liters:row.expected_liters,latitude:row.latitude,longitude:row.longitude,
   location_accuracy:row.location_accuracy,location_captured_at:row.location_captured_at}))setFormValue(form,name,value);
  await restoreAddressFields("farmer",{division:row.division,district:row.district,upazila:row.upazila,union_name:row.union_name,village_name:row.village_name});
- setFarmerRegistrationTime(row.registered_at||row.created_at||new Date());
  await showRecordPhotoPreview("farmer",row);
  $("farmerEditStatus").classList.remove("hidden");
  $("farmerSubmitButton").textContent="পরিবর্তন সংরক্ষণ";
@@ -1296,7 +1295,7 @@ $("verifyOtpBtn").onclick=async()=>{
   } catch(error) { $("loginMsg").textContent=error.message || String(error); }
 };
 $("logoutBtn").onclick=async()=>{try{await sb.auth.signOut();location.reload();}catch(error){toast(error.message || String(error));}};
-function setFarmerRegistrationTime(value=new Date()){const el=$("farmerRegisteredAt");if(!el)return;const date=value instanceof Date?value:new Date(value);if(Number.isNaN(date.getTime())){el.value="";return;}el.value=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(date)+" (বাংলাদেশ সময়)";}
+function setFarmerRegistrationTime(){const el=$("farmerRegisteredAt");if(el)el.value=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(new Date())+" (বাংলাদেশ সময়)";}
 setFarmerRegistrationTime();
 function bindPrivatePhotoInput(inputId,previewId){
  $(inputId)?.addEventListener("change",async event=>{
