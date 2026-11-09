@@ -139,3 +139,17 @@ The counts match the prior preflight snapshot. No operational rows were written 
 - Operational tenant ownership columns, backfill, integrity constraints and RLS cutover.
 
 **Decision:** The live tenant-context HTTP/JWT acceptance gate and basic Main Admin dashboard smoke gate are now passed. Keep the adapter isolated from `index.html` until the remaining session and module regression gates are completed. Keep the TEST 2 tenant `pending`; do not grant operational permissions. Do not modify Production or merge/deploy this PR.
+
+
+### Pre-cutover schema guard and security advisor — 2026-11-09
+
+- Re-ran the read-only `tenant_cutover_preflight.sql` checks against TEST 2: **PASS**.
+- All 17 expected operational tables exist and have RLS enabled.
+- No operational `tenant_id` column has been introduced; this is intentional before application/API cutover.
+- Pending TEST 2 tenant and active Main Admin owner membership remain present.
+- Farmer-to-Branch, Collection-to-Branch/Farmer and Payment-to-Farmer references have no orphan rows.
+- Counts remain: 1 Branch, 1 Farmer, 2 Milk Collections, 0 Farmer Payments, 0 App Settings.
+
+Security advisor findings:
+- INFO: the three private tenant tables have RLS enabled and no policies. This is intentional because browser roles have no `private` schema USAGE or table grants; do not add broad client policies to silence this notice.
+- WARN: Supabase Auth leaked-password protection is disabled. No Auth setting was changed during this work. Review and enable only through a separately approved TEST 2 Auth configuration step.
