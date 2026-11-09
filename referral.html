@@ -22,8 +22,9 @@ button,.btn{border:0;border-radius:9px;padding:10px 13px;background:#e2f1ee;colo
 <p class="muted">এই পোর্টালটি TEST 2 Supabase-এ সংযুক্ত। এটি মূল Main Admin অ্যাপের ব্যবসায়িক ডেটা দেখায় না।</p>
 <div class="row"><label>ইমেইল<input id="email" type="email" autocomplete="email"></label><label>পাসওয়ার্ড<input id="password" type="password" minlength="8" autocomplete="current-password"></label></div>
 <div id="signupFields" class="row"><label>আপনার নাম<input id="fullName" autocomplete="name"></label><label>মোবাইল নম্বর<input id="phone" type="tel" autocomplete="tel" placeholder="01XXXXXXXXX বা +8801XXXXXXXXX"></label></div>
-<div class="actions"><button class="primary" id="loginBtn">লগইন</button><button id="signupBtn">নতুন গ্রাহক রেজিস্ট্রেশন</button><button id="logoutBtn" class="hidden">লগআউট</button></div><p id="authStatus" class="status" role="status"></p>
+<div class="actions"><button class="primary" id="loginBtn">লগইন</button><button id="signupBtn">নতুন গ্রাহক রেজিস্ট্রেশন</button></div><p id="authStatus" class="status" role="status"></p>
 </section>
+<div id="activeBar" class="card hidden"><button id="logoutBtn">লগআউট</button></div>
 <section id="profile" class="card hidden">
 <h2>👤 গ্রাহক প্রোফাইল</h2><p class="muted">রেফারেল গ্রহণের জন্য আমন্ত্রণে দেওয়া মোবাইল নম্বরের সঙ্গে এই নম্বর মিলতে হবে।</p>
 <div class="row"><label>পূর্ণ নাম<input id="profileName"></label><label>মোবাইল নম্বর<input id="profilePhone" type="tel"></label></div>
@@ -127,7 +128,7 @@ async function refresh(){
  setVisible("auth",!currentUser);setVisible("logoutBtn",!!currentUser);
  if(!currentUser){setVisible("profile",false);setVisible("customerPanel",false);setVisible("adminPanel",false);return;}
  await loadCustomerPanel();
- if(!$("customerPanel").classList.contains("hidden")===false)await loadAdminPanel();
+ if($("customerPanel").classList.contains("hidden"))await loadAdminPanel();
 }
 $("loginBtn").onclick=async()=>{try{status("authStatus","");const r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error)throw r.error;await refresh();}catch(e){status("authStatus",e.message||String(e));}};
 $("signupBtn").onclick=async()=>{try{const email=$("email").value.trim(),password=$("password").value,full_name=$("fullName").value.trim(),phone=$("phone").value.trim();if(full_name.length<2)throw new Error("পূর্ণ নাম লিখুন।");if(phoneDigits(phone).length<10)throw new Error("সঠিক মোবাইল নম্বর দিন।");const r=await sb.auth.signUp({email,password,options:{data:{full_name,phone},emailRedirectTo:location.href.split("?")[0]+"?backend=test2"}});if(r.error)throw r.error;status("authStatus","রেজিস্ট্রেশন অনুরোধ হয়েছে। ইমেইল ভেরিফাই করে লগইন করুন।");}catch(e){status("authStatus",e.message||String(e));}};
