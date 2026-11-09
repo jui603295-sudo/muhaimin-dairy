@@ -1,6 +1,8 @@
 -- Move SECURITY DEFINER business functions and append-only trigger helper out of exposed public schema.
 -- Keep only SECURITY INVOKER wrappers in public for authenticated PostgREST RPC access.
 alter function public.referral_ensure_code() set schema private;
+alter function public.referral_reward_ledger_immutable() set schema private;
+revoke all on function private.referral_reward_ledger_immutable() from public,anon,authenticated;
 alter function public.referral_create_invitation(text,text) set schema private;
 alter function public.referral_accept_invitation(text) set schema private;
 alter function public.referral_admin_verify(uuid) set schema private;
