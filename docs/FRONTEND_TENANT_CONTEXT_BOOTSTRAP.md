@@ -153,3 +153,23 @@ The counts match the prior preflight snapshot. No operational rows were written 
 Security advisor findings:
 - INFO: the three private tenant tables have RLS enabled and no policies. This is intentional because browser roles have no `private` schema USAGE or table grants; do not add broad client policies to silence this notice.
 - WARN: Supabase Auth leaked-password protection is disabled. No Auth setting was changed during this work. Review and enable only through a separately approved TEST 2 Auth configuration step.
+
+
+### Branch and Farmer UI smoke check — 2026-11-09 (user-observed)
+
+The user manually opened the Farmer Edit and Branch Edit screens in the TEST 2 Preview app and inspected the available controls. The user explicitly confirmed that this was option/UI testing only: no confirmation, save, or data modification was performed.
+
+Observed:
+- Farmer Edit screen opened and displayed the edit-mode heading, farmer fields, photo preview area, registration date/time, GPS control, cascading address selectors, Branch selector, Expected L/day field, and Save/Cancel actions.
+- Farmer address selectors displayed Bangladesh, Rangpur division, Thakurgaon district, Thakurgaon Sadar and local union/municipality choices.
+- Branch Edit screen opened and displayed the branch form, cascading address selectors, GPS fields and explicit location action, photo preview area, daily target, status choices, notes, local-draft controls, and Save/Cancel actions.
+- The Branch list continued to display the QA row `T2-QA-BR-20261106` / `TEST 2 QA Branch` / 12 L / Active after the user exited the edit screen without saving.
+- The Farmer list displayed QA row `T2-QA-FR-20261106` / `TEST 2 QA Farmer` / `TEST 2 QA Branch`.
+
+Evidence classification:
+- **PASS — UI/navigation only:** both Edit screens opened and the described controls were visible.
+- **NOT TESTED:** whether existing values are correctly prefilled in every field; save/update behavior; reload persistence; photo upload and reopen from private Storage; fresh GPS capture and persistence; local draft restore behavior.
+- The displayed QA GPS coordinates are old sample values and must not be treated as a fresh location capture.
+- No database write, schema change, permission change, tenant cutover, Production access, PR merge, or deployment was performed as part of this manual UI check.
+
+**Decision:** Record this as preliminary TEST 2 Branch/Farmer UI smoke evidence only. Do not mark Edit mapping, CRUD, GPS persistence, or photo Storage acceptance as passed until each is separately verified with evidence.
