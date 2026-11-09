@@ -1,0 +1,56 @@
+name: Validate Muhaimin Referral Portal
+
+on:
+  pull_request:
+    branches:
+      - db/test2-auth-storage-branch-farmer-v1
+    paths:
+      - "referral.html"
+      - "supabase/migrations/**referral**"
+      - "supabase/tests/**referral**"
+      - "docs/customer-referral-reward-v1.md"
+      - ".github/workflows/validate-referral.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  referral-static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Validate referral portal HTML and inline JavaScript
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('referral.html', 'utf8');
+          const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+          if (duplicates.length) throw new Error('Duplicate IDs: ' + [...new Set(duplicates)].join(', '));
+          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+          let checked = 0;
+          for (const [, attrs, body] of scripts) {
+            if (/\bsrc\s*=/.test(attrs) || !body.trim()) continue;
+            new Function(body);
+            checked++;
+          }
+          if (!checked) throw new Error('No inline JavaScript was syntax-checked.');
+          const inline = scripts.map(([, attrs, body]) => /\bsrc\s*=/.test(attrs) ? '' : body).join('\n');
+          const refs = [...new Set([...inline.matchAll(/\$\(["']([A-Za-z][A-Za-z0-9_-]*)["']\)/g)].map(m => m[1]))];
+          const missing = refs.filter(id => !ids.includes(id));
+          if (missing.length) throw new Error('Missing DOM IDs: ' + missing.join(', '));
+          if (!html.includes('https://wpomsmvzylrembojdsxd.supabase.co')) throw new Error('TEST 2 Supabase URL missing.');
+          if (/hhqshslzoznwyprhjzia\.supabase\.co/.test(html)) throw new Error('Production Supabase URL must not appear in referral portal.');
+          if (!html.includes('backend=test2') || !html.includes('referral_ensure_code') || !html.includes('referral_accept_invitation')) {
+            throw new Error('TEST 2 gating or referral RPC wiring is missing.');
+          }
+          if (/from\(["'](branches|farmers|milk_collections|payments)["']\)/.test(inline)) {
+            throw new Error('Customer referral portal must not query protected dairy operations tables.');
+          }
+          console.log('Referral portal static checks passed; browser/JWT tests remain separate.');
+          NODE
