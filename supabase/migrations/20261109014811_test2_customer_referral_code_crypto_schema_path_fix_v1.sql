@@ -1,4 +1,4 @@
-create or replace function private.referral_ensure_code()
+create or replace function public.referral_ensure_code()
 returns table(referral_code_id uuid,code text) language plpgsql security definer
 set search_path=pg_catalog,public,private,auth,extensions as $$
 declare v_uid uuid:=auth.uid();v_id uuid;v_code text;
