@@ -364,6 +364,10 @@ const translations = {
 function tr(key) { return (translations[lang()] || translations.bn)[key] || (translations.bn[key] || key); }
 const uiEnglish = {
  "ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online":"Dairy & Livestock Product Management • Supabase Online",
+ "ঢাকা":"Dhaka","চট্টগ্রাম":"Chattogram","রাজশাহী":"Rajshahi","খুলনা":"Khulna","বরিশাল":"Barishal","সিলেট":"Sylhet","রংপুর":"Rangpur","ময়মনসিংহ":"Mymensingh",
+ "পঞ্চগড়":"Panchagarh","দিনাজপুর":"Dinajpur","লালমনিরহাট":"Lalmonirhat","নীলফামারী":"Nilphamari","গাইবান্ধা":"Gaibandha","ঠাকুরগাঁও":"Thakurgaon","কুড়িগ্রাম":"Kurigram",
+ "ঠাকুরগাঁও সদর":"Thakurgaon Sadar","পীরগঞ্জ":"Pirganj","রাণীশংকৈল":"Ranisankail","হরিপুর":"Haripur","বালিয়াডাঙ্গী":"Baliadangi",
+ "রুহিয়া":"Ruhia","আখানগর":"Akhanagar","আকচা":"Akcha","বড়গাঁও":"Bara Gaon","বালিয়া":"Balia","আউলিয়াপুর":"Auliapur","চিলারং":"Chilarang","রহিমানপুর":"Rahimanpur","রায়পুর":"Raipur","জামালপুর":"Jamalpur","মোহাম্মদপুর":"Mohammadpur","সালন্দর":"Salandar","গড়েয়া":"Goreya","রাজাগাঁও":"Rajagaon","দেবীপুর":"Debipur","নারগুন":"Nargun","জগন্নাথপুর":"Jagannathpur","শুখানপুকুরী":"Sukhanpukhuri","বেগুনবাড়ী":"Begunbari","রুহিয়া পশ্চিম":"Ruhia West","ঢোলারহাট":"Dholarhat","ঠাকুরগাঁও পৌরসভা":"Thakurgaon Municipality",
  "বিভাগ নির্বাচন":"Select division","আগে বিভাগ নির্বাচন করুন":"Select division first","জেলা নির্বাচন":"Select district",
  "আগে জেলা নির্বাচন করুন":"Select district first","উপজেলা / থানা নির্বাচন":"Select upazila / thana",
  "আগে উপজেলা নির্বাচন করুন":"Select upazila first","ইউনিয়ন / পৌরসভা নির্বাচন":"Select union / municipality",
@@ -1508,6 +1512,7 @@ function fillAddressSelect(select, items, placeholder, keepValue){
   select.replaceChildren(new Option(placeholder,""));
   (items||[]).forEach(item=>select.add(new Option(bdLabel(item),bdLabel(item))));
   if(old && Array.from(select.options).some(o=>o.value===old)) select.value=old;
+  translateUiText();
 }
 const addressCascadeReady={};
 const addressCascadeControllers={};
