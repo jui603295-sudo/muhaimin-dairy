@@ -425,42 +425,58 @@ const uiEnglish = {
 };
 const uiTextOriginals = new WeakMap();
 const uiAttributeOriginals = new WeakMap();
+const I18N_SKIP_SELECTOR = "script,style,noscript,textarea,input,[contenteditable='true'],code,pre,[data-i18n]";
 function translateUiText() {
   const english = lang()==="en";
-  const roots = document.querySelectorAll("body *");
-  roots.forEach(el=>{
-    if(el.closest("[data-i18n]")) return;
+  document.querySelectorAll("body *").forEach(el=>{
+    if(el.matches(I18N_SKIP_SELECTOR) || el.closest("[data-i18n]")) return;
     ["placeholder","title","aria-label","alt"].forEach(attr=>{
       if(!el.hasAttribute(attr))return;
-      let originals=uiAttributeOriginals.get(el);
-      if(!originals){originals={};uiAttributeOriginals.set(el,originals);}
-      if(!(attr in originals))originals[attr]=el.getAttribute(attr);
-      const source=originals[attr];
-      if(english && uiEnglish[source])el.setAttribute(attr,uiEnglish[source]);
-      else if(!english)el.setAttribute(attr,source);
+      let record=uiAttributeOriginals.get(el);
+      if(!record){record={};uiAttributeOriginals.set(el,record);}
+      const current=el.getAttribute(attr);
+      if(!record[attr] || current!==record[attr].lastApplied) record[attr]={source:current,lastApplied:current};
+      const entry=record[attr], translated=english?(uiEnglish[entry.source]||entry.source):entry.source;
+      if(current!==translated){el.setAttribute(attr,translated);entry.lastApplied=translated;}
     });
-    if(el.tagName==="OPTION"){
-      const original=uiTextOriginals.get(el);
-      const source=original===undefined?el.textContent:original;
-      if(original===undefined)uiTextOriginals.set(el,source);
-      if(english && uiEnglish[source.trim()])el.textContent=source.replace(source.trim(),uiEnglish[source.trim()]);
-      else if(!english)el.textContent=source;
-    }
   });
   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
   let node;
   while((node=walker.nextNode())){
-    if(!node.nodeValue.trim())continue;
     const parent=node.parentElement;
-    if(!parent || parent.closest("[data-i18n]"))continue;
-    if(!parent.closest("label,legend,button,p,small,h1,h2,h3,h4,h5,span,option,nav,a,summary,li"))continue;
-    let source=uiTextOriginals.get(node);
-    if(source===undefined){source=node.nodeValue;uiTextOriginals.set(node,source);}
-    const key=source.trim();
-    if(english && uiEnglish[key])node.nodeValue=source.replace(key,uiEnglish[key]);
-    else if(!english)node.nodeValue=source;
+    if(!parent || parent.closest(I18N_SKIP_SELECTOR) || parent.closest("[data-i18n]"))continue;
+    const current=node.nodeValue;
+    if(!current.trim())continue;
+    let record=uiTextOriginals.get(node);
+    if(!record || current!==record.lastApplied) {
+      record={source:current,lastApplied:current};
+      uiTextOriginals.set(node,record);
+    }
+    const key=record.source.trim();
+    const translated=english?(uiEnglish[key] ? record.source.replace(key,uiEnglish[key]) : record.source):record.source;
+    if(current!==translated){node.nodeValue=translated;record.lastApplied=translated;}
   }
 }
+let uiTranslationObserver=null;
+function observeUiTranslations() {
+  if(uiTranslationObserver || !document.body || typeof MutationObserver==="undefined")return;
+  uiTranslationObserver=new MutationObserver(records=>{
+    if(records.some(record=>record.type==="childList" || record.type==="characterData" || record.type==="attributes")) translateUiText();
+  });
+  uiTranslationObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["placeholder","title","aria-label","alt"]});
+}
+function translateText(value) {
+  const source=String(value ?? "");
+  return lang()==="en" ? (uiEnglish[source.trim()] || source) : source;
+}
+window.MuhaiminI18n=Object.freeze({
+  getLocale:()=>lang(),
+  setLocale:value=>applyLanguage(value),
+  t:key=>tr(key),
+  translateText,
+  refresh:()=>translateUiText(),
+  supportedLocales:Object.freeze(["bn","en"])
+});
 function applyLanguage(value) {
   const next = value || lang();
   localStorage.setItem("muhaimin-language", next);
@@ -483,10 +499,12 @@ function applyLanguage(value) {
   if ($("verifyOtpBtn")) $("verifyOtpBtn").textContent = next==="en" ? "Verify OTP" : "OTP যাচাই";
   if (state.settings) render();
   translateUiText();
+  observeUiTranslations();
 }
 function toast(message) {
   const el=$("toast"); if(!el) return;
-  el.textContent=String(message || "");
+  el.textContent=translateText(message || "");
+  translateUiText();
   el.style.display="block";
   setTimeout(()=>{el.style.display="none";},2600);
 }
