@@ -15,7 +15,7 @@ A separate Referral/Reward domain connected to Customer Management by Supabase A
 Portal: `referral.html?backend=test2`. It uses the TEST 2 project URL and publishable key only; it does not use the Production project.
 
 ## Main Admin workflow now implemented
-- Admin-only invitation review and verification.
+- Admin-only invitation review, verification, and rejection.
 - Admin-only referral-code activation/deactivation.
 - Admin-only manual BDT ledger entry: credit, payout, reversal.
 - Reward policy amount is intentionally not automated or preconfigured. Main Admin must decide the reward policy before issuing entries.
@@ -23,7 +23,7 @@ Portal: `referral.html?backend=test2`. It uses the TEST 2 project URL and publis
 ## Database and security
 Tables: `referral_codes`, `referral_invitations`, `referral_reward_ledger`. All have RLS enabled. Customer row visibility is scoped to their own records; Main Admin has system-wide visibility. Public RPC endpoints are SECURITY INVOKER wrappers. Their SECURITY DEFINER implementations live in the non-API `private` schema, use fixed search paths, and perform explicit customer/Main Admin role checks. The reward ledger has no client INSERT/UPDATE/DELETE grants and has a private UPDATE/DELETE rejection trigger. Supabase Security Advisor no longer reports the referral RPCs as exposed SECURITY DEFINER functions. Corrections use new reversal entries. Anonymous users have no intended table or RPC access.
 
-Phone matching normalizes Bangladesh-style local/international representations to the last 11 digits. A customer must have a verified Auth email or phone and a matching customer profile phone before accepting an invitation. The Main Admin verification action requires an explicit confirmation that invitee phone ownership was independently checked. Main Admin must perform that check before proceeding. Accounts created before the invitation, self-referrals, and duplicate invitations for the same referral code + phone are rejected.
+Phone matching normalizes Bangladesh-style local/international representations to the last 11 digits. A customer must have a verified Auth email or phone and a matching customer profile phone before accepting an invitation. The Main Admin verification action requires an explicit confirmation that invitee phone ownership was independently checked. Main Admin must perform that check before proceeding. Accounts created before the invitation, self-referrals, duplicate active invitations for the same phone, and duplicate acceptance by the same Auth user are rejected. Each customer is limited to 20 invitations per rolling 24 hours. Main Admin can reject a pending/accepted invitation to release its phone for a new referral.
 
 ## TEST 2 evidence so far
 - Referral schema migrations applied successfully.
