@@ -440,6 +440,14 @@ const uiEnglish = {
  "স্ক্যানার ইনপুট বা কৃষক কোড লিখলে কৃষক নির্বাচন হবে।":"Enter a scanner input or farmer code to select a farmer.",
  "বারকোড/QR স্ক্যান বন্ধ আছে; নিচের তালিকা থেকে কৃষক নির্বাচন করুন।":"Barcode/QR scanning is off; select a farmer from the list below."
 };
+function translateLiteral(source) {
+  const text=String(source ?? "");
+  if(lang()==="bn")return text;
+  const phrases=localeRegistry[lang()]?.phrases || {};
+  if(phrases[text.trim()])return text.replace(text.trim(),phrases[text.trim()]);
+  if(lang()==="en" && uiEnglish[text.trim()])return text.replace(text.trim(),uiEnglish[text.trim()]);
+  return text;
+}
 const uiTextOriginals = new WeakMap();
 const uiAttributeOriginals = new WeakMap();
 const I18N_SKIP_SELECTOR = "script,style,noscript,textarea,input,[contenteditable='true'],code,pre,[data-i18n]";
@@ -470,7 +478,7 @@ function translateUiText() {
       uiTextOriginals.set(node,record);
     }
     const key=record.source.trim();
-    const translated=english?(uiEnglish[key] ? record.source.replace(key,uiEnglish[key]) : record.source):record.source;
+    const translated=english?translateLiteral(record.source):record.source;
     if(current!==translated){node.nodeValue=translated;record.lastApplied=translated;}
   }
 }
@@ -484,7 +492,7 @@ function observeUiTranslations() {
 }
 function translateText(value) {
   const source=String(value ?? "");
-  return lang()==="en" ? (uiEnglish[source.trim()] || source) : source;
+  return translateLiteral(source);
 }
 window.MuhaiminI18n=Object.freeze({
   getLocale:()=>lang(),
@@ -502,7 +510,8 @@ window.MuhaiminI18n=Object.freeze({
       label:String(config.label||id),
       locale:String(config.locale||id),
       direction:config.direction==="rtl"?"rtl":"ltr",
-      currency:String(config.currency||"BDT")
+      currency:String(config.currency||"BDT"),
+      phrases:Object.freeze({...((config.phrases&&typeof config.phrases==="object")?config.phrases:{})})
     });
     const selector=$("language");
     if(selector && !Array.from(selector.options).some(option=>option.value===id)){
