@@ -32,13 +32,13 @@ button,.btn{border:0;border-radius:9px;padding:10px 13px;background:#e2f1ee;colo
 </section>
 <section id="customerPanel" class="hidden">
 <div class="card"><h2>🔗 আপনার Referral Link</h2><p class="muted">আপনার কোড ব্যক্তিগত। লিংক/QR শেয়ার করলেই পুরস্কার নিশ্চিত হয় না; আমন্ত্রিত ব্যক্তি নিবন্ধন ও যাচাই সম্পন্ন করলে Admin পর্যালোচনা করবেন।</p><div id="myCode" class="code">লোড হচ্ছে…</div><div id="shareLink" class="muted"></div><div class="actions"><button id="copyLink">লিংক কপি</button><button id="shareLinkBtn">শেয়ার</button></div><div id="qr" aria-label="Referral QR code"></div><p id="qrStatus" class="muted"></p></div>
-<div class="card"><h2>➕ গ্রাহককে আমন্ত্রণ</h2><label>আমন্ত্রিত ব্যক্তির মোবাইল নম্বর<input id="invitePhone" type="tel" placeholder="01XXXXXXXXX"></label><button id="inviteBtn" class="primary">আমন্ত্রণ সংরক্ষণ</button><p id="inviteStatus" class="status"></p><button id="acceptInviteBtn" class="primary hidden">আমন্ত্রণ গ্রহণ</button></div>
+<div class="card"><h2>➕ গ্রাহককে আমন্ত্রণ</h2><label>আমন্ত্রিত ব্যক্তির মোবাইল নম্বর<input id="invitePhone" type="tel" placeholder="01XXXXXXXXX"></label><p class="muted">প্রতি গ্রাহক ২৪ ঘণ্টায় সর্বোচ্চ ২০টি আমন্ত্রণ পাঠাতে পারবেন। একই মোবাইল নম্বরে একটিমাত্র সক্রিয় আমন্ত্রণ রাখা যাবে।</p><button id="inviteBtn" class="primary">আমন্ত্রণ সংরক্ষণ</button><p id="inviteStatus" class="status"></p><button id="acceptInviteBtn" class="primary hidden">আমন্ত্রণ গ্রহণ</button></div>
 <div class="card"><h2>📋 আমন্ত্রণের অবস্থা</h2><div id="myInvitations" class="tablewrap">লোড হচ্ছে…</div></div>
 <div class="card"><h2>💰 আপনার Reward Ledger</h2><p class="muted">এখানে কেবল আপনার নিজের হিসাব দেখানো হবে।</p><div id="myRewards" class="tablewrap"></div></div>
 </section>
 <section id="adminPanel" class="hidden">
 <div class="card"><h2>🛡️ Main Admin — Referral Control</h2><p class="muted">শুধু Main Admin-এর জন্য। আমন্ত্রণ যাচাই এবং Reward Ledger এন্ট্রি এখানে হবে।</p><div id="adminSummary" class="notice"></div></div>
-<div class="card"><h2>আমন্ত্রণ পর্যালোচনা</h2><div id="adminInvitations" class="tablewrap"></div></div>
+<div class="card"><h2>আমন্ত্রণ পর্যালোচনা</h2><p class="muted">যাচাইয়ের আগে ফোন নম্বরের মালিকানা স্বাধীনভাবে নিশ্চিত করুন। যাচাই করা আমন্ত্রণের পরেই Reward Ledger এন্ট্রি করা যাবে।</p><div id="adminInvitations" class="tablewrap"></div></div>
 <div class="card"><h2>Reward Ledger Entry</h2><label>যাচাইকৃত আমন্ত্রণ<select id="rewardInvitation"><option value="">আমন্ত্রণ নির্বাচন করুন</option></select></label><div class="row"><label>Entry Type<select id="rewardType"><option value="credit">Credit</option><option value="payout">Payout</option><option value="reversal">Reversal</option></select></label><label>পরিমাণ (৳)<input id="rewardAmount" type="number" min="0.01" step="0.01"></label></div><label>বিবরণ<input id="rewardDescription" maxlength="240"></label><button id="postReward" class="primary">Ledger Entry সংরক্ষণ</button><p id="rewardStatus" class="status"></p><div id="adminRewards" class="tablewrap"></div></div>
 <div class="card"><h2>Referral Code Control</h2><div id="adminCodes" class="tablewrap"></div></div>
 </section>
