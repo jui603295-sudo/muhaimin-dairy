@@ -44,3 +44,31 @@ Do not use the result to hide, block, or authorize existing Main Admin pages unt
 Run: node --test tests/tenant-context-bootstrap.test.mjs
 
 Unit tests validate response handling only; they do not replace a live browser/JWT test.
+
+
+## TEST 2 live diagnostic page
+
+A manual, read-only diagnostic page is available at:
+
+`/tools/tenant-context-diagnostic.html`
+
+### Safe test procedure
+
+1. Open the same TEST 2 Preview URL and browser profile used for the Muhaimin Dairy app.
+2. Sign in through the existing app's normal login screen. Do not share passwords, OTPs, JWTs, or screenshots containing secrets.
+3. Open `/tools/tenant-context-diagnostic.html` on that exact same origin.
+4. Press **লগইন সেশন ও Tenant Context পরীক্ষা** once.
+5. Record only the visible result code/status and whether the expected pending TEST 2 tenant is listed. Do not copy browser storage or network Authorization headers.
+6. Return to the main app. The diagnostic does not sign out, write operational rows, alter RLS, or persist its result.
+
+The diagnostic page creates a Supabase client using the same TEST 2 project URL and publishable key as the existing app. It relies on the Supabase SDK's normal same-origin session handling and invokes the read-only adapter only after the user clicks the button. It does not ask for credentials or print user IDs/tokens.
+
+### Expected current TEST 2 result
+
+- Signed-in Main Admin session is detected.
+- Edge Function response identity matches the session.
+- One active owner membership is returned.
+- Tenant status is `pending`, so adapter status should be `tenant_not_operational`.
+- `write_authority` remains `false`.
+
+This is a manual live HTTP/JWT acceptance test. A static Preview Build success or passing unit tests do not count as a live endpoint pass. If the page reports an error, record only its short status code; investigate CORS, JWT verification, deployment, or environment configuration without sharing secrets.
