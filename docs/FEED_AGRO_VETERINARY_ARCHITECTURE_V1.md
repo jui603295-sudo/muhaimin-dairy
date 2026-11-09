@@ -50,6 +50,8 @@ Counts are a point-in-time audit, not a permanent guarantee.
 - Veterinary expiry is currently attached to the product row, not to each received purchase lot. Multiple batches of the same medicine cannot be represented reliably.
 - Existing purchase/sale schemas require `total_amount` and `due_amount`, but the inspected browser handlers do not include both fields. No BEFORE INSERT trigger was found on these tables to calculate them. The forms therefore have a schema/handler contract mismatch.
 - The current schema inspection did not find `purchase_time` / `sale_time` columns on these transaction tables, while the browser handlers submit time fields. The shared insert helper deliberately rejects a save when a submitted time column is missing; it does not silently discard the time.
+- The Agro/Veterinary generic transaction binder sends `purchase_price` / `sale_price`, but the live transaction tables use `purchase_price_per_unit` / `sale_price_per_unit`. This is a direct field-name mismatch.
+- The purchase/sale tables have required `total_amount` and `due_amount` columns. The inspected handlers omit these fields, and no BEFORE INSERT/UPDATE calculation trigger was found to derive them. The current table constraints also require paid amount not to exceed total and due to reconcile with total minus paid.
 - The current forms include note fields for some transactions, but the audited transaction tables do not expose matching note columns consistently.
 - Existing product forms are create-oriented; a complete controlled edit/archive/history workflow is not yet present across all three modules.
 - Current RLS allows only the platform Main Admin. It is not safe to expose these tables to branch staff or customer/tenant users yet.
