@@ -452,7 +452,7 @@ const uiTextOriginals = new WeakMap();
 const uiAttributeOriginals = new WeakMap();
 const I18N_SKIP_SELECTOR = "script,style,noscript,textarea,input,[contenteditable='true'],code,pre,[data-i18n]";
 function translateUiText() {
-  const english = lang()==="en";
+  const english = lang()!=="bn";
   document.querySelectorAll("body *").forEach(el=>{
     if(el.matches(I18N_SKIP_SELECTOR) || el.closest("[data-i18n]")) return;
     ["placeholder","title","aria-label","alt"].forEach(attr=>{
