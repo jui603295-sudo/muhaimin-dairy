@@ -72,3 +72,70 @@ The diagnostic page creates a Supabase client using the same TEST 2 project URL 
 - `write_authority` remains `false`.
 
 This is a manual live HTTP/JWT acceptance test. A static Preview Build success or passing unit tests do not count as a live endpoint pass. If the page reports an error, record only its short status code; investigate CORS, JWT verification, deployment, or environment configuration without sharing secrets.
+
+
+## Live TEST 2 acceptance evidence — 2026-11-09
+
+### Authenticated HTTP/JWT diagnostic — PASS
+
+The user completed the same-origin diagnostic while signed in to the TEST 2 Preview app. The page reported:
+
+- Local authenticated session detected.
+- `tenant-context` Edge Function response received and validated.
+- Adapter status: `tenant_not_operational`.
+- Platform role: `main_admin`.
+- Membership count: 1.
+- Tenant: `মুহাইমিন ডেইরি` (`muhaimin-dairy-test2`).
+- Tenant status / membership role: `pending / owner`.
+- `can_operate=false`.
+- `write_authority=false` (read-only).
+
+This confirms the real browser session reached the deployed JWT-protected Edge Function and received the expected pending-tenant response. The diagnostic did not grant operational access.
+
+### Main Admin dashboard smoke regression — user-observed PASS
+
+Immediately after the diagnostic, the user returned to the same Preview app and confirmed successful Main Admin login and Dashboard load. The visible app reported Online and showed:
+
+- Branches: 1.
+- Farmers: 1.
+- Today's milk collection: 0 L.
+- Today's commission: ৳0.
+- TEST 2 QA Branch: 0 L / 12 L (Active).
+- Daily target: 2,500 L; CLR: 28; commission: ৳1/L.
+
+This is a user-observed browser smoke test, not an automated browser test. No screenshot or browser automation artifact was captured.
+
+### Read-only database before/after snapshot — unchanged
+
+A read-only TEST 2 SQL count was repeated after the browser diagnostic and dashboard return:
+
+| Table | Row count |
+|---|---:|
+| public.branches | 1 |
+| public.farmers | 1 |
+| public.milk_collections | 2 |
+| public.farmer_payments | 0 |
+| public.app_settings | 0 |
+
+The counts match the prior preflight snapshot. No operational rows were written by the diagnostic.
+
+### Security privilege recheck — PASS
+
+- `anon` has no USAGE on schema `private`.
+- `authenticated` has no USAGE on schema `private`.
+- `anon` cannot EXECUTE the tenant resolver.
+- `authenticated` cannot EXECUTE the tenant resolver.
+- `service_role` can EXECUTE the tenant resolver.
+- Edge Function remains ACTIVE v1 with `verify_jwt=true`.
+- PR head at time of verification: `962f5335291ae1f096b64244ca864ff9396b073c`; Vercel check reported success (preview/build status only).
+
+### Remaining gates — NOT YET PASSED
+
+- Expired/revoked session live browser test.
+- Main Admin full module regression (Branch, Farmer, Collection, Payments, Feed, Veterinary, Agro, Reports, Ledger, Settings, Backup, Audit).
+- Tenant-aware read APIs and server-validated write APIs.
+- Tenant-bound offline queue replay and idempotency tests.
+- Cross-tenant real-JWT authorization tests.
+- Operational tenant ownership columns, backfill, integrity constraints and RLS cutover.
+
+**Decision:** The live tenant-context HTTP/JWT acceptance gate and basic Main Admin dashboard smoke gate are now passed. Keep the adapter isolated from `index.html` until the remaining session and module regression gates are completed. Keep the TEST 2 tenant `pending`; do not grant operational permissions. Do not modify Production or merge/deploy this PR.
