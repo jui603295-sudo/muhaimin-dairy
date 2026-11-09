@@ -145,3 +145,42 @@ Each command must have a domain-specific schema and permission matrix. Financial
 This audit is based on source inspection of the specified Git ref and the recorded TEST 2 evidence. It does not prove that the deployed Preview matches the inspected commit, nor that the inspected source has passed browser runtime tests.
 
 No application code, schema, RLS policy, Auth setting, Storage object, TEST 2 business row or Production resource was changed during this audit. The next implementation work must remain on an isolated development branch and TEST 2.
+
+
+## 9. TEST 2 live schema and RLS inspection — read-only
+
+**Environment:** Supabase TEST 2 only (`wpomsmvzylrembojdsxd`)  
+**Method:** Supabase table metadata plus read-only catalog queries against `information_schema`, `pg_policies` and `pg_indexes`.  
+**No DDL/DML executed.**
+
+### Current operational fixture and settings state
+- `public.branches`: 1 row.
+- `public.farmers`: 1 row.
+- `public.milk_collections`: 2 rows.
+- `public.farmer_payments`: 0 rows.
+- `public.app_settings`: 0 rows.
+- `public.app_user_roles`: primary key is `user_id`; the role lookup is uniquely keyed.
+- `public.app_settings`: only the `id` primary key is present in the inspected indexes; no stable tenant/key uniqueness is defined.
+
+### RLS policies observed on the inspected tables
+- `branches`, `farmers`, `milk_collections`, `farmer_payments` and `app_settings`: one authenticated Main Admin-only `ALL` policy using `private.current_app_role() = 'main_admin'` for both `USING` and `WITH CHECK`.
+- `app_user_roles`: authenticated users may SELECT only their own row.
+- `audit_events`: Main Admin SELECT policy observed; no client write policy was present in the inspected policy result.
+- This is the current single-platform Main Admin gate. It is not tenant/branch-scoped authorization and must not be described as multi-tenant isolation.
+
+### Useful existing indexes and constraints
+- `app_user_roles(user_id)`: primary-key unique index.
+- `branches(id)`: primary key; `branches(code)`: unique index.
+- `farmers(id)`: primary key; `farmers(farmer_code)`: unique index; `farmers(branch_id)`: lookup index.
+- `milk_collections(id)`: primary key.
+- `milk_collections(client_record_id)`: partial unique index for non-null values — the database uniqueness prerequisite for duplicate-safe client retry is present.
+- `milk_collections(branch_id)` and `milk_collections(farmer_id)`: lookup indexes.
+- `farmer_payments(farmer_id)`: lookup index.
+- Milk Collection also has a unique scale-ticket index scoped by branch/date and normalized ticket value.
+
+### Consequences
+1. The existing Main Admin-only policies are a useful current security gate, but they cannot safely be loosened to tenant membership access until server-derived tenant context and row ownership are in place.
+2. The existing unique `client_record_id` index is a positive prerequisite, but it does not make the dormant direct-browser queue replay tenant-safe. Replay remains disabled.
+3. `app_settings` currently has zero rows and no deterministic tenant/key uniqueness. A tenant-aware settings migration must define canonical keys and conflict behavior before any operational write is moved.
+4. The existing Branch/Farmer/Collection schema already contains useful foreign keys and lookup indexes; preserve these while designing additive tenant ownership and composite integrity constraints.
+5. The live catalog inspection confirms the current TEST 2 schema shape only. It does not prove browser CRUD, Storage upload/readback, cross-tenant denial, or Production behavior.
