@@ -56,6 +56,7 @@ revoke all on public.referral_codes, public.referral_invitations, public.referra
 grant select, insert on public.referral_codes to authenticated;
 grant select, insert on public.referral_invitations to authenticated;
 grant select, insert on public.referral_reward_ledger to authenticated;
+grant update on public.referral_codes, public.referral_invitations to authenticated;
 
 drop policy if exists referral_codes_admin_all on public.referral_codes;
 create policy referral_codes_admin_all on public.referral_codes for all to authenticated
