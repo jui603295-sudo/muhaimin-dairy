@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f766e"><title>মুহাইমিন — গ্রাহক রেফারেল</title>
+<style>
+:root{font-family:system-ui,"Noto Sans Bengali",sans-serif;color:#17202a;background:#f3f7f6;--green:#0f766e;--line:#dbe5e3}
+*{box-sizing:border-box}body{margin:0}header{background:var(--green);color:white;padding:16px}header h1{margin:0;font-size:21px}header p{margin:4px 0 0;font-size:12px}
+main{max-width:900px;margin:auto;padding:12px}.card{background:white;border:1px solid #e5eeeb;border-radius:14px;padding:15px;margin:12px 0;box-shadow:0 2px 8px #00000008}
+h2{font-size:18px;margin:0 0 10px}h3{font-size:15px;margin:0 0 8px}p{line-height:1.5}label{display:block;font-weight:650;font-size:13px;margin:8px 0}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;margin-top:4px}
+button,.btn{border:0;border-radius:9px;padding:10px 13px;background:#e2f1ee;color:#075c55;font-weight:700;cursor:pointer;margin:4px 3px 4px 0}button.primary{background:var(--green);color:white}button:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:160px}.muted{font-size:12px;color:#64748b}.notice{padding:10px;background:#f0fdfa;border-radius:9px;font-size:13px}.hidden{display:none!important}.status{font-size:13px;min-height:20px;color:#334155}.code{font-size:24px;letter-spacing:3px;font-weight:800;color:#0f766e;word-break:break-all}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}th{background:#f8fafc}#qr{background:white;padding:8px;display:inline-block;min-height:10px}#qr img,#qr canvas{max-width:180px;height:auto!important}.actions{display:flex;gap:6px;flex-wrap:wrap}.danger{background:#fee2e2;color:#991b1b}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<header><h1>মুহাইমিন ডেইরি — গ্রাহক রেফারেল</h1><p>পরীক্ষামূলক পরিবেশ • TEST 2 • Production ডেটা নয়</p></header>
+<main>
+<section id="auth" class="card">
+<h2>🔐 গ্রাহক লগইন / রেজিস্ট্রেশন</h2>
+<p class="muted">এই পোর্টালটি TEST 2 Supabase-এ সংযুক্ত। এটি মূল Main Admin অ্যাপের ব্যবসায়িক ডেটা দেখায় না।</p>
+<div class="row"><label>ইমেইল<input id="email" type="email" autocomplete="email"></label><label>পাসওয়ার্ড<input id="password" type="password" minlength="8" autocomplete="current-password"></label></div>
+<div id="signupFields" class="row"><label>আপনার নাম<input id="fullName" autocomplete="name"></label><label>মোবাইল নম্বর<input id="phone" type="tel" autocomplete="tel" placeholder="01XXXXXXXXX বা +8801XXXXXXXXX"></label></div>
+<div class="actions"><button class="primary" id="loginBtn">লগইন</button><button id="signupBtn">নতুন গ্রাহক রেজিস্ট্রেশন</button><button id="logoutBtn" class="hidden">লগআউট</button></div><p id="authStatus" class="status" role="status"></p>
+</section>
+<section id="profile" class="card hidden">
+<h2>👤 গ্রাহক প্রোফাইল</h2><p class="muted">রেফারেল গ্রহণের জন্য আমন্ত্রণে দেওয়া মোবাইল নম্বরের সঙ্গে এই নম্বর মিলতে হবে।</p>
+<div class="row"><label>পূর্ণ নাম<input id="profileName"></label><label>মোবাইল নম্বর<input id="profilePhone" type="tel"></label></div>
+<button id="saveProfile" class="primary">প্রোফাইল সংরক্ষণ</button><p id="profileStatus" class="status"></p>
+</section>
+<section id="customerPanel" class="hidden">
+<div class="card"><h2>🔗 আপনার Referral Link</h2><p class="muted">আপনার কোড ব্যক্তিগত। লিংক/QR শেয়ার করলেই পুরস্কার নিশ্চিত হয় না; আমন্ত্রিত ব্যক্তি নিবন্ধন ও যাচাই সম্পন্ন করলে Admin পর্যালোচনা করবেন।</p><div id="myCode" class="code">লোড হচ্ছে…</div><div id="shareLink" class="muted"></div><div class="actions"><button id="copyLink">লিংক কপি</button><button id="shareLinkBtn">শেয়ার</button></div><div id="qr" aria-label="Referral QR code"></div><p id="qrStatus" class="muted"></p></div>
+<div class="card"><h2>➕ গ্রাহককে আমন্ত্রণ</h2><label>আমন্ত্রিত ব্যক্তির মোবাইল নম্বর<input id="invitePhone" type="tel" placeholder="01XXXXXXXXX"></label><button id="inviteBtn" class="primary">আমন্ত্রণ সংরক্ষণ</button><p id="inviteStatus" class="status"></p></div>
+<div class="card"><h2>📋 আমন্ত্রণের অবস্থা</h2><div id="myInvitations" class="tablewrap">লোড হচ্ছে…</div></div>
+<div class="card"><h2>💰 আপনার Reward Ledger</h2><p class="muted">এখানে কেবল আপনার নিজের হিসাব দেখানো হবে।</p><div id="myRewards" class="tablewrap"></div></div>
+</section>
+<section id="adminPanel" class="hidden">
+<div class="card"><h2>🛡️ Main Admin — Referral Control</h2><p class="muted">শুধু Main Admin-এর জন্য। আমন্ত্রণ যাচাই এবং Reward Ledger এন্ট্রি এখানে হবে।</p><div id="adminSummary" class="notice"></div></div>
+<div class="card"><h2>আমন্ত্রণ পর্যালোচনা</h2><div id="adminInvitations" class="tablewrap"></div></div>
+<div class="card"><h2>Reward Ledger Entry</h2><label>যাচাইকৃত আমন্ত্রণ<select id="rewardInvitation"><option value="">আমন্ত্রণ নির্বাচন করুন</option></select></label><div class="row"><label>Entry Type<select id="rewardType"><option value="credit">Credit</option><option value="payout">Payout</option><option value="reversal">Reversal</option></select></label><label>পরিমাণ (৳)<input id="rewardAmount" type="number" min="0.01" step="0.01"></label></div><label>বিবরণ<input id="rewardDescription" maxlength="240"></label><button id="postReward" class="primary">Ledger Entry সংরক্ষণ</button><p id="rewardStatus" class="status"></p><div id="adminRewards" class="tablewrap"></div></div>
+<div class="card"><h2>Referral Code Control</h2><div id="adminCodes" class="tablewrap"></div></div>
+</section>
+<p class="muted">নিরাপত্তা: QR বা URL কোনো অনুমতির বিকল্প নয়। OTP/ইমেইল যাচাই, ফোন-মিল, নিজের কোডে নিজেকে আমন্ত্রণ না করা, Main Admin verification এবং append-only ledger প্রযোজ্য।</p>
+</main>
+<script>
+"use strict";
+const TEST2_URL="https://wpomsmvzylrembojdsxd.supabase.co";
+const TEST2_KEY="sb_publishable_q_-9k6hlPJiEo5GHDBzh8Q_HTSvoNEP";
+const sb=window.supabase.createClient(TEST2_URL,TEST2_KEY);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const phoneDigits=v=>String(v||"").replace(/\D/g,"");
+const money=v=>"৳"+Number(v||0).toLocaleString("bn-BD",{maximumFractionDigits:2});
+let currentUser=null,myCode=null,adminMode=false,allInvitations=[];
+const refCode=new URLSearchParams(location.search).get("ref");
+function status(id,msg){$(id).textContent=msg||"";}
+function baseLink(code){const u=new URL(location.pathname,location.origin);u.searchParams.set("backend","test2");u.searchParams.set("ref",code);return u.toString();}
+function setVisible(id,yes){$(id).classList.toggle("hidden",!yes);}
+async function loadProfile(){
+ const {data,error}=await sb.from("customer_profiles").select("user_id,full_name,phone").eq("user_id",currentUser.id).maybeSingle();
+ if(error)throw error;
+ if(data){$("profileName").value=data.full_name||"";$("profilePhone").value=data.phone||"";setVisible("profile",false);}
+ else setVisible("profile",true);
+ return data;
+}
+async function saveProfile(){
+ const full_name=$("profileName").value.trim(),phone=$("profilePhone").value.trim();
+ if(full_name.length<2)throw new Error("পূর্ণ নাম লিখুন।");
+ if(phoneDigits(phone).length<10||phoneDigits(phone).length>15)throw new Error("সঠিক মোবাইল নম্বর লিখুন।");
+ const {error}=await sb.from("customer_profiles").upsert({user_id:currentUser.id,full_name,phone,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+ if(error)throw error;
+ status("profileStatus","প্রোফাইল সংরক্ষিত হয়েছে।");
+ setVisible("profile",false);
+ await loadCustomerPanel();
+}
+async function loadCustomerPanel(){
+ const role=await sb.from("app_user_roles").select("role").eq("user_id",currentUser.id).maybeSingle();
+ if(role.error)throw role.error;
+ if(role.data?.role!=="customer"){setVisible("customerPanel",false);setVisible("adminPanel",role.data?.role==="main_admin");return;}
+ const profile=await loadProfile();
+ setVisible("customerPanel",!!profile);setVisible("adminPanel",false);
+ if(!profile)return;
+ const codeResult=await sb.rpc("referral_ensure_code");
+ if(codeResult.error)throw codeResult.error;
+ const codeRow=codeResult.data?.[0];
+ if(!codeRow)throw new Error("Referral code তৈরি করা যায়নি।");
+ myCode=codeRow.code;
+ $("myCode").textContent=myCode;
+ const link=baseLink(myCode);$("shareLink").textContent=link;
+ $("qr").innerHTML="";
+ if(window.QRCode){new QRCode($("qr"),{text:link,width:180,height:180});status("qrStatus","এই QR-এ আপনার Referral Link আছে।")}
+ else status("qrStatus","QR লাইব্রেরি লোড হয়নি; লিংক কপি করে ব্যবহার করুন।");
+ const [inv,rewards]=await Promise.all([
+  sb.from("referral_invitations").select("id,invitee_phone,status,invited_at,accepted_at,verified_at").eq("inviter_user_id",currentUser.id).order("invited_at",{ascending:false}),
+  sb.from("referral_reward_ledger").select("id,entry_type,amount,currency,description,created_at").eq("beneficiary_user_id",currentUser.id).order("created_at",{ascending:false})
+ ]);
+ if(inv.error)throw inv.error;if(rewards.error)throw rewards.error;
+ $("myInvitations").innerHTML=inv.data.length?table(["মোবাইল","অবস্থা","আমন্ত্রণের সময়","যাচাই"],inv.data.map(x=>[esc(x.invitee_phone),esc(x.status),new Date(x.invited_at).toLocaleString("bn-BD"),x.verified_at?"হ্যাঁ":"—"])):"এখনো কোনো আমন্ত্রণ নেই।";
+ $("myRewards").innerHTML=rewards.data.length?table(["ধরন","পরিমাণ","বিবরণ","তারিখ"],rewards.data.map(x=>[esc(x.entry_type),money(x.amount),esc(x.description||""),new Date(x.created_at).toLocaleDateString("bn-BD")])):"এখনো কোনো Reward Entry নেই।";
+ if(refCode){$("inviteStatus").textContent="আপনি Referral Code "+refCode+" দিয়ে এসেছেন। নিজের গ্রাহক প্রোফাইলে আমন্ত্রণের মোবাইল নম্বর দিন, তারপর নিচের আমন্ত্রণ গ্রহণ বোতাম ব্যবহার করুন।";$("acceptInviteBtn").classList.remove("hidden");}
+}
+function table(head,rows){return "<table><thead><tr>"+head.map(x=>"<th>"+x+"</th>").join("")+"</tr></thead><tbody>"+rows.map(r=>"<tr>"+r.map(x=>"<td>"+(x??"")+"</td>").join("")+"</tr>").join("")+"</tbody></table>";}
+async function loadAdminPanel(){
+ const role=await sb.from("app_user_roles").select("role").eq("user_id",currentUser.id).maybeSingle();
+ if(role.error)throw role.error;
+ adminMode=role.data?.role==="main_admin";
+ if(!adminMode){setVisible("adminPanel",false);return;}
+ setVisible("adminPanel",true);setVisible("customerPanel",false);
+ const [codes,inv,rewards]=await Promise.all([
+  sb.from("referral_codes").select("id,owner_user_id,code,is_active,created_at").order("created_at",{ascending:false}),
+  sb.from("referral_invitations").select("id,referral_code_id,inviter_user_id,invitee_phone,invitee_user_id,status,invited_at,accepted_at,verified_at").order("invited_at",{ascending:false}),
+  sb.from("referral_reward_ledger").select("id,invitation_id,beneficiary_user_id,entry_type,amount,description,created_at").order("created_at",{ascending:false})
+ ]);
+ for(const x of [codes,inv,rewards])if(x.error)throw x.error;
+ allInvitations=inv.data;
+ const pending=inv.data.filter(x=>x.status==="accepted");
+ $("adminSummary").textContent="মোট কোড: "+codes.data.length+" · মোট আমন্ত্রণ: "+inv.data.length+" · যাচাই অপেক্ষমাণ: "+pending.length+" · Ledger Entry: "+rewards.data.length;
+ $("adminInvitations").innerHTML=inv.data.length?table(["ফোন","Inviter ID","Invitee ID","অবস্থা","তারিখ","কাজ"],inv.data.map(x=>[esc(x.invitee_phone),esc(x.inviter_user_id),esc(x.invitee_user_id||"—"),esc(x.status),new Date(x.invited_at).toLocaleString("bn-BD"),x.status==="accepted"?"<button data-verify='"+esc(x.id)+"' class='primary'>যাচাই</button>":"—"])):"কোনো আমন্ত্রণ নেই।";
+ $("rewardInvitation").innerHTML='<option value="">আমন্ত্রণ নির্বাচন করুন</option>'+inv.data.filter(x=>x.status==="verified").map(x=>'<option value="'+esc(x.id)+'">'+esc(x.invitee_phone)+" · "+esc(x.id.slice(0,8))+"</option>").join("");
+ $("adminRewards").innerHTML=rewards.data.length?table(["Beneficiary","ধরন","পরিমাণ","বিবরণ","তারিখ"],rewards.data.map(x=>[esc(x.beneficiary_user_id),esc(x.entry_type),money(x.amount),esc(x.description||""),new Date(x.created_at).toLocaleDateString("bn-BD")])):"কোনো Ledger Entry নেই।";
+ $("adminCodes").innerHTML=codes.data.length?table(["কোড","Owner ID","অবস্থা","কাজ"],codes.data.map(x=>[esc(x.code),esc(x.owner_user_id),x.is_active?"Active":"Inactive","<button data-code='"+esc(x.id)+"' data-active='"+(!x.is_active)+"'>"+(x.is_active?"নিষ্ক্রিয়":"সক্রিয়")+"</button>"])):"কোনো Referral Code নেই।";
+}
+async function refresh(){
+ const {data,error}=await sb.auth.getSession();if(error)throw error;
+ currentUser=data.session?.user||null;
+ setVisible("auth",!currentUser);setVisible("logoutBtn",!!currentUser);
+ if(!currentUser){setVisible("profile",false);setVisible("customerPanel",false);setVisible("adminPanel",false);return;}
+ await loadCustomerPanel();
+ if(!$("customerPanel").classList.contains("hidden")===false)await loadAdminPanel();
+}
+$("loginBtn").onclick=async()=>{try{status("authStatus","");const r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error)throw r.error;await refresh();}catch(e){status("authStatus",e.message||String(e));}};
+$("signupBtn").onclick=async()=>{try{const email=$("email").value.trim(),password=$("password").value,full_name=$("fullName").value.trim(),phone=$("phone").value.trim();if(full_name.length<2)throw new Error("পূর্ণ নাম লিখুন।");if(phoneDigits(phone).length<10)throw new Error("সঠিক মোবাইল নম্বর দিন।");const r=await sb.auth.signUp({email,password,options:{data:{full_name,phone},emailRedirectTo:location.href.split("?")[0]+"?backend=test2"}});if(r.error)throw r.error;status("authStatus","রেজিস্ট্রেশন অনুরোধ হয়েছে। ইমেইল ভেরিফাই করে লগইন করুন।");}catch(e){status("authStatus",e.message||String(e));}};
+$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.href=location.pathname+"?backend=test2";};
+$("saveProfile").onclick=async()=>{try{await saveProfile();}catch(e){status("profileStatus",e.message||String(e));}};
+$("inviteBtn").onclick=async()=>{try{if(!myCode)throw new Error("Referral Code তৈরি হয়নি।");const r=await sb.rpc("referral_create_invitation",{p_code:myCode,p_invitee_phone:$("invitePhone").value.trim()});if(r.error)throw r.error;status("inviteStatus","আমন্ত্রণ সংরক্ষিত হয়েছে।");$("invitePhone").value="";await loadCustomerPanel();}catch(e){status("inviteStatus",e.message||String(e));}};
+$("copyLink").onclick=async()=>{const link=baseLink(myCode);try{await navigator.clipboard.writeText(link);status("inviteStatus","Referral Link কপি হয়েছে।");}catch(e){status("inviteStatus","কপি করা যায়নি; লিংকটি হাতে কপি করুন।");}};
+$("shareLinkBtn").onclick=async()=>{const url=baseLink(myCode);if(navigator.share){try{await navigator.share({title:"মুহাইমিন ডেইরি Referral",url});}catch(e){if(e.name!=="AbortError")status("inviteStatus",e.message);}}else{$("shareLink").textContent=url;}};
+$("postReward").onclick=async()=>{try{const invitation_id=$("rewardInvitation").value,amount=Number($("rewardAmount").value);if(!invitation_id)throw new Error("যাচাইকৃত আমন্ত্রণ নির্বাচন করুন।");if(!(amount>0))throw new Error("সঠিক পরিমাণ দিন।");const r=await sb.rpc("referral_admin_post_reward",{p_invitation_id:invitation_id,p_entry_type:$("rewardType").value,p_amount:amount,p_description:$("rewardDescription").value.trim()||null});if(r.error)throw r.error;status("rewardStatus","Ledger Entry সংরক্ষিত হয়েছে: "+r.data);$("rewardAmount").value="";$("rewardDescription").value="";await loadAdminPanel();}catch(e){status("rewardStatus",e.message||String(e));}};
+document.addEventListener("click",async e=>{const v=e.target.closest("[data-verify]");if(v){v.disabled=true;try{const r=await sb.rpc("referral_admin_verify",{p_invitation_id:v.dataset.verify});if(r.error)throw r.error;await loadAdminPanel();}catch(x){alert(x.message||String(x));v.disabled=false;}return;}const c=e.target.closest("[data-code]");if(c){c.disabled=true;try{const r=await sb.rpc("referral_admin_set_code_active",{p_code_id:c.dataset.code,p_active:c.dataset.active==="true"});if(r.error)throw r.error;await loadAdminPanel();}catch(x){alert(x.message||String(x));c.disabled=false;}}});
+(async()=>{try{if(new URLSearchParams(location.search).get("backend")!=="test2"){status("authStatus","TEST 2 backend parameter missing. Reload with ?backend=test2.");$("loginBtn").disabled=true;$("signupBtn").disabled=true;return;}await refresh();}catch(e){status("authStatus",e.message||String(e));}})();
+</script>
+</body></html>
