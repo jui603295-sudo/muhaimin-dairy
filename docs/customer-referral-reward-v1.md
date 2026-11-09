@@ -21,9 +21,9 @@ Portal: `referral.html?backend=test2`. It uses the TEST 2 project URL and publis
 - Reward policy amount is intentionally not automated or preconfigured. Main Admin must decide the reward policy before issuing entries.
 
 ## Database and security
-Tables: `referral_codes`, `referral_invitations`, `referral_reward_ledger`. All have RLS enabled. Customer row visibility is scoped to their own records; Main Admin has system-wide visibility. Mutations are routed through SECURITY DEFINER RPCs with fixed search paths and explicit customer/Main Admin role checks. The reward ledger has no client UPDATE/DELETE grants and has an UPDATE/DELETE rejection trigger. Corrections use new reversal entries. Anonymous users have no intended table or RPC access.
+Tables: `referral_codes`, `referral_invitations`, `referral_reward_ledger`. All have RLS enabled. Customer row visibility is scoped to their own records; Main Admin has system-wide visibility. Public RPC endpoints are SECURITY INVOKER wrappers. Their SECURITY DEFINER implementations live in the non-API `private` schema, use fixed search paths, and perform explicit customer/Main Admin role checks. The reward ledger has no client INSERT/UPDATE/DELETE grants and has a private UPDATE/DELETE rejection trigger. Supabase Security Advisor no longer reports the referral RPCs as exposed SECURITY DEFINER functions. Corrections use new reversal entries. Anonymous users have no intended table or RPC access.
 
-Phone matching normalizes Bangladesh-style local/international representations to the last 11 digits. A customer must have a verified Auth email or phone and a matching customer profile phone before accepting an invitation. Self-referral and duplicate invitations for the same referral code + phone are rejected.
+Phone matching normalizes Bangladesh-style local/international representations to the last 11 digits. A customer must have a verified Auth email or phone and a matching customer profile phone before accepting an invitation. Main Admin must independently confirm the invitee's phone ownership before final verification. Self-referral and duplicate invitations for the same referral code + phone are rejected.
 
 ## TEST 2 evidence so far
 - Referral schema migrations applied successfully.
