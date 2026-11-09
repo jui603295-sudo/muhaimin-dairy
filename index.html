@@ -305,8 +305,20 @@ const dateTimeBD = value => {
   const time=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Dhaka",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).format(d);
   return date+" "+time;
 };
-const lang = () => localStorage.getItem("muhaimin-language") || "bn";
-const money = value => (lang()==="en" ? "BDT " : "৳") + Number(value || 0).toLocaleString(lang()==="en" ? "en-US" : "bn-BD", {maximumFractionDigits:2});
+const localeRegistry = {
+  bn:{label:"বাংলা",locale:"bn-BD",direction:"ltr",currency:"BDT"},
+  en:{label:"English",locale:"en-US",direction:"ltr",currency:"BDT"}
+};
+const normalizeLocale = value => {
+  const candidate=String(value||"bn").trim();
+  if(localeRegistry[candidate])return candidate;
+  const base=candidate.toLowerCase().split("-")[0];
+  return localeRegistry[base] ? base : "bn";
+};
+const lang = () => normalizeLocale(localStorage.getItem("muhaimin-language") || "bn");
+const localeTag = () => localeRegistry[lang()]?.locale || lang();
+const formatNumber = (value, options={}) => new Intl.NumberFormat(localeTag(),options).format(Number(value||0));
+const money = value => (lang()==="en" ? "BDT " : "৳") + formatNumber(value,{maximumFractionDigits:2});
 const dateBN = value => dateDisplay(value);
 const storedTime = (time, createdAt) => {
   if(time && /^\d{2}:\d{2}(:\d{2})?$/.test(String(time)))return String(time).slice(0,8);
@@ -361,7 +373,12 @@ const translations = {
     auditTitle:"🧾 Audit Log", auditInfo:"Local activity list for this browser; not a server-secured audit log."
   }
 };
-function tr(key) { return (translations[lang()] || translations.bn)[key] || (translations.bn[key] || key); }
+function tr(key) {
+  const active=translations[lang()] || {};
+  const english=translations.en || {};
+  const bengali=translations.bn || {};
+  return active[key] || english[key] || bengali[key] || key;
+}
 const uiEnglish = {
  "ডেইরি ও প্রাণিজ পণ্য ব্যবস্থাপনা • Supabase Online":"Dairy & Livestock Product Management • Supabase Online",
  "ঢাকা":"Dhaka","চট্টগ্রাম":"Chattogram","রাজশাহী":"Rajshahi","খুলনা":"Khulna","বরিশাল":"Barishal","সিলেট":"Sylhet","রংপুর":"Rangpur","ময়মনসিংহ":"Mymensingh",
@@ -475,12 +492,31 @@ window.MuhaiminI18n=Object.freeze({
   t:key=>tr(key),
   translateText,
   refresh:()=>translateUiText(),
-  supportedLocales:Object.freeze(["bn","en"])
+  formatNumber,
+  formatDate:(value,options={})=>new Intl.DateTimeFormat(localeTag(),{timeZone:"Asia/Dhaka",...options}).format(new Date(value)),
+  registerLocale:(code,catalog,config={})=>{
+    const id=String(code||"").trim();
+    if(!/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(id) || !catalog || typeof catalog!=="object")return false;
+    translations[id]=Object.freeze({...catalog});
+    localeRegistry[id]=Object.freeze({
+      label:String(config.label||id),
+      locale:String(config.locale||id),
+      direction:config.direction==="rtl"?"rtl":"ltr",
+      currency:String(config.currency||"BDT")
+    });
+    const selector=$("language");
+    if(selector && !Array.from(selector.options).some(option=>option.value===id)){
+      selector.add(new Option(localeRegistry[id].label,id));
+    }
+    return true;
+  },
+  supportedLocales:Object.freeze(Object.keys(localeRegistry))
 });
 function applyLanguage(value) {
-  const next = value || lang();
+  const next = normalizeLocale(value || lang());
   localStorage.setItem("muhaimin-language", next);
-  document.documentElement.lang = next;
+  document.documentElement.lang = localeRegistry[next]?.locale || next;
+  document.documentElement.dir = localeRegistry[next]?.direction || "ltr";
   if ($("language")) $("language").value = next;
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.dataset.i18n;
