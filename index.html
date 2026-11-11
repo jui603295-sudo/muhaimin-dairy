@@ -1071,7 +1071,8 @@ function resetFarmerAddressChildren(level){
  if(level<=3){
   const locality=$("farmerUnion");setFarmerAddressOptions(locality,[],"আগে উপজেলা নির্বাচন করুন",item=>item.value);
   if(locality)locality.disabled=true;
-  $("farmerLocalityManual")?.classList.add("hidden");
+  const manual=$("farmerLocalityManual");if(manual){manual.value="";manual.classList.add("hidden");}
+  const village=$("farmerForm")?.elements.farmer_village_name;if(village)village.value="";
  }
 }
 async function initFarmerAddressPicker(){
@@ -1096,7 +1097,8 @@ async function initFarmerAddressPicker(){
   const division=farmerAddressTree.find(item=>item.bn===$("farmerDivision").value);
   const district=division?.districts.find(item=>item.bn===$("farmerDistrict").value);
   const upazila=district?.upazilas.find(item=>item.bn===event.target.value);
-  const locality=$("farmerUnion");if(!locality)return;
+  resetFarmerAddressChildren(3);
+  const locality=$("farmerUnion");if(!locality||!upazila)return;
   locality.replaceChildren();
   const first=document.createElement("option");first.value="";first.textContent="ইউনিয়ন / পৌরসভা নির্বাচন";locality.appendChild(first);
   for(const item of upazila?.unions||[]){
